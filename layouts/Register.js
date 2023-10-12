@@ -2,14 +2,32 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { RadioButton } from 'react-native-paper';
+import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
+
+const formatDate = (date) => {
+  let d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2)
+      month = '0' + month;
+  if (day.length < 2)
+      day = '0' + day;
+
+  return [year, month, day].join('-');
+}
 
 export default function Register({ navigation }) {
   const getFreshModel = () => ({
     firstName: undefined,
     lastName: undefined,
-    //birthday: undefined,
-    gender: undefined,
+    birthday: new Date(),
+    formatbirthday: undefined,
+    gender: "M",
     phoneNumber: undefined,
     email: undefined,
     password: undefined,
@@ -26,6 +44,10 @@ export default function Register({ navigation }) {
   } = useForm(getFreshModel);
 
   const PlaceholderImage = require('../assets/loginbackground.png');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const showDatePickerModal = () => {
+    setShowDatePicker(true);
+  };
 
   useEffect(() => {
     console.log(values)
@@ -37,81 +59,114 @@ export default function Register({ navigation }) {
 
   return (
     <ImageBackground source={PlaceholderImage} style={styles.image} resizeMode="cover">
-    <View style={styles.container}>
-      <Text style={styles.heading}>Register Page</Text>
-      <View style={styles.divider} />
-      <Text style={styles.label}>Personal Information</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.heading}>Register Page</Text>
+        <View style={styles.divider} />
+        <Text style={styles.label}>Personal Information</Text>
 
-      <View style={styles.row}>
+        <View style={styles.row}>
+          <TextInput
+            style={[styles.input, styles.halfInput]}
+            placeholder="First Name"
+            value={values.firstName}
+            onChangeText={(text) => handleInputChange('firstName', text)}
+          />
+
+          <TextInput
+            style={[styles.input, styles.halfInput]}
+            placeholder="Last Name"
+            value={values.lastName}
+            onChangeText={(text) => handleInputChange('lastName', text)}
+          />
+        </View>
+
+        <RadioButtonGroup
+          containerStyle={{ margin: 10 }}
+          selected={values.gender}
+          onSelected={(value) => handleInputChange('gender', value)}
+          radioBackground="green"
+        >
+          <RadioButtonItem value="M" label="Male" />
+          <RadioButtonItem value="F" label="Female" />
+          <RadioButtonItem value="NA" label="N/A" />
+        </RadioButtonGroup>
+
+
+        <TouchableOpacity style={styles.button} onPress={showDatePickerModal}>
+          <Text style={styles.buttonText}>Select Birthday</Text>
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={values.birthday}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              handleInputChange('birthday', selectedDate);
+              handleInputChange('formatbirthday', formatDate(selectedDate));
+            }}
+          />
+        )}
+
         <TextInput
-          style={[styles.input, styles.halfInput]}
-          placeholder="First Name"
-          value={values.firstName}
-          onChangeText={(text) => handleInputChange('firstName', text)}
+          style={[styles.input]}
+          placeholder="Birthday"
+          value={values.formatbirthday}
+        />
+
+
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={values.email}
+          onChangeText={(text) => handleInputChange('email', text)}
         />
 
         <TextInput
-          style={[styles.input, styles.halfInput]}
-          placeholder="Last Name"
-          value={values.lastName}
-          onChangeText={(text) => handleInputChange('lastName', text)}
+          style={styles.input}
+          placeholder="Phone Number"
+          value={values.phoneNumber}
+          onChangeText={(text) => handleInputChange('phoneNumber', text)}
         />
-      </View>
 
-      {/* Radio buttons for gender */}
-      {/* Replace this with appropriate Radio button component in React Native */}
+        <View style={styles.divider} />
+        <Text style={styles.label}>Login Information</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={values.email}
-        onChangeText={(text) => handleInputChange('email', text)}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Login Name"
+          value={values.loginName}
+          onChangeText={(text) => handleInputChange('loginName', text)}
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Phone Number"
-        value={values.phoneNumber}
-        onChangeText={(text) => handleInputChange('phoneNumber', text)}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={values.password}
+          onChangeText={(text) => handleInputChange('password', text)}
+          secureTextEntry
+        />
 
-      <View style={styles.divider} />
-      <Text style={styles.label}>Login Information</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          value={values.confirmPassword}
+          onChangeText={(text) => handleInputChange('confirmPassword', text)}
+          secureTextEntry
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Login Name"
-        value={values.loginName}
-        onChangeText={(text) => handleInputChange('loginName', text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={values.password}
-        onChangeText={(text) => handleInputChange('password', text)}
-        secureTextEntry
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={values.confirmPassword}
-        onChangeText={(text) => handleInputChange('confirmPassword', text)}
-        secureTextEntry
-      />
-
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegisterSubmit}>
-        <Text style={styles.registerButtonText}>Register</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.registerButton} onPress={handleRegisterSubmit}>
+         <Text style={styles.registerButtonText}>Register</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 16,
   },
   heading: {
@@ -162,5 +217,18 @@ const styles = StyleSheet.create({
     height: '100%',
     position: 'absolute',
     resizeMode: 'cover',
-  }
+  },
+  button: {
+    backgroundColor: 'green',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
