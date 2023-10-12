@@ -7,121 +7,25 @@ import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity }
 import axios from 'axios';
 import { StatusBar } from 'expo-status-bar';
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Register from "./layouts/Register";
+import Login from "./layouts/Login";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const getFreshModel = () => ({
-    username: '',
-    password: '',
-  })
-
-  const {
-    values,
-    setValues,
-    error,
-    setErrors,
-    handleInputChange
-  } = useForm(getFreshModel);
-
-  const PlaceholderImage = require('./assets/loginbackground2.png');
-
-  const handleSubmit = () => {
-    console.log("called")
-    axios
-      .post(`${process.env.API_BASE_URL}/login`, values)//'http://localhost:8081/login'
-      .then((res) => {
-        if (res.data === 'success') {
-          navigate('/home');
-        } else {
-          alert('No exist record');
-        }
-      })
-      .catch((err) => console.log(err));
-
-  };
-
-  useEffect(() => {
-    console.log(values)
-  }, [values])
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
-      <Pressable onPress={() => alert('You pressed a button.')} style={styles.button}>
-        <Text style={styles.buttonText}>Login Page</Text>
-      </Pressable>
-      <Text style={styles.text}>Please enter your information</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={values.username}
-        onChangeText={text => handleInputChange('username', text)}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={values.password}
-        onChangeText={text => handleInputChange('password', text)}
-        secureTextEntry
-      />
-
-      <Text>{error.username}</Text>
-      <Text>{error.password}</Text>
-
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Sign In</Text>
-      </TouchableOpacity>
-
-    </View>
-  );
+    <NavigationContainer>
+    <Stack.Navigator initialRouteName="Login" screenOptions={{
+            headerShown: false,
+          }}>
+    <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
+    </Stack.Navigator>
+  </NavigationContainer>
+  )
+  
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  button: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  text: {
-    color: '#fff',
-    fontSize: 16,
-    marginTop: 20,
-  },
-  input: {
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: 'lightgray', // Set the background color
-  },
-  submitButton: {
-    backgroundColor: 'green',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-});
