@@ -13,6 +13,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Share } from 'react-native';
 
+import BottomBar from "./BottomBar";
+
 export default function Home({ navigation, route }) {
 
   const getFreshModel = () => ({
@@ -127,7 +129,11 @@ export default function Home({ navigation, route }) {
     /*
     https://docs.expo.dev/versions/latest/sdk/sharing/
     https://www.volcengine.com/theme/6356016-Z-7-1
-    
+
+    group
+    https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
+    https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
+
     // 检查设备是否支持分享
     if (!(await Sharing.isAvailableAsync())) {
       alert('分享不可用');
@@ -155,29 +161,27 @@ export default function Home({ navigation, route }) {
       <Text style={styles.heading}>Home Page</Text>
 
       <View style={styles.cardContainer}>
-  <Card style={styles.card}>
-  <TextInput
-          style={styles.input}
-          value={values.loginName}
-        />
-        <TextInput
-          style={styles.input}
-          value={values.gender}
-        />
-        <TextInput
-          style={styles.input}
-          value={values.formatbirthday}
-        />
-  </Card>
-</View>
-
-
-
-
+        <Card style={styles.card}>
+          <TextInput
+            style={styles.input}
+            value={values.loginName}
+          />
+          <TextInput
+            style={styles.input}
+            value={values.gender}
+          />
+          <TextInput
+            style={styles.input}
+            value={values.formatbirthday}
+          />
+        </Card>
+      </View>
 
       <TouchableOpacity onPress={shareViaWhatsApp}>
         <Text>分享到WhatsApp</Text>
       </TouchableOpacity>
+
+      <BottomBar navigation={navigation} />
     </View>
   );
 }

@@ -12,6 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Register from "./layouts/Register";
 import Login from "./layouts/Login";
 import Home from "./layouts/Home";
+import InitialAccount from "./layouts/InitialAccount";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,15 +20,17 @@ export default function App() {
 
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Login" screenOptions={{
-            headerShown: false,
-          }}>
-    <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Register" component={Register} />
-      <Stack.Screen name="Home" component={Home} />
-    </Stack.Navigator>
-  </NavigationContainer>
+      {/*https://reactnavigation.org/docs/bottom-tab-navigator/*/}
+      <Stack.Navigator initialRouteName="Login" screenOptions={{
+        headerShown: false,
+      }}>
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="InitialAccount" component={InitialAccount} />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
-  
+
 }
 
