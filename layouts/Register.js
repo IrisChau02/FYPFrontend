@@ -126,7 +126,6 @@ export default function Register({ navigation }) {
           value={values.formatbirthday}
         />
 
-
         <TextInput
           style={styles.input}
           placeholder="Email"

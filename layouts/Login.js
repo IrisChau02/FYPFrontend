@@ -35,7 +35,7 @@ export default function Login({ navigation }) {
           alert('No exist record');
         } else {
           alert('success')
-          navigation.navigate('Home', { loginName: res.data.loginName, password: res.data.password })
+          navigation.navigate('Home', { loginName: res.data[0].loginName, password: res.data[0].password })
         }
       })
       .catch((err) => console.log(err));
