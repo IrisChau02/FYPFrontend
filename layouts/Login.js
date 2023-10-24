@@ -28,19 +28,17 @@ export default function Login({ navigation }) {
   const PlaceholderImage = require('../assets/loginbackground2.png');
 
   const handleSubmit = () => {
-    console.log("called")
-    /*
     axios
-      .post(`${process.env.API_BASE_URL}/login`, values)//'http://localhost:8081/login'
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/login`, values)
       .then((res) => {
-        if (res.data === 'success') {
-          navigate('/home');
-        } else {
+        if (res.data === 'failed') {
           alert('No exist record');
+        } else {
+          alert('success')
+          navigation.navigate('Home', { loginName: res.data.loginName, password: res.data.password })
         }
       })
-      .catch((err) => console.log(err));*/
-
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -135,3 +133,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+

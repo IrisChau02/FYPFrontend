@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { RadioButton } from 'react-native-paper';
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
+import axios from 'axios';
 
 const formatDate = (date) => {
   let d = new Date(date),
@@ -54,7 +55,17 @@ export default function Register({ navigation }) {
   }, [values])
 
   const handleRegisterSubmit = () => {
-    // Handle form submission
+    axios
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/register`, values)
+      .then((res) => {
+        if (res.data === 'added') {
+          alert('success')
+          navigation.navigate('Login')
+        } else {
+          alert('fail');
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
