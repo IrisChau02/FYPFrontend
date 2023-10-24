@@ -13,6 +13,8 @@ import Register from "./layouts/Register";
 import Login from "./layouts/Login";
 import Home from "./layouts/Home";
 import InitialAccount from "./layouts/InitialAccount";
+import Mission from "./layouts/Mission";
+import Guild from "./layouts/Guild";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +30,8 @@ export default function App() {
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="InitialAccount" component={InitialAccount} />
+        <Stack.Screen name="Mission" component={Mission} />
+        <Stack.Screen name="Guild" component={Guild} />
       </Stack.Navigator>
     </NavigationContainer>
   )

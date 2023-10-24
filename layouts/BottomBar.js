@@ -10,11 +10,11 @@ export default function BottomBar({ navigation }) {
       </View>
       <View style={styles.bottomBar}>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>
+        <TouchableOpacity onPress={() => navigation.navigate('Guild')} style={styles.button}>
           <Text style={styles.icon}>Guild</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>
+        <TouchableOpacity onPress={() => navigation.navigate('Mission')} style={styles.button}>
           <Text style={styles.icon}>Mission</Text>
         </TouchableOpacity>
 
