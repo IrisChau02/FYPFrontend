@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import BottomBar from "./BottomBar";
 
-export default function Guild({ navigation}) {
+export default function GuildCreate({ navigation}) {
 
   const getFreshModel = () => ({
     firstName: undefined,
@@ -33,13 +33,7 @@ export default function Guild({ navigation}) {
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
-      <Text style={styles.heading}>Guild Page</Text>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GuildCreate')}>
-        <Text style={styles.buttonText}>Create your own guild!</Text>
-      </TouchableOpacity>
-    
-      <BottomBar navigation={navigation} />
+      <Text style={styles.heading}>Guild Create Page</Text>
     </View>
   );
 }
