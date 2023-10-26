@@ -8,6 +8,20 @@ import BottomBar from "./BottomBar";
 import SelectDropdown from 'react-native-select-dropdown'
 import { Dimensions } from 'react-native';
 
+import * as FileSystem from 'expo-file-system';
+
+const guildDir = FileSystem.documentDirectory + 'guildImages/';
+
+// Checks if gif directory exists. If not, creates it
+async function ensureDirExists() {
+  const dirInfo = await FileSystem.getInfoAsync(guildDir);
+  if (!dirInfo.exists) {
+    console.log("GuildDir directory doesn't exist, creating…");
+    await FileSystem.makeDirectoryAsync(guildDir, { intermediates: true });
+  }
+}
+
+
 export default function GuildCreate({ navigation }) {
 
   const getFreshModel = () => ({
@@ -36,6 +50,7 @@ export default function GuildCreate({ navigation }) {
   //We can pass the object to specify different options when invoking the method.
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
       allowsEditing: true,
       quality: 1,
     });

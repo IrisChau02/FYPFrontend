@@ -1,32 +1,50 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
+const defaultLogoImage = require('../assets/defaultLogo.png');
+
 const GuildCard = ({ guild }) => {
+  //{ uri: guild.guildLogo }
   return (
     <View style={styles.cardContainer}>
-      <Image source={{ uri: guild.guildLogo }} style={styles.logo} />
-      <Text style={styles.guildName}>{guild.guildName}</Text>
-      <Text style={styles.guildInfo}>{guild.guildInto}</Text>
-      <Text style={styles.guildDetails}>Level: {guild.level} | Members: {guild.memberNo}</Text>
+      <View style={styles.row}>
+        <Image source={defaultLogoImage} style={styles.logo} /> 
+        <View style={styles.column}>
+          <Text style={styles.guildName}>Name: {guild.guildName}</Text>
+          <Text style={styles.guildInfo}>Introduction: {guild.guildInto}</Text>
+          <Text style={styles.guildDetails}>
+            Level: {guild.level} | Members: {guild.memberNo}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#F9F6F2', // Rice color
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
     elevation: 4,
+    borderColor: 'gray', // Gray border color
+    borderWidth: 4, // Border width
     shadowColor: 'black',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logo: {
     width: 100,
     height: 100,
     marginBottom: 8,
+  },
+  column: {
+    marginLeft: 16,
   },
   guildName: {
     fontSize: 20,

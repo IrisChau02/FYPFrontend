@@ -42,6 +42,9 @@ export default function Guild({ navigation}) {
           console.log(res.data)
           setGuildList(res.data)
           
+          //https://www.youtube.com/watch?v=pBEYprNAs4c 14:14
+          //https://docs.expo.dev/versions/latest/sdk/filesystem/
+          //https://snack.expo.dev/
 
           /*if (res.data === 'failed') {
             alert('No existing record');
@@ -115,5 +118,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
-  }
+  },
 });
