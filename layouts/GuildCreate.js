@@ -17,7 +17,7 @@ export default function GuildCreate({ navigation }) {
     districtDropdown: null,
     districtID: undefined,
     level: 1,
-    member: 0
+    member: 1
   })
 
   const {
@@ -76,18 +76,18 @@ export default function GuildCreate({ navigation }) {
 
   const handleGuildCreate = () => {
     console.log(values)
-    /*
+    
     axios
-      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/register`, values)
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuild`, values)
       .then((res) => {
         if (res.data === 'added') {
           alert('success')
-          navigation.navigate('Login')
+          navigation.navigate('Guild')
         } else {
           alert('fail');
         }
       })
-      .catch((err) => console.log(err));*/
+      .catch((err) => console.log(err));
   };
 
   return (

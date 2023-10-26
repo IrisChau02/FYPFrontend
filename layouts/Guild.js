@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import axios from 'axios';
 
 import BottomBar from "./BottomBar";
+import GuildCard from "../components/GuildCard";
 
 export default function Guild({ navigation}) {
 
@@ -30,6 +31,40 @@ export default function Guild({ navigation}) {
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
 
+  const [guildList, setGuildList] = useState([]);
+
+  useEffect(() => {
+   
+  
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuild`)
+        .then((res) => {
+          console.log(res.data)
+          setGuildList(res.data)
+          
+
+          /*if (res.data === 'failed') {
+            alert('No existing record');
+          } else {
+            alert('Success');
+            //console.log(res.data);
+
+            setValues({
+              ...values,
+              firstName: res.data[0].firstName,
+              lastName: res.data[0].lastName,
+              formatbirthday: res.data[0].birthday,
+              gender: res.data[0].gender,
+              phoneNumber: res.data[0].phoneNumber,
+              email: res.data[0].email
+            })
+          }*/
+
+        })
+        .catch((err) => console.log(err));
+    
+  }, []);
+
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
@@ -38,6 +73,13 @@ export default function Guild({ navigation}) {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GuildCreate')}>
         <Text style={styles.buttonText}>Create your own guild!</Text>
       </TouchableOpacity>
+
+      <FlatList
+        data={guildList}
+        renderItem={({ item }) => <GuildCard guild={item} />}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.cardList}
+      />
     
       <BottomBar navigation={navigation} />
     </View>
@@ -67,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    margin: 20,
   },
   buttonText: {
     color: '#fff',
