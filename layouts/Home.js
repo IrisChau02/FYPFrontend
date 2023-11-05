@@ -126,6 +126,7 @@ export default function Home({ navigation, route }) {
     catch (error) {
       console.log(error.message)
     }
+
     /*
     https://docs.expo.dev/versions/latest/sdk/sharing/
     https://www.volcengine.com/theme/6356016-Z-7-1
