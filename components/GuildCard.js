@@ -8,7 +8,7 @@ const GuildCard = ({ guild, navigation }) => {
   return (
     <View style={styles.cardContainer}>
       <View style={styles.row}>
-        <Image source={defaultLogoImage} style={styles.logo} /> 
+        <Image source={{ uri: `data:image/jpeg;base64,${guild.guildLogo}` }} style={styles.logo} /> 
         <View style={styles.column}>
           <Text style={styles.guildName}>Name: {guild.guildName}</Text>
           <Text style={styles.guildInfo}>Introduction: {guild.guildIntro}</Text>

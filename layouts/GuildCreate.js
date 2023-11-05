@@ -62,6 +62,8 @@ export default function GuildCreate({ navigation }) {
       //console.log(result);
       //console.log(result.assets[0].uri);
       
+      console.log(result.assets[0].base64);
+
       setValues({
         ...values,
         guildLogo: result.assets[0].base64,
