@@ -64,7 +64,7 @@ export default function GuildCreate({ navigation }) {
       
       setValues({
         ...values,
-        guildLogo: result.base64,
+        guildLogo: result.assets[0].base64,
       })
 
     } else {
