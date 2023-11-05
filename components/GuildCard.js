@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet,TouchableOpacity } from 'react-native';
 
 const defaultLogoImage = require('../assets/defaultLogo.png');
 
-const GuildCard = ({ guild }) => {
+const GuildCard = ({ guild, navigation }) => {
   //{ uri: guild.guildLogo }
   return (
     <View style={styles.cardContainer}>
@@ -11,10 +11,13 @@ const GuildCard = ({ guild }) => {
         <Image source={defaultLogoImage} style={styles.logo} /> 
         <View style={styles.column}>
           <Text style={styles.guildName}>Name: {guild.guildName}</Text>
-          <Text style={styles.guildInfo}>Introduction: {guild.guildInto}</Text>
+          <Text style={styles.guildInfo}>Introduction: {guild.guildIntro}</Text>
           <Text style={styles.guildDetails}>
             Level: {guild.level} | Members: {guild.memberNo}
           </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('GuildDetail', { guild: guild })} style={styles.button}>
+          <Text style={styles.buttonText}>Join</Text>
+        </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -58,6 +61,19 @@ const styles = StyleSheet.create({
   guildDetails: {
     fontSize: 14,
     color: 'gray',
+  },
+  button: {
+    backgroundColor: 'green',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

@@ -16,6 +16,9 @@ import InitialAccount from "./layouts/InitialAccount";
 import Mission from "./layouts/Mission";
 import Guild from "./layouts/Guild";
 import GuildCreate from "./layouts/GuildCreate";
+import GuildDetail from "./layouts/GuildDetail";
+import Event from "./layouts/Event";
+import EventCreate from "./layouts/EventCreate";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +37,9 @@ export default function App() {
         <Stack.Screen name="Mission" component={Mission} />
         <Stack.Screen name="Guild" component={Guild} />
         <Stack.Screen name="GuildCreate" component={GuildCreate} />
+        <Stack.Screen name="GuildDetail" component={GuildDetail} />
+        <Stack.Screen name="Event" component={Event} />
+        <Stack.Screen name="EventCreate" component={EventCreate} />
       </Stack.Navigator>
     </NavigationContainer>
   )

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native';
 import axios from 'axios';
 
 import BottomBar from "./BottomBar";
@@ -10,15 +10,7 @@ import GuildCard from "../components/GuildCard";
 export default function Guild({ navigation}) {
 
   const getFreshModel = () => ({
-    firstName: undefined,
-    lastName: undefined,
-    formatbirthday: undefined,
-    gender: undefined,
-    phoneNumber: undefined,
-    email: undefined,
-    password: undefined,
-    loginName: undefined,
-    confirmPassword: undefined,
+   
   })
 
   const {
@@ -34,12 +26,10 @@ export default function Guild({ navigation}) {
   const [guildList, setGuildList] = useState([]);
 
   useEffect(() => {
-   
-  
       axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuild`)
         .then((res) => {
-          console.log(res.data)
+          //console.log(res.data)
           setGuildList(res.data)
           
           //https://www.youtube.com/watch?v=pBEYprNAs4c 14:14
@@ -69,7 +59,7 @@ export default function Guild({ navigation}) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
       <Text style={styles.heading}>Guild Page</Text>
 
@@ -79,21 +69,21 @@ export default function Guild({ navigation}) {
 
       <FlatList
         data={guildList}
-        renderItem={({ item }) => <GuildCard guild={item} />}
+        renderItem={({ item }) => <GuildCard guild={item} navigation={navigation} />}
         keyExtractor={(item, index) => index.toString()}
         style={styles.cardList}
       />
-    
-      <BottomBar navigation={navigation} />
-    </View>
+
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //alignItems: 'center',
-    //justifyContent: 'center',
   },
   image: {
     width: '100%',
@@ -118,5 +108,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });

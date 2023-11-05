@@ -53,16 +53,18 @@ export default function GuildCreate({ navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
       allowsEditing: true,
       quality: 1,
+      base64: true, // Set base64 to true to get the image data in base64 format
     });
+
 
     if (!result.canceled) {
       delete result.cancelled;
       //console.log(result);
       //console.log(result.assets[0].uri);
-
+      
       setValues({
         ...values,
-        guildLogo: result.assets[0].uri,
+        guildLogo: result.base64,
       })
 
     } else {
@@ -119,7 +121,7 @@ export default function GuildCreate({ navigation }) {
 
         <View style={styles.col}>
           <View style={styles.imageContainer}>
-            <Image source={values.guildLogo ? { uri: values.guildLogo } : defaultLogoImage}
+            <Image source={values.guildLogo ? { uri: `data:image/jpeg;base64,${values.guildLogo}` } : defaultLogoImage}
               style={{
                 width: 150, height: 150, borderWidth: 3,
                 borderColor: 'grey',
