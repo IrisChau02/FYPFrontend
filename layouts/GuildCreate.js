@@ -52,7 +52,7 @@ export default function GuildCreate({ navigation }) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
       allowsEditing: true,
-      quality: 1,
+      quality: 0.5, // Adjust the quality parameter (0-1) to reduce image size
       base64: true, // Set base64 to true to get the image data in base64 format
     });
 
@@ -61,8 +61,7 @@ export default function GuildCreate({ navigation }) {
       delete result.cancelled;
       //console.log(result);
       //console.log(result.assets[0].uri);
-      
-      console.log(result.assets[0].base64);
+      //console.log(result.assets[0].base64);
 
       setValues({
         ...values,
