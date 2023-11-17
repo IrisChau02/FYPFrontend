@@ -13,6 +13,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Share } from 'react-native';
 
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+import { useRef } from 'react';
+
 import BottomBar from "./BottomBar";
 
 export default function Home({ navigation, route }) {
@@ -38,6 +42,27 @@ export default function Home({ navigation, route }) {
   } = useForm(getFreshModel);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
+
+  const viewRef = useRef(null);
+
+  const shareViewToWhatsApp = async () => {
+    try {
+      // Get the reference to the view
+      const view = viewRef.current;
+  
+      // Capture the specific part of the view as a base64 image
+      const captureOptions = {
+        format: 'png',
+        quality: 0.8,
+      };
+      const imageURI = await captureRef(view, captureOptions);
+  
+      // Share the image to WhatsApp
+      await Sharing.shareAsync(imageURI, { mimeType: 'image/png', dialogTitle: 'Share to WhatsApp' });
+    } catch (error) {
+      console.error('Error sharing image to WhatsApp:', error);
+    }
+  };
 
 
   useEffect(() => {
@@ -180,6 +205,13 @@ export default function Home({ navigation, route }) {
 
       <TouchableOpacity onPress={shareViaWhatsApp}>
         <Text>分享到WhatsApp</Text>
+      </TouchableOpacity>
+
+      <View ref={viewRef} style={{ backgroundColor: 'pink', padding: 10, margin: 10 }}>
+        <Text>This is a test</Text>
+      </View>
+      <TouchableOpacity onPress={shareViewToWhatsApp}>
+        <Text>Share to WhatsApp</Text>
       </TouchableOpacity>
 
       <BottomBar navigation={navigation} />
