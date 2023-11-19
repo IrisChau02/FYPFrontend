@@ -8,6 +8,10 @@ import BottomBar from "./BottomBar";
 import { Dimensions } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+import { useRef } from 'react';
+
 const formatDate = (date) => {
   let d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -48,25 +52,94 @@ export default function EventCreate({ navigation }) {
     setShowDatePicker(true);
   };
 
-  const handleCreateEvent = () => {
-    console.log(values)
+  const viewRef = useRef(null);
 
+  //custom background colour
+  const [selectedbgColor, setSelectedbgColor] = useState('#E5C1CD');
+  const buttonColors = [
+    { color: '#E5C1CD', label: '' }, //Pink
+    { color: '#F3DBCF', label: '' }, //Orange
+    { color: '#7E9680', label: '' }, //Green
+    { color: '#AAC9C2', label: '' }, //Blue
+    { color: '#B6B4C2', label: '' }, //Purple
+    { color: '#E4DFD9', label: '' }, //Gray
+  ];
+
+  const handlebgColorChange = (color) => {
+    setSelectedbgColor(color);
+  };
+
+  //custom font size
+  const [fontSize, setFontSize] = useState(16);
+  const buttonSizes = [
+    { size: 12, label: '12' },
+    { size: 13, label: '13' },
+    { size: 14, label: '14' },
+    { size: 15, label: '15' },
+    { size: 16, label: '16' },
+    { size: 17, label: '17' },
+  ];
+  const handleFontSizeChange = (size) => {
+    setFontSize(size);
+  };
+
+  //custom font colour
+  const [fontColor, setFontColor] = useState('black');
+  const buttonfontColour = [
+    { color: '#000000', label: '' }, //Black
+    { color: '#FFFFFF', label: '' }, //White
+    { color: '#333333', label: '' }, //Dark Gray
+    { color: '#666666', label: '' }, //Gray
+    { color: '#999999', label: '' }, //Light Gray
+    { color: '#AAAAAA', label: '' }, //Silver
+    { color: '#BBBBBB', label: '' }, //Light Silver
+    { color: '#CCCCCC', label: '' }, //Pale Gray
+  ];
+  const handleFontColorChange = (color) => {
+    setFontColor(color);
+  };
+
+  const handleCreateEvent = () => {
+    
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuildEvent`, values)
       .then((res) => {
         if (res.data === 'added') {
-          alert('success');
-
+          //alert('success');
+          shareViewToWhatsApp();
+          
+          /*
           const msg = `Event: [${values.eventName}] is created on [${values.formateventDate}]!\nIt will start from [${values.startTime}] to [${values.endTime}]\nThe venue is [${values.venue}]\nHere is the Detail: "${values.eventDetail}" \nWelcome to join!!`;
-
+      
           const url = `https://wa.me/85298245007?text=${encodeURIComponent(msg)}`;
-          Linking.openURL(url);
-          // navigation.navigate('Login');
+          Linking.openURL(url);*/
+          
+          //navigation.navigate('Login');
+
         } else {
           alert('fail');
         }
       })
       .catch((err) => console.log(err));
+  };
+
+  const shareViewToWhatsApp = async () => {
+    try {
+      // Get the reference to the view
+      const view = viewRef.current;
+
+      // Capture the specific part of the view as a base64 image
+      const captureOptions = {
+        format: 'png',
+        quality: 0.8,
+      };
+      const imageURI = await captureRef(view, captureOptions);
+
+      // Share the image to WhatsApp
+      await Sharing.shareAsync(imageURI, { mimeType: 'image/png', dialogTitle: 'Share to WhatsApp' });
+    } catch (error) {
+      console.error('Error sharing image to WhatsApp:', error);
+    }
   };
 
   return (
@@ -203,6 +276,55 @@ export default function EventCreate({ navigation }) {
               onChangeText={(text) => handleInputChange('venue', text)}
             />
           </View>
+        </View>
+
+        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Background Colour</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {buttonColors.map((button, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handlebgColorChange(button.color)}
+              style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
+            >
+              <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Size</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {buttonSizes.map((button, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleFontSizeChange(button.size)}
+              style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+            >
+              <Text style={{ color: 'white', textAlign: 'center', fontSize: button.size }}>
+                {button.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Colour</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {buttonfontColour.map((button, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleFontColorChange(button.color)}
+              style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
+            >
+              <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View ref={viewRef} style={{ backgroundColor: selectedbgColor, padding: 10, margin: 10 }}>
+          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
+          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
+          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime} - Event End Time: {values.endTime}</Text>
+          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
+          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleCreateEvent}>
