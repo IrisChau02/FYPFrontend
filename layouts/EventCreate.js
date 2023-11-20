@@ -26,9 +26,10 @@ const formatDate = (date) => {
   return [year, month, day].join('-');
 }
 
-export default function EventCreate({ navigation }) {
+export default function EventCreate({ navigation, route }) {
 
   const getFreshModel = () => ({
+    guildName: undefined, 
     eventName: undefined,
     eventDetail: undefined,
     eventDate: new Date(),
@@ -45,6 +46,17 @@ export default function EventCreate({ navigation }) {
     setErrors,
     handleInputChange
   } = useForm(getFreshModel);
+
+  useEffect(() => {
+    if (route && route.params) {
+      const { guildName } = route.params;
+
+      setValues({
+        ...values,
+        guildName: guildName,
+      })
+    }
+  }, [route]);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
   const [showDatePicker, setShowDatePicker] = useState(false);

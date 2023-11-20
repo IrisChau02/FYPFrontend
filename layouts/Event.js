@@ -5,11 +5,12 @@ import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, 
 import axios from 'axios';
 
 import BottomBar from "./BottomBar";
+import GuildEventCard from "../components/GuildEventCard";
 
-export default function Event({ navigation}) {
+export default function Event({ navigation, route}) {
 
   const getFreshModel = () => ({
-   
+    guildName: undefined
   })
 
   const {
@@ -22,14 +23,58 @@ export default function Event({ navigation}) {
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
 
+  useEffect(() => {
+    if (route && route.params) {
+      const { guildName } = route.params;
+
+      setValues({
+        ...values,
+        guildName: guildName,
+      })
+    }
+  }, [route]);
+
+  const [eventList, setEventList] = useState([]);
+
+  useEffect(() => {
+    if (values.guildName !== undefined) {
+      axios
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildEvent`, {
+        params: {
+          guildName: values.guildName
+        },
+      })
+      .then((res) => {
+        if (res.data === 'failed') {
+          alert('No existing record');
+        } else {
+          //alert('Success');
+          setEventList(res.data)
+        }
+      })
+      .catch((err) => console.log(err));
+
+
+    }
+  }, [values.guildName]);
+
+ 
+
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
       <Text style={styles.heading}>Event Page</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventCreate')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName})}>
           <Text style={styles.buttonText}>Create Event</Text>
         </TouchableOpacity>
+
+        <FlatList
+        data={eventList}
+        renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.cardList}
+      />
 
     </View>
   );

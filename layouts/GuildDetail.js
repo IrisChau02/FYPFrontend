@@ -72,7 +72,7 @@ export default function GuildDetail({ navigation, route }) {
 
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Event')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Event', { guildName: values.guildName})}>
           <Text style={styles.buttonText}>Event</Text>
         </TouchableOpacity>
 
