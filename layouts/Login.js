@@ -5,10 +5,6 @@ import { TextField, Button, Card, CardContent } from '@mui/material';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { StatusBar } from 'expo-status-bar';
-
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export default function Login({ navigation }) {
 
@@ -27,54 +23,76 @@ export default function Login({ navigation }) {
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
 
-  const handleSubmit = () => {
-    axios
-      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/login`, values)
-      .then((res) => {
-        if (res.data === 'failed') {
-          alert('No exist record');
-        } else {
-          alert('success')
-          navigation.navigate('Home', { loginName: res.data[0].loginName, password: res.data[0].password })
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+  const validate = () => {
+    const temp = {};
 
-  useEffect(() => {
-    console.log(values)
-  }, [values])
+    if (!values.username) {
+      temp.username = "Username cannot be empty.";
+    } else {
+      temp.username = "";
+    }
+
+    if (!values.password) {
+      temp.password = "Password cannot be empty.";
+    } else {
+      temp.password = "";
+    }
+
+    setErrors(temp);
+
+    return Object.values(temp).every((x) => x === "");
+  };
+  
+  const handleSubmit = () => {
+    if (validate()) {
+      axios
+        .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/login`, values)
+        .then((res) => {
+          if (res.data === 'failed') {
+            alert('There is no existing record. Please input again.');
+          } else {
+            alert('Success');
+            navigation.navigate('Home', {
+              loginName: res.data[0].loginName,
+              password: res.data[0].password,
+            });
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
-      <Pressable onPress={() => alert('You pressed a button.')} style={styles.button}>
+      <Pressable style={styles.button}>
         <Text style={styles.buttonText}>Login Page</Text>
       </Pressable>
-      <Text style={styles.text}>Please enter your information</Text>
+      <Text style={styles.text}>Please enter your login information</Text>
 
       <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={values.username}
-        onChangeText={text => handleInputChange('username', text)}
-      />
+      style={styles.input}
+      placeholder="Username"
+      value={values.username}
+      onChangeText={(text) => handleInputChange('username', text)}
+      onFocus={() => setErrors({ ...error, username: '' })}
+    />
+    {error.username && <Text style={styles.errorText}>{error.username}</Text>}
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={values.password}
-        onChangeText={text => handleInputChange('password', text)}
-        secureTextEntry
-      />
+    <TextInput
+      style={styles.input}
+      placeholder="Password"
+      value={values.password}
+      onChangeText={(text) => handleInputChange('password', text)}
+      secureTextEntry
+      onFocus={() => setErrors({ ...error, password: '' })}
+    />
+    {error.password && <Text style={styles.errorText}>{error.password}</Text>}
 
-      <Text>{error.username}</Text>
-      <Text>{error.password}</Text>
-
-      <Text style={styles.buttonText}>if you do not have account</Text>
+      <Text style={styles.text}>If you do not have an account</Text>
 
       <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.button}>
-        <Text style={styles.buttonText}>Go to Register</Text>
+        <Text style={styles.buttonText}>Go to Register Page</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -108,7 +126,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   text: {
-    color: '#fff',
+    color: 'gray',
     fontSize: 16,
     marginTop: 20,
   },
@@ -131,6 +149,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 14,
   },
 });
 
