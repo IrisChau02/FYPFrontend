@@ -10,7 +10,7 @@ const GuildEventCard = ({ event, navigation }) => {
       <Text style={styles.eventInfo}>Date: {event.eventDate}</Text>
       <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
       <Text style={styles.eventInfo}>Venue: {event.venue}</Text>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventDetails', { eventId: event.id })}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventDetail', { event: event })}>
         <Text style={styles.buttonText}>View Details</Text>
       </TouchableOpacity>
 

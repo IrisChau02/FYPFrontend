@@ -29,7 +29,7 @@ const formatDate = (date) => {
 export default function EventCreate({ navigation, route }) {
 
   const getFreshModel = () => ({
-    guildName: undefined, 
+    guildName: undefined,
     eventName: undefined,
     eventDetail: undefined,
     eventDate: new Date(),
@@ -111,21 +111,33 @@ export default function EventCreate({ navigation, route }) {
     setFontColor(color);
   };
 
+  //custom border Style
+  const [borderStyle, setBorderStyle] = useState(null);
+  const defaultBorderStyle = [
+    { border: null, label: 'Line' },
+    { border: 'dotted', label: 'Dotted' },
+    { border: 'dashed', label: 'Dashed' },
+  ];
+
+  const handleBorderStyleChange = (border) => {
+    setBorderStyle(border);
+  };
+
   const handleCreateEvent = () => {
-    
+
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuildEvent`, values)
       .then((res) => {
         if (res.data === 'added') {
           //alert('success');
           shareViewToWhatsApp();
-          
+
           /*
           const msg = `Event: [${values.eventName}] is created on [${values.formateventDate}]!\nIt will start from [${values.startTime}] to [${values.endTime}]\nThe venue is [${values.venue}]\nHere is the Detail: "${values.eventDetail}" \nWelcome to join!!`;
       
           const url = `https://wa.me/85298245007?text=${encodeURIComponent(msg)}`;
           Linking.openURL(url);*/
-          
+
           //navigation.navigate('Login');
 
         } else {
@@ -134,6 +146,14 @@ export default function EventCreate({ navigation, route }) {
       })
       .catch((err) => console.log(err));
   };
+
+  //need people restarint
+  //like KMB cal the startpoint & cal the time remaining
+  //weather, venue
+  //runnung data>affect user, linking
+  //why your run like this can encourage
+  //descriptioon, too wide
+  //need more thinking
 
   const shareViewToWhatsApp = async () => {
     try {
@@ -331,12 +351,28 @@ export default function EventCreate({ navigation, route }) {
           ))}
         </View>
 
+        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Border Style</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {defaultBorderStyle.map((button, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleBorderStyleChange(button.border)}
+              style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+            >
+              <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         <View ref={viewRef} style={{ backgroundColor: selectedbgColor, padding: 10, margin: 10 }}>
-          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
-          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
-          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime} - Event End Time: {values.endTime}</Text>
-          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
-          <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
+
+          <View style={[{ padding: 10, borderWidth: 2, borderColor: 'black', borderStyle: borderStyle }]}>
+            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
+            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
+            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime} - Event End Time: {values.endTime}</Text>
+            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
+            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleCreateEvent}>
