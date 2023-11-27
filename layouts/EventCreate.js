@@ -129,31 +129,13 @@ export default function EventCreate({ navigation, route }) {
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuildEvent`, values)
       .then((res) => {
         if (res.data === 'added') {
-          //alert('success');
           shareViewToWhatsApp();
-
-          /*
-          const msg = `Event: [${values.eventName}] is created on [${values.formateventDate}]!\nIt will start from [${values.startTime}] to [${values.endTime}]\nThe venue is [${values.venue}]\nHere is the Detail: "${values.eventDetail}" \nWelcome to join!!`;
-      
-          const url = `https://wa.me/85298245007?text=${encodeURIComponent(msg)}`;
-          Linking.openURL(url);*/
-
-          //navigation.navigate('Login');
-
         } else {
-          alert('fail');
+          alert('Failed to create the event.');
         }
       })
       .catch((err) => console.log(err));
   };
-
-  //need people restarint
-  //like KMB cal the startpoint & cal the time remaining
-  //weather, venue
-  //runnung data>affect user, linking
-  //why your run like this can encourage
-  //descriptioon, too wide
-  //need more thinking
 
   const shareViewToWhatsApp = async () => {
     try {
@@ -177,34 +159,26 @@ export default function EventCreate({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
+      <View style={styles.margincontainer}>
       <ScrollView>
         <Text style={styles.heading}>Create Event Page</Text>
 
-        <View style={styles.row}>
-          <View style={styles.col}>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Event Name</Text>
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.col}>
+    
             <TextInput
               style={styles.input}
               placeholder="Event Name"
               value={values.eventName}
               onChangeText={(text) => handleInputChange('eventName', text)}
             />
-          </View>
-        </View>
+      
 
-        <View style={styles.row}>
-          <View style={styles.col}>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Event Detail</Text>
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.col}>
+       
             <TextInput
               style={styles.input}
               placeholder="Event Detail"
@@ -213,17 +187,12 @@ export default function EventCreate({ navigation, route }) {
               multiline={true}
               keyboardType="ascii-capable"
             />
-          </View>
-        </View>
+    
 
-        <View style={styles.row}>
-          <View style={styles.col}>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Event Date</Text>
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.col}>
+         
             <TouchableOpacity style={styles.button} onPress={showDatePickerModal}>
               <Text style={styles.buttonText}>Select Event Date</Text>
             </TouchableOpacity>
@@ -240,75 +209,49 @@ export default function EventCreate({ navigation, route }) {
                 }}
               />
             )}
-
-          </View>
-        </View>
-
-
-        <View style={styles.row}>
-          <View style={styles.col}>
-
-          </View>
-
-          <View style={styles.col}>
+    
             <TextInput
               style={styles.input}
               placeholder="Event Time"
               value={values.formateventDate}
             />
-          </View>
-        </View>
+    
 
-        <View style={styles.row}>
-          <View style={styles.col}>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Event From Time</Text>
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.col}>
+      
             <TextInput
               style={styles.input}
               placeholder="Event From Time"
               value={values.startTime}
               onChangeText={(text) => handleInputChange('startTime', text)}
             />
-          </View>
-        </View>
+    
 
-        <View style={styles.row}>
-          <View style={styles.col}>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Event To Time</Text>
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.col}>
+        
             <TextInput
               style={styles.input}
               placeholder="Event To Time"
               value={values.endTime}
               onChangeText={(text) => handleInputChange('endTime', text)}
             />
-          </View>
-        </View>
+        
 
-        <View style={styles.row}>
-          <View style={styles.col}>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Venue</Text>
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.col}>
+         
             <TextInput
               style={styles.input}
               placeholder="Venue"
               value={values.venue}
               onChangeText={(text) => handleInputChange('venue', text)}
             />
-          </View>
-        </View>
+       
 
         <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Background Colour</Text>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -375,11 +318,12 @@ export default function EventCreate({ navigation, route }) {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleCreateEvent}>
+        <TouchableOpacity style={styles.greenbutton} onPress={handleCreateEvent}>
           <Text style={styles.buttonText}>Create</Text>
         </TouchableOpacity>
 
       </ScrollView>
+      </View>
     </View>
   );
 }
@@ -387,6 +331,9 @@ export default function EventCreate({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  margincontainer: { // Corrected style name
+    margin: 16
   },
   image: {
     width: '100%',
@@ -398,14 +345,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'brown',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 15,
   },
   button: {
+    backgroundColor: 'grey',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  greenbutton: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    margin: 20,
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
   },
   buttonText: {
     color: '#fff',
@@ -432,7 +389,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   input: {
-    width: 150,
+    width: '100%',
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,

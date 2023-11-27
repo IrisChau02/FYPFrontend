@@ -5,8 +5,8 @@ import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, 
 import axios from 'axios';
 import BottomBar from "./BottomBar";
 import GuildCard from "../components/GuildCard";
-
-import { A } from '@expo/html-elements';
+import { FontAwesome } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function GuildDetail({ navigation, route }) {
 
@@ -30,12 +30,12 @@ export default function GuildDetail({ navigation, route }) {
   useEffect(() => {
     if (route && route.params) {
       const { guild } = route.params;
-      //console.log(guild)
 
       setValues({
         ...values,
         guildName: guild.guildName,
         guildIntro: guild.guildIntro,
+        guildLogo: guild.guildLogo,
         level: guild.level,
         memberNo: guild.memberNo,
       })
@@ -43,42 +43,47 @@ export default function GuildDetail({ navigation, route }) {
   }, [route]);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
-  const defaultLogoImage = require('../assets/defaultLogo.png');
 
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
-      <Text style={styles.heading}>Guild Detail Page</Text>
+      <View style={styles.margincontainer}>
 
-      <View style={styles.cardContainer}>
-        <View style={styles.row}>
-          <Image source={defaultLogoImage} style={styles.logo} />
-          <View style={styles.column}>
-            <Text style={styles.guildName}>Name: {values.guildName}</Text>
-            <Text style={styles.guildInfo}>Introduction: {values.guildIntro}</Text>
-            <Text style={styles.guildDetails}>
-              Level: {values.level} | Members: {values.memberNo}
-            </Text>
+        <Text style={styles.heading}>Guild Detail Page</Text>
+
+        <View style={styles.cardContainer}>
+          <View style={styles.row}>
+          <Image source={{ uri: `data:image/jpeg;base64,${values.guildLogo}` }} style={styles.logo} />
+            <View style={styles.column}>
+              <Text style={styles.guildName}>Name: {values.guildName}</Text>
+              <Text style={styles.guildInfo}>Detail: {values.guildIntro}</Text>
+              <Text style={styles.guildDetails}>
+                Level: {values.level} | Members: {values.memberNo}
+              </Text>
+            </View>
           </View>
+
+          <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://chat.whatsapp.com/BbKplYG4XqHGGvsjzJx895')}>
+
+            <Text style={styles.buttonText}>Join WhatsApp Group <FontAwesome name="whatsapp" size={24} color="white" /> </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://wa.me/85265022979?text=Hello, nice to meet you!')}>
+            <Text style={styles.buttonText}>Chat With Master <FontAwesome name="whatsapp" size={24} color="white" /> </Text>
+          </TouchableOpacity>
+
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://chat.whatsapp.com/BbKplYG4XqHGGvsjzJx895')}>
-          <Text style={styles.buttonText}>Join WhatsApp Group</Text>
+        <TouchableOpacity style={styles.greybutton} onPress={() => navigation.navigate('Event', { guildName: values.guildName })}>
+        <View style={styles.iconContainer}>
+          <MaterialIcons name="event-note" size={24} color="white" />
+          <Text style={styles.iconText}>Event </Text>
+          </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://wa.me/85298245007?text=Hello, nice to meet you!')}>
-          <Text style={styles.buttonText}>Chat With Master</Text>
-        </TouchableOpacity>
+
 
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Event', { guildName: values.guildName})}>
-          <Text style={styles.buttonText}>Event</Text>
-        </TouchableOpacity>
-
-        
-
-
       <BottomBar navigation={navigation} />
     </View>
   );
@@ -87,8 +92,9 @@ export default function GuildDetail({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //alignItems: 'center',
-    //justifyContent: 'center',
+  },
+  margincontainer: {
+    margin: 16
   },
   image: {
     width: '100%',
@@ -100,14 +106,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'brown',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 15,
   },
   button: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    margin: 20,
+    margin: 10,
+  },
+  greybutton: {
+    backgroundColor: 'grey',
+    padding: 10,
+    borderRadius: 5,
+    margin: 10,
   },
   buttonText: {
     color: '#fff',
@@ -150,5 +162,15 @@ const styles = StyleSheet.create({
   guildDetails: {
     fontSize: 14,
     color: 'gray',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: {
+    color: '#F5F5DC',
+    fontWeight: 'bold',
+    marginLeft: 5, // Add some spacing between the icon and text
   },
 });

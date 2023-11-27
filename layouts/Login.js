@@ -51,7 +51,6 @@ export default function Login({ navigation }) {
           if (res.data === 'failed') {
             alert('There is no existing record. Please input again.');
           } else {
-            alert('Success');
             navigation.navigate('Home', {
               loginName: res.data[0].loginName,
               password: res.data[0].password,

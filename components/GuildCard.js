@@ -11,7 +11,7 @@ const GuildCard = ({ guild, navigation }) => {
         <Image source={{ uri: `data:image/jpeg;base64,${guild.guildLogo}` }} style={styles.logo} /> 
         <View style={styles.column}>
           <Text style={styles.guildName}>Name: {guild.guildName}</Text>
-          <Text style={styles.guildInfo}>Introduction: {guild.guildIntro}</Text>
+          <Text style={styles.guildInfo}>Detail: {guild.guildIntro}</Text>
           <Text style={styles.guildDetails}>
             Level: {guild.level} | Members: {guild.memberNo}
           </Text>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginBottom: 10,
+    margin: 10,
   },
   buttonText: {
     color: 'white',

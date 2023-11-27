@@ -5,7 +5,6 @@ const GuildEventCard = ({ event, navigation }) => {
   return (
     <View style={styles.cardContainer}>
 
-
 <Text style={styles.eventName}>{event.eventName}</Text>
       <Text style={styles.eventInfo}>Date: {event.eventDate}</Text>
       <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
@@ -13,9 +12,8 @@ const GuildEventCard = ({ event, navigation }) => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventDetail', { event: event })}>
         <Text style={styles.buttonText}>View Details</Text>
       </TouchableOpacity>
-
-
     </View>
+
   );
 };
 
@@ -51,7 +49,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
     textAlign: 'center',
   },
 });

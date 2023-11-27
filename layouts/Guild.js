@@ -29,61 +29,51 @@ export default function Guild({ navigation}) {
       axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuild`)
         .then((res) => {
-          //console.log(res.data)
           setGuildList(res.data)
-          
-          //https://www.youtube.com/watch?v=pBEYprNAs4c 14:14
-          //https://docs.expo.dev/versions/latest/sdk/filesystem/
-          //https://snack.expo.dev/
-
-          /*if (res.data === 'failed') {
-            alert('No existing record');
-          } else {
-            alert('Success');
-            //console.log(res.data);
-
-            setValues({
-              ...values,
-              firstName: res.data[0].firstName,
-              lastName: res.data[0].lastName,
-              formatbirthday: res.data[0].birthday,
-              gender: res.data[0].gender,
-              phoneNumber: res.data[0].phoneNumber,
-              email: res.data[0].email
-            })
-          }*/
-
         })
         .catch((err) => console.log(err));
     
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
-      <Text style={styles.heading}>Guild Page</Text>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GuildCreate')}>
-        <Text style={styles.buttonText}>Create your own guild!</Text>
-      </TouchableOpacity>
-
+  
       <FlatList
-        data={guildList}
-        renderItem={({ item }) => <GuildCard guild={item} navigation={navigation} />}
-        keyExtractor={(item, index) => index.toString()}
-        style={styles.cardList}
+        data={[{ key: 'guildPage' }]}
+        renderItem={() => (
+          <SafeAreaView style={styles.margincontainer}>
+            <Text style={styles.heading}>Guild Page</Text>
+  
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GuildCreate')}>
+              <Text style={styles.buttonText}>Create your own guild!</Text>
+            </TouchableOpacity>
+  
+            <FlatList
+              data={guildList}
+              renderItem={({ item }) => <GuildCard guild={item} navigation={navigation} />}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.cardList}
+            />
+          </SafeAreaView>
+        )}
+        keyExtractor={(item) => item.key}
+        style={{ flex: 1 }}
       />
-
+  
       <View style={styles.bottomBarContainer}>
         <BottomBar navigation={navigation} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  margincontainer: { // Corrected style name
+    margin: 16
   },
   image: {
     width: '100%',
@@ -95,18 +85,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'brown',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 15,
   },
   button: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    margin: 20,
+    margin: 15,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   bottomBarContainer: {

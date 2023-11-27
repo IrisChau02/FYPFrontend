@@ -6,16 +6,8 @@ import useForm from '../hooks/useForm';
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import axios from 'axios';
-import { StatusBar } from 'expo-status-bar';
-
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Share } from 'react-native';
-
-import { captureRef } from 'react-native-view-shot';
-import * as Sharing from 'expo-sharing';
-import { useRef } from 'react';
 
 import BottomBar from "./BottomBar";
 
@@ -43,28 +35,6 @@ export default function Home({ navigation, route }) {
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
 
-  const viewRef = useRef(null);
-
-  const shareViewToWhatsApp = async () => {
-    try {
-      // Get the reference to the view
-      const view = viewRef.current;
-  
-      // Capture the specific part of the view as a base64 image
-      const captureOptions = {
-        format: 'png',
-        quality: 0.8,
-      };
-      const imageURI = await captureRef(view, captureOptions);
-  
-      // Share the image to WhatsApp
-      await Sharing.shareAsync(imageURI, { mimeType: 'image/png', dialogTitle: 'Share to WhatsApp' });
-    } catch (error) {
-      console.error('Error sharing image to WhatsApp:', error);
-    }
-  };
-
-
   useEffect(() => {
     if (route && route.params) {
       const { loginName, password } = route.params;
@@ -91,8 +61,6 @@ export default function Home({ navigation, route }) {
           if (res.data === 'failed') {
             alert('No existing record');
           } else {
-            alert('Success');
-            //console.log(res.data);
 
             setValues({
               ...values,
@@ -109,29 +77,6 @@ export default function Home({ navigation, route }) {
         .catch((err) => console.log(err));
     }
   }, [values.loginName, values.password]);
-
-  /*
-  useEffect(() => {
-    if (route && route.params) {
-      const { loginName, password } = route.params;
-  
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserData`, { loginName, password });
-          if (response.data === 'failed') {
-            alert('No existing record');
-          } else {
-            alert('Success');
-            console.log(response.data);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      };
-  
-      fetchData();
-    }
-  }, [route]);*/
 
   const shareViaWhatsApp = async () => {
     try {
@@ -159,31 +104,13 @@ export default function Home({ navigation, route }) {
     group
     https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
     https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
-
-    // 检查设备是否支持分享
-    if (!(await Sharing.isAvailableAsync())) {
-      alert('分享不可用');
-      return;
-    }
-  
-    // 组装分享内容
-    const shareOptions = {
-      mimeType: 'text/plain',
-      dialogTitle: '分享到WhatsApp',
-      UTI: 'net.whatsapp.WhatsApp.ShareExtension',
-      anchor: null,
-      filename: null,
-      urls: ['https://example.com'],
-      excludedActivityTypes: [],
-    };
-  
-    // 执行分享
-    await Sharing.shareAsync(shareOptions);*/
+    */
   };
 
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
+      <View style={styles.margincontainer}>
       <Text style={styles.heading}>Home Page</Text>
 
       <View style={styles.cardContainer}>
@@ -203,17 +130,7 @@ export default function Home({ navigation, route }) {
         </Card>
       </View>
 
-      <TouchableOpacity onPress={shareViaWhatsApp}>
-        <Text>分享到WhatsApp</Text>
-      </TouchableOpacity>
-
-      <View ref={viewRef} style={{ backgroundColor: 'pink', padding: 10, margin: 10 }}>
-        <Text>This is a test</Text>
       </View>
-      <TouchableOpacity onPress={shareViewToWhatsApp}>
-        <Text>Share to WhatsApp</Text>
-      </TouchableOpacity>
-
       <BottomBar navigation={navigation} />
     </View>
   );
@@ -222,8 +139,9 @@ export default function Home({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //alignItems: 'center',
-    //justifyContent: 'center',
+  },
+  margincontainer: { // Corrected style name
+    margin: 16
   },
   image: {
     width: '100%',
@@ -235,8 +153,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'brown',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 15,
   },
   cardContainer: {
     height: 200, // Set the desired fixed height for the card

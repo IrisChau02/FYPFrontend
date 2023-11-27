@@ -7,7 +7,7 @@ import axios from 'axios';
 import BottomBar from "./BottomBar";
 import GuildEventCard from "../components/GuildEventCard";
 
-export default function Event({ navigation, route}) {
+export default function Event({ navigation, route }) {
 
   const getFreshModel = () => ({
     guildName: undefined
@@ -39,43 +39,54 @@ export default function Event({ navigation, route}) {
   useEffect(() => {
     if (values.guildName !== undefined) {
       axios
-      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildEvent`, {
-        params: {
-          guildName: values.guildName
-        },
-      })
-      .then((res) => {
-        if (res.data === 'failed') {
-          alert('No existing record');
-        } else {
-          //alert('Success');
-          setEventList(res.data)
-        }
-      })
-      .catch((err) => console.log(err));
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildEvent`, {
+          params: {
+            guildName: values.guildName
+          },
+        })
+        .then((res) => {
+          if (res.data === 'failed') {
+            alert('No existing record');
+          } else {
+            //alert('Success');
+            setEventList(res.data)
+          }
+        })
+        .catch((err) => console.log(err));
 
 
     }
   }, [values.guildName]);
 
- 
+
 
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
-      <Text style={styles.heading}>Event Page</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName})}>
-          <Text style={styles.buttonText}>Create Event</Text>
-        </TouchableOpacity>
+      <FlatList
+        data={[{ key: 'eventPage' }]}
+        renderItem={() => (
+          <SafeAreaView style={styles.margincontainer}>
+            <Text style={styles.heading}>Event Page</Text>
 
-        <FlatList
-        data={eventList}
-        renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
-        keyExtractor={(item, index) => index.toString()}
-        style={styles.cardList}
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName })}>
+              <Text style={styles.buttonText}>Create Event</Text>
+            </TouchableOpacity>
+
+            <FlatList
+              data={eventList}
+              renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.cardList}
+            />
+
+          </SafeAreaView>
+        )}
+        keyExtractor={(item) => item.key}
+        style={{ flex: 1 }}
       />
-
+      
     </View>
   );
 }
@@ -83,6 +94,9 @@ export default function Event({ navigation, route}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  margincontainer: { // Corrected style name
+    margin: 16
   },
   image: {
     width: '100%',
@@ -94,8 +108,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'brown',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 15,
   },
   button: {
     backgroundColor: 'green',
@@ -107,6 +121,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   bottomBarContainer: {
     position: 'absolute',

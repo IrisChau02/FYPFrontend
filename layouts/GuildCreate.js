@@ -1,25 +1,12 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import BottomBar from "./BottomBar";
 import SelectDropdown from 'react-native-select-dropdown'
 import { Dimensions } from 'react-native';
-
-import * as FileSystem from 'expo-file-system';
-
-const guildDir = FileSystem.documentDirectory + 'guildImages/';
-
-// Checks if gif directory exists. If not, creates it
-async function ensureDirExists() {
-  const dirInfo = await FileSystem.getInfoAsync(guildDir);
-  if (!dirInfo.exists) {
-    console.log("GuildDir directory doesn't exist, creating…");
-    await FileSystem.makeDirectoryAsync(guildDir, { intermediates: true });
-  }
-}
 
 
 export default function GuildCreate({ navigation }) {
@@ -47,21 +34,18 @@ export default function GuildCreate({ navigation }) {
 
   //receives an object in which different options are specified. 
   //This object is an ImagePickerOptions object. 
-  //We can pass the object to specify different options when invoking the method.
+  //We can pass the object to specify different options when invoking the method
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
       allowsEditing: true,
-      quality: 0.5, // Adjust the quality parameter (0-1) to reduce image size
+      quality: 0.3, // Adjust the quality parameter (0-1) to reduce image size
       base64: true, // Set base64 to true to get the image data in base64 format
     });
 
 
     if (!result.canceled) {
       delete result.cancelled;
-      //console.log(result);
-      //console.log(result.assets[0].uri);
-      //console.log(result.assets[0].base64);
 
       setValues({
         ...values,
@@ -93,16 +77,14 @@ export default function GuildCreate({ navigation }) {
   }, []);
 
   const handleGuildCreate = () => {
-    console.log(values)
-    
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuild`, values)
       .then((res) => {
         if (res.data === 'added') {
-          alert('success')
+          alert('Create successfully')
           navigation.navigate('Guild')
         } else {
-          alert('fail');
+          alert('Failed to create');
         }
       })
       .catch((err) => console.log(err));
@@ -111,16 +93,14 @@ export default function GuildCreate({ navigation }) {
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
-      <Text style={styles.heading}>Guild Create Page</Text>
+      <View style={styles.margincontainer}>
+        <ScrollView>
+          <Text style={styles.heading}>Guild Create Page</Text>
 
-      <View style={styles.row}>
-        <View style={styles.col}>
           <TouchableOpacity style={styles.button} onPress={pickImageAsync}>
             <Text style={styles.buttonText}>Import Guild Logo</Text>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.col}>
           <View style={styles.imageContainer}>
             <Image source={values.guildLogo ? { uri: `data:image/jpeg;base64,${values.guildLogo}` } : defaultLogoImage}
               style={{
@@ -128,35 +108,24 @@ export default function GuildCreate({ navigation }) {
                 borderColor: 'grey',
               }} />
           </View>
-        </View>
-      </View>
 
 
-      <View style={styles.row}>
-        <View style={styles.col}>
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Guild Name</Text>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.col}>
           <TextInput
             style={styles.input}
             placeholder="Guild Name"
             value={values.guildName}
             onChangeText={(text) => handleInputChange('guildName', text)}
           />
-        </View>
-      </View>
 
-      <View style={styles.row}>
-        <View style={styles.col}>
+
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Guild Introduction</Text>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.col}>
           <TextInput
             style={styles.input}
             placeholder="Guild Introduction"
@@ -165,18 +134,12 @@ export default function GuildCreate({ navigation }) {
             multiline={true}
             keyboardType="ascii-capable"
           />
-        </View>
-      </View>
 
 
-      <View style={styles.row}>
-        <View style={styles.col}>
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Select District</Text>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.col}>
           <SelectDropdown
             data={districtList}
             onSelect={(selectedItem, index) => {
@@ -198,45 +161,33 @@ export default function GuildCreate({ navigation }) {
               return item.districtName;
             }}
           />
-        </View>
-      </View>
 
-      <View style={styles.row}>
-        <View style={styles.col}>
+
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Level</Text>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.col}>
           <TextInput
             style={styles.input}
             placeholder="Level"
             value={values.level.toString()}
           />
-        </View>
-      </View>
 
-      <View style={styles.row}>
-        <View style={styles.col}>
+
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Member</Text>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.col}>
           <TextInput
             style={styles.input}
             placeholder="Member"
             value={values.member.toString()}
           />
-        </View>
-      </View>
 
-      <View style={styles.row}>
-      <TouchableOpacity style={styles.button} onPress={handleGuildCreate}>
-          <Text style={styles.buttonText}>Create</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.greenbutton} onPress={handleGuildCreate}>
+            <Text style={styles.buttonText}>Create</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
 
     </View>
@@ -246,23 +197,10 @@ export default function GuildCreate({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //alignItems: 'center',
-    //justifyContent: 'center',
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    margin: 10,
-
+  margincontainer: { // Corrected style name
+    margin: 16
   },
-  col: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    //margin: 10,
-    width: Dimensions.get('window').width / 2,
-    justifyContent: 'center'
-  },
-
   image: {
     width: '100%',
     height: '100%',
@@ -273,15 +211,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'brown',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 15,
   },
   button: {
+    backgroundColor: 'grey',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  greenbutton: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    width: 150,
-    //margin: 20,
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
   },
   buttonText: {
     color: '#fff',
@@ -289,7 +236,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   imageContainer: {
-    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   input: {
     width: 150,
@@ -298,5 +246,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 8,
     backgroundColor: 'lightgray', // Set the background color
+    width: '100%',
   },
 });

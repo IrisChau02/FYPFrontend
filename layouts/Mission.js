@@ -33,9 +33,10 @@ export default function Mission({ navigation}) {
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
+      <View style={styles.margincontainer}>
       <Text style={styles.heading}>Mission Page</Text>
 
-    
+      </View>
       <BottomBar navigation={navigation} />
     </View>
   );
@@ -44,8 +45,9 @@ export default function Mission({ navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //alignItems: 'center',
-    //justifyContent: 'center',
+  },
+  margincontainer: { // Corrected style name
+    margin: 16
   },
   image: {
     width: '100%',
@@ -57,7 +59,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'brown',
     textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 15,
   },
 });
