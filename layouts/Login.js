@@ -50,11 +50,20 @@ export default function Login({ navigation }) {
         .then((res) => {
           if (res.data === 'failed') {
             alert('There is no existing record. Please input again.');
-          } else {
-            navigation.navigate('Home', {
-              loginName: res.data[0].loginName,
-              password: res.data[0].password,
-            });
+          } else { 
+            if(res.data[0].districtID == null || res.data[0].workModeID == null || res.data[0].sportsID == null){
+              //if user is first log in
+              navigation.navigate('InitialAccount', {
+                loginName: res.data[0].loginName,
+                password: res.data[0].password,
+              });
+            } else{
+              //if all the user info is filled
+              navigation.navigate('Home', {
+                loginName: res.data[0].loginName,
+                password: res.data[0].password,
+              });
+            }
           }
         })
         .catch((err) => console.log(err));
