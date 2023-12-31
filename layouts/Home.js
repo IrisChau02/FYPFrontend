@@ -7,13 +7,14 @@ import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity }
 import { Card, Title, Paragraph } from 'react-native-paper';
 import axios from 'axios';
 
-import { Share } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
 
 export default function Home({ navigation, route }) {
 
   const getFreshModel = () => ({
+    userID: undefined,
     firstName: undefined,
     lastName: undefined,
     formatbirthday: undefined,
@@ -22,7 +23,12 @@ export default function Home({ navigation, route }) {
     email: undefined,
     password: undefined,
     loginName: undefined,
-    confirmPassword: undefined,
+    userLogo: undefined,
+    districtName: undefined,
+    workModeName: undefined,
+    sportsName: [],
+    userLogo: undefined,
+    guildName: undefined,
   })
 
   const {
@@ -34,6 +40,7 @@ export default function Home({ navigation, route }) {
   } = useForm(getFreshModel);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
+  const defaultLogoImage = require('../assets/defaultLogo.png');
 
   useEffect(() => {
     if (route && route.params) {
@@ -47,9 +54,40 @@ export default function Home({ navigation, route }) {
     }
   }, [route]);
 
+  const [districtList, setDistrictList] = useState([]);
+  const [workingModeList, setWorkingModeList] = useState([]);
+  const [sportsList, setSportsList] = useState([]); 
+
+  const fetchData = async () => {
+    try {
+      const districtResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getDistrict`);
+      const workingModeResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWorkingMode`);
+      const sportsResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getSports`);
+
+      const [districtData, workingModeData, sportsData] = await Promise.all([
+        districtResponse,
+        workingModeResponse,
+        sportsResponse,
+      ]);
+
+      setDistrictList(districtData.data);
+      setWorkingModeList(workingModeData.data);
+      setSportsList(sportsData.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    if (values.loginName !== undefined && values.password !== undefined) {
-      console.log(values.loginName, values.password)
+    fetchData();
+  }, []);
+
+
+
+  useEffect(() => {
+
+    if (values.loginName !== undefined && values.password !== undefined && districtList.length !== 0 && workingModeList.length !== 0 && sportsList.length !== 0) {
+      
       axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserData`, {
           params: {
@@ -62,73 +100,93 @@ export default function Home({ navigation, route }) {
             alert('No existing record');
           } else {
 
+            
+
+            const selectedDistrict = districtList.find(item => item.districtID === res.data[0].districtID);
+            const selectedworkMode = workingModeList.find(item => item.workModeID === res.data[0].workModeID);
+
+            const sportsID = res.data[0].sportsID;
+            const sportsIDArray = sportsID.split(",").map(Number);
+
+            const sportsNameArray = sportsList
+              .filter(item => sportsIDArray.includes(item.sportsID))
+              .map(item => item.sportsName);
+
             setValues({
               ...values,
+              userID: res.data[0].userID,
               firstName: res.data[0].firstName,
               lastName: res.data[0].lastName,
               formatbirthday: res.data[0].birthday,
               gender: res.data[0].gender,
               phoneNumber: res.data[0].phoneNumber,
-              email: res.data[0].email
+              email: res.data[0].email,
+              userLogo: res.data[0].userLogo,
+              districtName: selectedDistrict.districtName,
+              workModeName: selectedworkMode.workModeName,
+              sportsName: sportsNameArray,
+              userLogo: res.data[0].userLogo,
+              guildName: res.data[0].guildName,
             })
 
           }
         })
         .catch((err) => console.log(err));
     }
-  }, [values.loginName, values.password]);
+  }, [values.loginName, values.password, districtList, workingModeList, sportsList]);
 
-  const shareViaWhatsApp = async () => {
-    try {
-      const result = await Share.share({
-        message: ("Congulation to join!!")
-      }
-      );
+  /*
+  https://docs.expo.dev/versions/latest/sdk/sharing/
+  https://www.volcengine.com/theme/6356016-Z-7-1
 
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          console.log('shared')
-        }
-      } else if (result.action === Share.dismissedAction) {
-        console.log('dismissed')
-      }
-    }
-    catch (error) {
-      console.log(error.message)
-    }
-
-    /*
-    https://docs.expo.dev/versions/latest/sdk/sharing/
-    https://www.volcengine.com/theme/6356016-Z-7-1
-
-    group
-    https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
-    https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
-    */
-  };
+  group
+  https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
+  https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
+  */
 
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
       <View style={styles.margincontainer}>
-      <Text style={styles.heading}>Home Page</Text>
+        <Text style={styles.heading}>Home Page</Text>
 
-      <View style={styles.cardContainer}>
-        <Card style={styles.card}>
-          <TextInput
-            style={styles.input}
-            value={values.loginName}
-          />
-          <TextInput
-            style={styles.input}
-            value={values.gender}
-          />
-          <TextInput
-            style={styles.input}
-            value={values.formatbirthday}
-          />
-        </Card>
-      </View>
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+            <View style={styles.row}>
+              <View style={styles.column}>
+                <Image source={values.userLogo ? { uri: `data:image/jpeg;base64,${values.userLogo}` } : defaultLogoImage} style={styles.logo} />
+                <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileDetail', {props: values})} />
+              </View>
+              <View style={styles.column}>
+                <TextInput
+                  style={styles.input}
+                  value={values.loginName}
+                />
+                <TextInput
+                  style={styles.input}
+                  value={values.gender}
+                />
+                <TextInput
+                  style={styles.input}
+                  value={values.formatbirthday}
+                />
+
+              </View>
+            </View>
+          </Card>
+        </View>
+
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+
+            {values.sportsName.map((item, index) => (
+              <View key={index} style={styles.button}>
+                <Text style={styles.buttonText}>{item}</Text>
+              </View>
+            ))}
+
+          </Card>
+        </View>
 
       </View>
       <BottomBar navigation={navigation} />
@@ -168,10 +226,36 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    //borderColor: 'gray',
+    //borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 8,
     backgroundColor: 'lightgray', // Set the background color
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  column: {
+    flex: 1, // Use flex: 1 to make the column take up remaining horizontal space
+    //marginLeft: 10,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 8,
+  },
+  button: {
+    backgroundColor: 'grey',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

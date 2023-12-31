@@ -20,6 +20,7 @@ import GuildDetail from "./layouts/GuildDetail";
 import Event from "./layouts/Event";
 import EventCreate from "./layouts/EventCreate";
 import EventDetail from "./layouts/EventDetail";
+import ProfileDetail from "./layouts/ProfileDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,7 @@ export default function App() {
         <Stack.Screen name="Event" component={Event} />
         <Stack.Screen name="EventCreate" component={EventCreate} />
         <Stack.Screen name="EventDetail" component={EventDetail} />
+        <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
         
       </Stack.Navigator>
     </NavigationContainer>

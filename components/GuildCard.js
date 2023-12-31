@@ -26,13 +26,14 @@ const GuildCard = ({ guild, navigation }) => {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#F9F6F2', // Rice color
+    flex: 1, // Use flex: 1 to make the card container flexible in height
+    backgroundColor: '#F9F6F2',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
     elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
+    borderColor: 'gray',
+    borderWidth: 4,
     shadowColor: 'black',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -47,6 +48,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   column: {
+    flex: 1, // Use flex: 1 to make the column take up remaining horizontal space
     marginLeft: 16,
   },
   guildName: {

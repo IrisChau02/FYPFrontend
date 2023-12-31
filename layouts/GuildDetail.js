@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   column: {
+    flex: 1,
     marginLeft: 16,
   },
   guildName: {
