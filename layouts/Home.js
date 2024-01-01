@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
 //import { TextField, Button, Card, CardContent } from '@mui/material';
 
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import { Divider } from 'react-native-paper';
 import axios from 'axios';
@@ -25,13 +25,13 @@ export default function Home({ navigation, route }) {
     email: undefined,
     password: undefined,
     loginName: undefined,
-    userLogo: undefined,
     districtName: undefined,
     workModeID: undefined,
     workModeName: undefined,
     sportsID: [],
     sportsName: [],
     userLogo: undefined,
+    userIntro: undefined,
     guildName: undefined,
   })
 
@@ -60,7 +60,7 @@ export default function Home({ navigation, route }) {
 
   const [districtList, setDistrictList] = useState([]);
   const [workingModeList, setWorkingModeList] = useState([]);
-  const [sportsList, setSportsList] = useState([]); 
+  const [sportsList, setSportsList] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -87,9 +87,8 @@ export default function Home({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-
     if (values.loginName !== undefined && values.password !== undefined && districtList.length !== 0 && workingModeList.length !== 0 && sportsList.length !== 0) {
-      
+
       axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserData`, {
           params: {
@@ -99,7 +98,7 @@ export default function Home({ navigation, route }) {
         })
         .then((res) => {
           if (res.data === 'failed') {
-            alert('No existing record');
+            //alert('No existing record');
           } else {
 
             const selectedDistrict = districtList.find(item => item.districtID === res.data[0].districtID);
@@ -122,12 +121,12 @@ export default function Home({ navigation, route }) {
               phoneNumber: res.data[0].phoneNumber,
               email: res.data[0].email,
               userLogo: res.data[0].userLogo,
+              userIntro: res.data[0].userIntro,
               districtName: selectedDistrict.districtName,
               workModeID: res.data[0].workModeID,
               workModeName: selectedworkMode.workModeName,
               sportsID: sportsIDArray,
               sportsName: sportsNameArray,
-              userLogo: res.data[0].userLogo,
               guildName: res.data[0].guildName,
             })
 
@@ -137,86 +136,116 @@ export default function Home({ navigation, route }) {
     }
   }, [values, districtList, workingModeList, sportsList]); //values.loginName, values.password, values.userLogo
 
-
-
-
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
       <View style={styles.margincontainer}>
         <Text style={styles.heading}>Home Page</Text>
 
-        <View style={styles.cardContainer}>
-          <Card style={styles.card}>
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <Image source={values.userLogo ? { uri: `data:image/jpeg;base64,${values.userLogo}` } : defaultLogoImage} style={styles.logo} />
-                <AntDesign name="camera" size={24} color="grey" onPress={() => navigation.navigate('ProfileLogoUpdate', {props: values})}/>
-               </View>
-              <View style={styles.column}>
+        <ScrollView style={{ marginBottom: 100 }}>
+
+          <View style={styles.cardContainer}>
+
+            <Card style={styles.card}>
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <AntDesign name="user" size={24} color="grey" />
+                <Text style={styles.label}>Profile</Text>
+                <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileDetail', { props: values })} />
+              </View>
+
+              <Divider style={{ marginBottom: 10 }} />
+
+              <View style={styles.row}>
+                <View style={styles.column}>
+                  <Image source={values.userLogo ? { uri: `data:image/jpeg;base64,${values.userLogo}` } : defaultLogoImage} style={styles.logo} />
+                  <AntDesign name="camera" size={24} color="grey" onPress={() => navigation.navigate('ProfileLogoUpdate', { props: values })} />
+                </View>
+                <View style={styles.column}>
+                  <TextInput
+                    style={styles.input}
+                    value={values.loginName}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={values.gender}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={values.formatbirthday}
+                  />
+
+                </View>
+              </View>
+
+              <Divider style={{ marginTop: 10, marginBottom: 10 }} />
+
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <AntDesign name="message1" size={24} color="grey" />
+
                 <TextInput
-                  style={styles.input}
-                  value={values.loginName}
+                  style={styles.messageInput}
+                  placeholder="Type your message here..."
+                  value={values.userIntro}
+                  multiline={true}
                 />
-                <TextInput
-                  style={styles.input}
-                  value={values.gender}
-                />
-                <TextInput
-                  style={styles.input}
-                  value={values.formatbirthday}
-                />
-                 <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileDetail', {props: values})} />
-            
 
               </View>
-            </View>
-          </Card>
-        </View>
-
-
-        <View style={styles.cardContainer}>
-          <Card style={styles.card}>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <AntDesign name="idcard" size={24} color="grey"/>
-          <Text style={styles.label} >Working Mode</Text>
-          <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileWMUpdate', {props: values})} />
+            </Card>
           </View>
-          <Divider/>
+
+          <View style={styles.cardContainer}>
+            <Card style={styles.card}>
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <AntDesign name="idcard" size={24} color="grey" />
+                <Text style={styles.label} >Working Mode</Text>
+                <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileWMUpdate', { props: values })} />
+              </View>
+              <Divider />
               <View style={styles.button}>
                 <Text style={styles.buttonText}>{values.workModeName}</Text>
               </View>
-          </Card>
-        </View>
-
-
-        <View style={styles.cardContainer}>
-          <Card style={styles.card}>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <AntDesign name="heart" size={24} color="grey"/>
-          <Text style={styles.label} >Favourite Sports</Text>
-          <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileSportsUpdate', {props: values})} />
+            </Card>
           </View>
-          <Divider/>
-            {values.sportsName.map((item, index) => (
-              <View key={index} style={styles.button}>
-                <Text style={styles.buttonText}>{item}</Text>
+
+
+          <View style={styles.cardContainer}>
+            <Card style={styles.card}>
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <AntDesign name="heart" size={24} color="grey" />
+                <Text style={styles.label} >Favourite Sports</Text>
+                <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileSportsUpdate', { props: values })} />
               </View>
-            ))}
+              <Divider />
+              {values.sportsName.map((item, index) => (
+                <View key={index} style={styles.button}>
+                  <Text style={styles.buttonText}>{item}</Text>
+                </View>
+              ))}
 
-          </Card>
-        </View>
+            </Card>
+          </View>
 
+        </ScrollView>
       </View>
-      <BottomBar navigation={navigation} />
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
     </View>
   );
 }
@@ -291,13 +320,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  messageInput: {
+    flex: 1,
+    height: 'auto',
+    borderWidth: 2,
+    borderColor: '#ccc',
+    paddingHorizontal: 5,
+    color: "grey",
+    marginTop: 10,
+    marginBottom: 10,
+    marginRight: 5,
+    marginLeft: 5,
+  },
 });
 
-  /*
-  https://docs.expo.dev/versions/latest/sdk/sharing/
-  https://www.volcengine.com/theme/6356016-Z-7-1
+/*
+https://docs.expo.dev/versions/latest/sdk/sharing/
+https://www.volcengine.com/theme/6356016-Z-7-1
 
-  group
-  https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
-  https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
-  */
+group
+https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
+https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
+*/

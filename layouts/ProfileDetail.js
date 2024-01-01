@@ -45,6 +45,7 @@ export default function ProfileDetail({ navigation, route }) {
     sportsName: [],
     userLogo: undefined,
     guildName: undefined,
+    userIntro: undefined
   })
 
   const {
@@ -83,7 +84,8 @@ export default function ProfileDetail({ navigation, route }) {
         workModeName: props.props.workModeName,
         sportsName: props.props.sportsName,
         userLogo: props.props.userLogo,
-        guildName: props.props.guildName
+        guildName: props.props.guildName,
+        userIntro: props.props.userIntro
       })
     }
   }, [route]);
@@ -181,6 +183,12 @@ export default function ProfileDetail({ navigation, route }) {
       temp.confirmPassword = "";
     }
 
+    if (values.userIntro.length > 50) {
+      temp.userIntro = "Max is 50 characters.";
+    } else {
+      temp.userIntro = "";
+    }
+
     setErrors(temp);
 
     return Object.values(temp).every((x) => x === "");
@@ -188,19 +196,18 @@ export default function ProfileDetail({ navigation, route }) {
 
   const handleChange = () => {
     if (validate()) {
-      console.log(values)
-
       axios
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/updateUser`, values)
         .then((res) => {
           if (res.data === 'updated') {
-            alert('success');
-            navigation.navigate('Home');
+            alert('success. Please Login again');
+            navigation.navigate('Login');
           } else {
             alert('fail');
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err)
+        );
     }
   };
 
@@ -209,14 +216,9 @@ export default function ProfileDetail({ navigation, route }) {
       <Image source={PlaceholderImage} style={styles.image} />
       <ScrollView style={styles.margincontainer}>
 
-
-
         <Text style={styles.heading}>Profile Detail Page</Text>
 
-
         <Text style={styles.label}>Personal Information</Text>
-
-
         <TextInput
           style={[styles.input]}
           placeholder="First Name"
@@ -324,6 +326,18 @@ export default function ProfileDetail({ navigation, route }) {
         />
         {error.confirmPassword && <Text style={styles.errorText}>{error.confirmPassword}</Text>}
 
+        <Text style={styles.label}>Self Introduction</Text>
+
+        <TextInput
+          style={styles.messageInput}
+          placeholder="Type your message here...max 50 characters"
+          value={values.userIntro}
+          onChangeText={(text) => handleInputChange('userIntro', text)}
+          multiline={true}
+        //keyboardType="ascii-capable"
+        />
+        {error.userIntro && <Text style={styles.errorText}>{error.userIntro}</Text>}
+
         <TouchableOpacity style={styles.button} onPress={handleChange}>
           <Text style={styles.buttonText}>Confirm Change</Text>
         </TouchableOpacity>
@@ -409,6 +423,12 @@ const styles = StyleSheet.create({
     color: 'brown',
     fontWeight: 'bold',
     marginBottom: 8,
+  },
+  messageInput: {
+    height: 100,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'lightgray', // Set the background color
   },
 
 });
