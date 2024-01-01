@@ -21,6 +21,9 @@ import Event from "./layouts/Event";
 import EventCreate from "./layouts/EventCreate";
 import EventDetail from "./layouts/EventDetail";
 import ProfileDetail from "./layouts/ProfileDetail";
+import ProfileLogoUpdate from "./layouts/ProfileLogoUpdate";
+import ProfileSportsUpdate from "./layouts/ProfileSportsUpdate";
+import ProfileWMUpdate from "./layouts/ProfileWMUpdate";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +47,9 @@ export default function App() {
         <Stack.Screen name="EventCreate" component={EventCreate} />
         <Stack.Screen name="EventDetail" component={EventDetail} />
         <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
+        <Stack.Screen name="ProfileLogoUpdate" component={ProfileLogoUpdate} />
+        <Stack.Screen name="ProfileSportsUpdate" component={ProfileSportsUpdate} />
+        <Stack.Screen name="ProfileWMUpdate" component={ProfileWMUpdate} />
         
       </Stack.Navigator>
     </NavigationContainer>

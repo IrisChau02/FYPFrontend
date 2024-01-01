@@ -8,6 +8,7 @@ import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 
+import { AntDesign } from '@expo/vector-icons';
 import BottomBar from "./BottomBar";
 
 const formatDate = (date) => {
@@ -188,7 +189,7 @@ export default function ProfileDetail({ navigation, route }) {
   const handleChange = () => {
     if (validate()) {
       console.log(values)
-      
+
       axios
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/updateUser`, values)
         .then((res) => {
@@ -246,8 +247,16 @@ export default function ProfileDetail({ navigation, route }) {
         {error.gender && <Text style={styles.errorText}>{error.gender}</Text>}
 
 
-        <TouchableOpacity style={styles.birthdaybutton} onPress={showDatePickerModal}>
-          <Text style={styles.buttonText}>Select Birthday</Text>
+        <TouchableOpacity style={styles.button} onPress={showDatePickerModal}>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <AntDesign name="calendar" size={24} color="#fff" />
+            <Text style={styles.buttonText}>Select Birthday</Text>
+          </View>
+
         </TouchableOpacity>
 
         {showDatePicker && (
@@ -326,7 +335,6 @@ export default function ProfileDetail({ navigation, route }) {
 }
 
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -391,4 +399,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  label: {
+    fontSize: 18,
+    color: 'brown',
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+
 });

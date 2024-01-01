@@ -112,18 +112,18 @@ export default function InitialAccount({ navigation, route }) {
   const handleConfirmButton = () => {
     if (!values.districtID || !values.workModeID || !values.sportsID) {
       alert("District, Work Mode, Favourite Sport cannot be empty.")
-    } else{
+    } else {
 
       axios
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/initiateAccount`, values)
         .then((res) => {
           if (res.data === 'updated') {
             alert('Success');
-          } 
+          }
         })
         .catch((err) => console.log(err));
     }
-    
+
   };
 
   const DistrictButton = ({ buttonText, regionID }) => {

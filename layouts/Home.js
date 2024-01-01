@@ -5,7 +5,9 @@ import useForm from '../hooks/useForm';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
 
 import { AntDesign } from '@expo/vector-icons';
 
@@ -25,7 +27,9 @@ export default function Home({ navigation, route }) {
     loginName: undefined,
     userLogo: undefined,
     districtName: undefined,
+    workModeID: undefined,
     workModeName: undefined,
+    sportsID: [],
     sportsName: [],
     userLogo: undefined,
     guildName: undefined,
@@ -40,7 +44,7 @@ export default function Home({ navigation, route }) {
   } = useForm(getFreshModel);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
-  const defaultLogoImage = require('../assets/defaultLogo.png');
+  const defaultLogoImage = require('../assets/defaultUserLogo.png');
 
   useEffect(() => {
     if (route && route.params) {
@@ -82,8 +86,6 @@ export default function Home({ navigation, route }) {
     fetchData();
   }, []);
 
-
-
   useEffect(() => {
 
     if (values.loginName !== undefined && values.password !== undefined && districtList.length !== 0 && workingModeList.length !== 0 && sportsList.length !== 0) {
@@ -99,8 +101,6 @@ export default function Home({ navigation, route }) {
           if (res.data === 'failed') {
             alert('No existing record');
           } else {
-
-            
 
             const selectedDistrict = districtList.find(item => item.districtID === res.data[0].districtID);
             const selectedworkMode = workingModeList.find(item => item.workModeID === res.data[0].workModeID);
@@ -123,7 +123,9 @@ export default function Home({ navigation, route }) {
               email: res.data[0].email,
               userLogo: res.data[0].userLogo,
               districtName: selectedDistrict.districtName,
+              workModeID: res.data[0].workModeID,
               workModeName: selectedworkMode.workModeName,
+              sportsID: sportsIDArray,
               sportsName: sportsNameArray,
               userLogo: res.data[0].userLogo,
               guildName: res.data[0].guildName,
@@ -133,16 +135,10 @@ export default function Home({ navigation, route }) {
         })
         .catch((err) => console.log(err));
     }
-  }, [values.loginName, values.password, districtList, workingModeList, sportsList]);
+  }, [values, districtList, workingModeList, sportsList]); //values.loginName, values.password, values.userLogo
 
-  /*
-  https://docs.expo.dev/versions/latest/sdk/sharing/
-  https://www.volcengine.com/theme/6356016-Z-7-1
 
-  group
-  https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
-  https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
-  */
+
 
   return (
     <View style={styles.container}>
@@ -155,8 +151,8 @@ export default function Home({ navigation, route }) {
             <View style={styles.row}>
               <View style={styles.column}>
                 <Image source={values.userLogo ? { uri: `data:image/jpeg;base64,${values.userLogo}` } : defaultLogoImage} style={styles.logo} />
-                <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileDetail', {props: values})} />
-              </View>
+                <AntDesign name="camera" size={24} color="grey" onPress={() => navigation.navigate('ProfileLogoUpdate', {props: values})}/>
+               </View>
               <View style={styles.column}>
                 <TextInput
                   style={styles.input}
@@ -170,15 +166,46 @@ export default function Home({ navigation, route }) {
                   style={styles.input}
                   value={values.formatbirthday}
                 />
+                 <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileDetail', {props: values})} />
+            
 
               </View>
             </View>
           </Card>
         </View>
 
+
         <View style={styles.cardContainer}>
           <Card style={styles.card}>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <AntDesign name="idcard" size={24} color="grey"/>
+          <Text style={styles.label} >Working Mode</Text>
+          <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileWMUpdate', {props: values})} />
+          </View>
+          <Divider/>
+              <View style={styles.button}>
+                <Text style={styles.buttonText}>{values.workModeName}</Text>
+              </View>
+          </Card>
+        </View>
 
+
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <AntDesign name="heart" size={24} color="grey"/>
+          <Text style={styles.label} >Favourite Sports</Text>
+          <AntDesign name="form" size={24} color="grey" onPress={() => navigation.navigate('ProfileSportsUpdate', {props: values})} />
+          </View>
+          <Divider/>
             {values.sportsName.map((item, index) => (
               <View key={index} style={styles.button}>
                 <Text style={styles.buttonText}>{item}</Text>
@@ -215,11 +242,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   cardContainer: {
-    height: 200, // Set the desired fixed height for the card
+    height: 'auto',
     marginBottom: 16,
   },
   card: {
-    flex: 1,
+    height: 'auto',
     padding: 16,
     backgroundColor: 'white',
     // Set any other styles for the card if needed
@@ -258,4 +285,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  label: {
+    fontSize: 18,
+    color: 'grey',
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
 });
+
+  /*
+  https://docs.expo.dev/versions/latest/sdk/sharing/
+  https://www.volcengine.com/theme/6356016-Z-7-1
+
+  group
+  https://stackoverflow.com/questions/43518482/react-native-send-a-message-to-specific-whatsapp-number
+  https://stackoverflow.com/questions/68435788/whatsapp-share-using-expo-sharing-library-in-androidreact-native
+  */
