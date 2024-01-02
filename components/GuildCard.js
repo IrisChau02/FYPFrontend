@@ -1,10 +1,51 @@
 import React from 'react';
+import { useEffect } from "react";
+import useForm from '../hooks/useForm';
 import { View, Text, Image, StyleSheet,TouchableOpacity } from 'react-native';
+import { CurrentUserID } from '../layouts/CurrentUserID';
+import axios from 'axios';
 
 const defaultLogoImage = require('../assets/defaultLogo.png');
 
 const GuildCard = ({ guild, navigation }) => {
-  //{ uri: guild.guildLogo }
+
+  const getFreshModel = () => ({
+    userID: undefined,
+  })
+
+  const {
+    values,
+    setValues,
+    error,
+    setErrors,
+    handleInputChange
+  } = useForm(getFreshModel);
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      userID: CurrentUserID
+    })
+  }, [CurrentUserID]);
+
+  const handleJoinGuild = () => {
+    axios
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/joinGuild`, {
+        userID: values.userID,
+        guildName: guild.guildName,
+        memberNo: guild.memberNo,
+      })
+      .then((res) => {
+        if (res.data === 'updated') {
+          alert('Join successfully');
+          navigation.navigate('GuildDetail');
+        } else {
+          alert('Failed to join');
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <View style={styles.cardContainer}>
       <View style={styles.row}>
@@ -15,7 +56,7 @@ const GuildCard = ({ guild, navigation }) => {
           <Text style={styles.guildDetails}>
             Level: {guild.level} | Members: {guild.memberNo}
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('GuildDetail', { guild: guild })} style={styles.button}>
+          <TouchableOpacity onPress={handleJoinGuild} style={styles.button}>
           <Text style={styles.buttonText}>Join</Text>
         </TouchableOpacity>
         </View>

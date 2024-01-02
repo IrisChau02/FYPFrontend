@@ -119,6 +119,7 @@ export default function InitialAccount({ navigation, route }) {
         .then((res) => {
           if (res.data === 'updated') {
             alert('Success');
+            navigation.navigate('Login')
           }
         })
         .catch((err) => console.log(err));

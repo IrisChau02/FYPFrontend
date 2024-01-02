@@ -31,6 +31,7 @@ export default function BottomBar({ navigation }) {
 
   useEffect(() => {
     if (values.userID) {
+      //console.log("called")
       axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
           params: {
@@ -39,7 +40,6 @@ export default function BottomBar({ navigation }) {
         })
         .then((res) => {
           if (res.data === 'failed') {
-
           } else {
             setValues({
               ...values,
@@ -54,7 +54,7 @@ export default function BottomBar({ navigation }) {
 
   const navigateToGuild = () => {
     if (values.guildName) {
-      navigation.navigate('GuildDetail', { values });
+      navigation.navigate('GuildDetail');
     } else {
       navigation.navigate('Guild');
     }

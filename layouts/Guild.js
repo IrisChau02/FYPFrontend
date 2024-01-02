@@ -58,14 +58,21 @@ export default function Guild({ navigation }) {
   const [guildList, setGuildList] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuild`)
-      .then((res) => {
-        setGuildList(res.data)
-      })
-      .catch((err) => console.log(err));
+    if (values.districtID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildByDistrict`, {
+          params: {
+            districtID: values.districtID,
+          },
+        })
+        .then((res) => {
+          //console.log(res.data)
+          setGuildList(res.data)
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.districtID]);
 
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -77,7 +84,7 @@ export default function Guild({ navigation }) {
           <SafeAreaView style={styles.margincontainer}>
             <Text style={styles.heading}>Guild Page</Text>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GuildCreate')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GuildCreate', { props: values })}>
               <Text style={styles.buttonText}>Create your own guild!</Text>
             </TouchableOpacity>
 

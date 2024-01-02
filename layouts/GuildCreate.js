@@ -9,14 +9,15 @@ import SelectDropdown from 'react-native-select-dropdown'
 import { Dimensions } from 'react-native';
 
 
-export default function GuildCreate({ navigation }) {
+export default function GuildCreate({ navigation, route }) {
 
   const getFreshModel = () => ({
+    userID: undefined,
     guildLogo: null,
     guildName: undefined,
     guildIntro: undefined,
-    districtDropdown: null,
     districtID: undefined,
+    districtName: undefined,
     level: 1,
     member: 1
   })
@@ -28,6 +29,18 @@ export default function GuildCreate({ navigation }) {
     setErrors,
     handleInputChange
   } = useForm(getFreshModel);
+
+  useEffect(() => {
+    if (route && route.params) {
+      const props = route.params;
+
+      setValues({
+        ...values,
+        userID: props.props.userID,
+        districtID: props.props.districtID,
+      })
+    }
+  }, [route]);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
   const defaultLogoImage = require('../assets/defaultLogo.png');
@@ -57,24 +70,28 @@ export default function GuildCreate({ navigation }) {
     }
   };
 
-  const [districtList, setDistrictList] = useState([]);
-
   useEffect(() => {
+    if (values.districtID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getDistrict`)
+        .then((res) => {
+          if (res.data === 'failed') {
+            console.log('No existing record');
+          } else {
+            const matchingDistrict = res.data.find(
+              (district) => district.districtID === values.districtID
+            );
+            setValues({
+              ...values,
+              districtName: matchingDistrict ? matchingDistrict.districtName : null
+            })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
 
-    axios
-      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getDistrict`)
-      .then((res) => {
-        if (res.data === 'failed') {
-          console.log('No existing record');
-        } else {
-          //console.log(res.data);
-          setDistrictList(res.data)
+  }, [values.districtID]);
 
-        }
-      })
-      .catch((err) => console.log(err));
-
-  }, []);
 
   const handleGuildCreate = () => {
     axios
@@ -82,7 +99,7 @@ export default function GuildCreate({ navigation }) {
       .then((res) => {
         if (res.data === 'added') {
           alert('Create successfully')
-          navigation.navigate('Guild')
+          navigation.navigate('GuildDetail')
         } else {
           alert('Failed to create');
         }
@@ -109,7 +126,6 @@ export default function GuildCreate({ navigation }) {
               }} />
           </View>
 
-
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Guild Name</Text>
           </TouchableOpacity>
@@ -120,7 +136,6 @@ export default function GuildCreate({ navigation }) {
             value={values.guildName}
             onChangeText={(text) => handleInputChange('guildName', text)}
           />
-
 
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Guild Introduction</Text>
@@ -140,26 +155,10 @@ export default function GuildCreate({ navigation }) {
             <Text style={styles.buttonText}>Select District</Text>
           </TouchableOpacity>
 
-          <SelectDropdown
-            data={districtList}
-            onSelect={(selectedItem, index) => {
-              //console.log(selectedItem, index);
-
-              setValues({
-                ...values,
-                districtDropdown: selectedItem,
-                districtID: selectedItem?.districtID
-              })
-
-            }}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              // Return the districtName as the label after item is selected
-              return selectedItem.districtName;
-            }}
-            rowTextForSelection={(item, index) => {
-              // Return the districtName to represent each item in the dropdown
-              return item.districtName;
-            }}
+          <TextInput
+            style={styles.input}
+            placeholder="Level"
+            value={values.districtName}
           />
 
 

@@ -7,14 +7,16 @@ import BottomBar from "./BottomBar";
 import GuildCard from "../components/GuildCard";
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { CurrentUserID } from './CurrentUserID';
 
 export default function GuildDetail({ navigation, route }) {
 
   const getFreshModel = () => ({
+    userID: undefined,
     guildLogo: undefined,
     guildName: undefined,
     guildIntro: undefined,
-    district: undefined,
+    districtID: undefined,
     level: undefined,
     memberNo: undefined,
   })
@@ -28,6 +30,64 @@ export default function GuildDetail({ navigation, route }) {
   } = useForm(getFreshModel);
 
   useEffect(() => {
+    setValues({
+      ...values,
+      userID: CurrentUserID
+    })
+  }, [CurrentUserID]);
+
+  useEffect(() => {
+    if (values.userID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+          params: {
+            userID: values.userID,
+          },
+        })
+        .then((res) => {
+          if (res.data === 'failed') {
+          } else {
+            setValues({
+              ...values,
+              userID: res.data[0].userID,
+              guildName: res.data[0].guildName,
+            })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.userID]);
+
+
+  useEffect(() => {
+    if (values.guildName) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildDetailByName`, {
+          params: {
+            guildName: values.guildName,
+          },
+        })
+        .then((res) => {
+          if (res.data === 'failed') {
+          } else {
+            //console.log(res.data)
+
+            setValues({
+              ...values,
+              guildLogo: res.data[0].guildLogo,
+              guildIntro: res.data[0].guildIntro,
+              districtID: res.data[0].districtID,
+              level: res.data[0].level,
+              memberNo: res.data[0].memberNo,
+            })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.guildName]);
+
+  /*
+  useEffect(() => {
     if (route && route.params) {
       const { guild } = route.params;
 
@@ -40,7 +100,7 @@ export default function GuildDetail({ navigation, route }) {
         memberNo: guild.memberNo,
       })
     }
-  }, [route]);
+  }, [route]);*/
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
 
@@ -53,7 +113,7 @@ export default function GuildDetail({ navigation, route }) {
 
         <View style={styles.cardContainer}>
           <View style={styles.row}>
-          <Image source={{ uri: `data:image/jpeg;base64,${values.guildLogo}` }} style={styles.logo} />
+            <Image source={{ uri: `data:image/jpeg;base64,${values.guildLogo}` }} style={styles.logo} />
             <View style={styles.column}>
               <Text style={styles.guildName}>Name: {values.guildName}</Text>
               <Text style={styles.guildInfo}>Detail: {values.guildIntro}</Text>
@@ -75,9 +135,9 @@ export default function GuildDetail({ navigation, route }) {
         </View>
 
         <TouchableOpacity style={styles.greybutton} onPress={() => navigation.navigate('Event', { guildName: values.guildName })}>
-        <View style={styles.iconContainer}>
-          <MaterialIcons name="event-note" size={24} color="white" />
-          <Text style={styles.iconText}>Event </Text>
+          <View style={styles.iconContainer}>
+            <MaterialIcons name="event-note" size={24} color="white" />
+            <Text style={styles.iconText}>Event </Text>
           </View>
         </TouchableOpacity>
 
