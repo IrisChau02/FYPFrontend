@@ -36,7 +36,12 @@ export default function EventCreate({ navigation, route }) {
     formateventDate: undefined,
     startTime: undefined,
     endTime: undefined,
+    memberNumber: undefined,
     venue: undefined,
+
+    //making poster
+    isFilling: true,
+    isFormat: false,
   })
 
   const {
@@ -123,8 +128,23 @@ export default function EventCreate({ navigation, route }) {
     setBorderStyle(border);
   };
 
-  const handleCreateEvent = () => {
+  const handleNextButton = () => {
+    setValues({
+      ...values,
+      isFilling: false,
+      isFormat: true
+    })
+  };
 
+  const handleBackButton = () => {
+    setValues({
+      ...values,
+      isFilling: true,
+      isFormat: false
+    })
+  };
+
+  const handleCreateEvent = () => {
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuildEvent`, values)
       .then((res) => {
@@ -160,169 +180,201 @@ export default function EventCreate({ navigation, route }) {
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
       <View style={styles.margincontainer}>
-      <ScrollView>
-        <Text style={styles.heading}>Create Event Page</Text>
+        <ScrollView>
+          <Text style={styles.heading}>Create Event Page</Text>
 
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Event Name</Text>
-            </TouchableOpacity>
-    
-            <TextInput
-              style={styles.input}
-              placeholder="Event Name"
-              value={values.eventName}
-              onChangeText={(text) => handleInputChange('eventName', text)}
-            />
-      
+          {values.isFilling && (
+            <>
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Event Name</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Event Detail</Text>
-            </TouchableOpacity>
-       
-            <TextInput
-              style={styles.input}
-              placeholder="Event Detail"
-              value={values.eventDetail}
-              onChangeText={(text) => handleInputChange('eventDetail', text)}
-              multiline={true}
-              keyboardType="ascii-capable"
-            />
-    
-
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Event Date</Text>
-            </TouchableOpacity>
-         
-            <TouchableOpacity style={styles.button} onPress={showDatePickerModal}>
-              <Text style={styles.buttonText}>Select Event Date</Text>
-            </TouchableOpacity>
-
-            {showDatePicker && (
-              <DateTimePicker
-                value={values.eventDate}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  handleInputChange('eventDate', selectedDate);
-                  handleInputChange('formateventDate', formatDate(selectedDate));
-                }}
+              <TextInput
+                style={styles.input}
+                placeholder="Event Name"
+                value={values.eventName}
+                onChangeText={(text) => handleInputChange('eventName', text)}
               />
-            )}
-    
-            <TextInput
-              style={styles.input}
-              placeholder="Event Time"
-              value={values.formateventDate}
-            />
-    
 
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Event From Time</Text>
-            </TouchableOpacity>
-      
-            <TextInput
-              style={styles.input}
-              placeholder="Event From Time"
-              value={values.startTime}
-              onChangeText={(text) => handleInputChange('startTime', text)}
-            />
-    
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Event Detail</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Event To Time</Text>
-            </TouchableOpacity>
-        
-            <TextInput
-              style={styles.input}
-              placeholder="Event To Time"
-              value={values.endTime}
-              onChangeText={(text) => handleInputChange('endTime', text)}
-            />
-        
+              <TextInput
+                style={styles.input}
+                placeholder="Event Detail"
+                value={values.eventDetail}
+                onChangeText={(text) => handleInputChange('eventDetail', text)}
+                multiline={true}
+                keyboardType="ascii-capable"
+              />
 
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Venue</Text>
-            </TouchableOpacity>
-         
-            <TextInput
-              style={styles.input}
-              placeholder="Venue"
-              value={values.venue}
-              onChangeText={(text) => handleInputChange('venue', text)}
-            />
-       
 
-        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Background Colour</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {buttonColors.map((button, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handlebgColorChange(button.color)}
-              style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
-            >
-              <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Event Date</Text>
+              </TouchableOpacity>
 
-        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Size</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {buttonSizes.map((button, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleFontSizeChange(button.size)}
-              style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
-            >
-              <Text style={{ color: 'white', textAlign: 'center', fontSize: button.size }}>
-                {button.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+              <TouchableOpacity style={styles.button} onPress={showDatePickerModal}>
+                <Text style={styles.buttonText}>Select Event Date</Text>
+              </TouchableOpacity>
 
-        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Colour</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {buttonfontColour.map((button, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleFontColorChange(button.color)}
-              style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
-            >
-              <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={values.eventDate}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    handleInputChange('eventDate', selectedDate);
+                    handleInputChange('formateventDate', formatDate(selectedDate));
+                  }}
+                />
+              )}
 
-        <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Border Style</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {defaultBorderStyle.map((button, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleBorderStyleChange(button.border)}
-              style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
-            >
-              <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Event Time"
+                value={values.formateventDate}
+              />
 
-        <View ref={viewRef} style={{ backgroundColor: selectedbgColor, padding: 10, margin: 10 }}>
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Event Start Time</Text>
+              </TouchableOpacity>
 
-          <View style={[{ padding: 10, borderWidth: 2, borderColor: 'black', borderStyle: borderStyle }]}>
-            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
-            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
-            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime} - Event End Time: {values.endTime}</Text>
-            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
-            <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
-          </View>
-        </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Event Start Time"
+                value={values.startTime}
+                onChangeText={(text) => handleInputChange('startTime', text)}
+              />
 
-        <TouchableOpacity style={styles.greenbutton} onPress={handleCreateEvent}>
-          <Text style={styles.buttonText}>Create</Text>
-        </TouchableOpacity>
 
-      </ScrollView>
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Event Finished Time</Text>
+              </TouchableOpacity>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Event Finished Time"
+                value={values.endTime}
+                onChangeText={(text) => handleInputChange('endTime', text)}
+              />
+
+
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Member Number Limit</Text>
+              </TouchableOpacity>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Member Number Limit"
+                value={values.memberNumber}
+                onChangeText={(text) => handleInputChange('memberNumber', text)}
+              />
+
+
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Venue</Text>
+              </TouchableOpacity>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Venue"
+                value={values.venue}
+                onChangeText={(text) => handleInputChange('venue', text)}
+              />
+
+              <TouchableOpacity style={styles.greenbutton} onPress={handleNextButton}>
+                <Text style={styles.buttonText}>Next</Text>
+              </TouchableOpacity>
+
+            </>
+          )}
+
+
+          {values.isFormat && (
+            <>
+              <Text style={styles.label}>Poster to whatsapp Group</Text>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Background Colour</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                {buttonColors.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => handlebgColorChange(button.color)}
+                    style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Size</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                {buttonSizes.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => handleFontSizeChange(button.size)}
+                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center', fontSize: button.size }}>
+                      {button.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Colour</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                {buttonfontColour.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => handleFontColorChange(button.color)}
+                    style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Border Style</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                {defaultBorderStyle.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => handleBorderStyleChange(button.border)}
+                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <View ref={viewRef} style={{ backgroundColor: selectedbgColor, padding: 10, margin: 10 }}>
+
+                <View style={[{ padding: 10, borderWidth: 2, borderColor: 'black', borderStyle: borderStyle }]}>
+                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
+                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
+                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime} - Event End Time: {values.endTime}</Text>
+                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
+                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity style={styles.greenbutton} onPress={handleBackButton}>
+                <Text style={styles.buttonText}>Back</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.greenbutton} onPress={handleCreateEvent}>
+                <Text style={styles.buttonText}>Create</Text>
+              </TouchableOpacity>
+
+            </>
+          )}
+
+
+        </ScrollView>
       </View>
     </View>
   );
@@ -395,5 +447,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 8,
     backgroundColor: 'lightgray', // Set the background color
+  },
+  label: {
+    fontSize: 18,
+    color: 'brown',
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 10,
   },
 });

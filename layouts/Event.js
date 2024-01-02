@@ -45,12 +45,7 @@ export default function Event({ navigation, route }) {
           },
         })
         .then((res) => {
-          if (res.data === 'failed') {
-            alert('No existing record');
-          } else {
-            //alert('Success');
-            setEventList(res.data)
-          }
+          setEventList(res.data)
         })
         .catch((err) => console.log(err));
 
