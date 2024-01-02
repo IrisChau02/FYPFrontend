@@ -11,6 +11,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import { useRef } from 'react';
+import Draggable from 'react-native-draggable';
 
 const formatDate = (date) => {
   let d = new Date(date),
@@ -70,6 +71,16 @@ export default function EventCreate({ navigation, route }) {
   };
 
   const viewRef = useRef(null);
+  //custom ratio
+  const [ratio, setRatio] = useState(1);
+  const buttonRatio = [
+    { ratio: 16 / 9, label: '16:9' },
+    { ratio: 1, label: '1:1' },
+    { ratio: 9 / 12, label: '9:12' },
+  ];
+  const handleRatioChange = (ratio) => {
+    setRatio(ratio);
+  };
 
   //custom background colour
   const [selectedbgColor, setSelectedbgColor] = useState('#E5C1CD');
@@ -182,6 +193,8 @@ export default function EventCreate({ navigation, route }) {
       <View style={styles.margincontainer}>
         <ScrollView>
           <Text style={styles.heading}>Create Event Page</Text>
+
+
 
           {values.isFilling && (
             <>
@@ -296,6 +309,23 @@ export default function EventCreate({ navigation, route }) {
             <>
               <Text style={styles.label}>Poster to whatsapp Group</Text>
 
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Ratio</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                {buttonRatio.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => handleRatioChange(button.ratio)}
+                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center', fontSize: button.size }}>
+                      {button.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+
               <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Background Colour</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 {buttonColors.map((button, index) => (
@@ -350,8 +380,19 @@ export default function EventCreate({ navigation, route }) {
                   </TouchableOpacity>
                 ))}
               </View>
+              {/**padding: 10, margin: 10 
+                 <Draggable
+                  x={20}
+                  y={30}
+                  renderColor='red'
+                  renderText='B'
+                  dragStartThreshold={100}
+                  onShortPressRelease={() => alert('Hold long and drag')}
+                  style={{ position: 'absolute', zIndex: 1 }}
+                />
+                */}
 
-              <View ref={viewRef} style={{ backgroundColor: selectedbgColor, padding: 10, margin: 10 }}>
+              <View ref={viewRef} style={{ aspectRatio: ratio, backgroundColor: selectedbgColor }}>
 
                 <View style={[{ padding: 10, borderWidth: 2, borderColor: 'black', borderStyle: borderStyle }]}>
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
@@ -360,6 +401,9 @@ export default function EventCreate({ navigation, route }) {
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
                 </View>
+
+
+
               </View>
 
               <TouchableOpacity style={styles.greenbutton} onPress={handleBackButton}>
