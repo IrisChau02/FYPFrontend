@@ -1,10 +1,65 @@
 import React from 'react';
+import { useEffect } from "react";
+import useForm from '../hooks/useForm';
 import { View, Text, StyleSheet } from 'react-native';
-import { Image, Pressable, TextInput, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity} from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import { CurrentUserID } from './CurrentUserID';
+import axios from 'axios';
 
 export default function BottomBar({ navigation }) {
+
+  const getFreshModel = () => ({
+    userID: undefined,
+    guildName: undefined,
+  })
+
+  const {
+    values,
+    setValues,
+    error,
+    setErrors,
+    handleInputChange
+  } = useForm(getFreshModel);
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      userID: CurrentUserID
+    })
+  }, [CurrentUserID]);
+
+  useEffect(() => {
+    if (values.userID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+          params: {
+            userID: values.userID,
+          },
+        })
+        .then((res) => {
+          if (res.data === 'failed') {
+
+          } else {
+            setValues({
+              ...values,
+              userID: res.data[0].userID,
+              guildName: res.data[0].guildName,
+            })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.userID]);
+
+  const navigateToGuild = () => {
+    if (values.guildName) {
+      navigation.navigate('GuildDetail', { values });
+    } else {
+      navigation.navigate('Guild');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -12,7 +67,7 @@ export default function BottomBar({ navigation }) {
       </View>
       <View style={styles.bottomBar}>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Guild')} style={styles.button}>
+        <TouchableOpacity onPress={navigateToGuild} style={styles.button}>
           <View style={styles.iconContainer}>
             <AntDesign name="team" size={24} color="#F5F5DC" />
             <Text style={styles.iconText}>Guild</Text>

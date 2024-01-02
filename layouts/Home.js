@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
+
 //import { TextField, Button, Card, CardContent } from '@mui/material';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
@@ -12,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
+import { setCurrentUserID } from './CurrentUserID';
 
 export default function Home({ navigation, route }) {
 
@@ -110,6 +112,8 @@ export default function Home({ navigation, route }) {
             const sportsNameArray = sportsList
               .filter(item => sportsIDArray.includes(item.sportsID))
               .map(item => item.sportsName);
+
+              setCurrentUserID(res.data[0].userID)
 
             setValues({
               ...values,
