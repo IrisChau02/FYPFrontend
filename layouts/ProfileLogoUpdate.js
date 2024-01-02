@@ -66,16 +66,16 @@ export default function ProfileLogoUpdate({ navigation, route }) {
 
   const handleUpdateUserLogo = () => {
     axios
-    .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/updateUserLogo`, values)
-    .then((res) => {
-      if (res.data === 'updated') {
-        alert('Change successfully')
-        navigation.navigate('Home')
-      } else {
-        alert('Failed to Change');
-      }
-    })
-    .catch((err) => console.log(err));
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/updateUserLogo`, values)
+      .then((res) => {
+        if (res.data === 'updated') {
+          alert('Change successfully')
+          navigation.navigate('Home')
+        } else {
+          alert('Failed to Change');
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -86,21 +86,21 @@ export default function ProfileLogoUpdate({ navigation, route }) {
 
         <View style={styles.cardContainer}>
           <Card style={styles.card}>
-       
-       
-                <Image source={values.userLogo ? { uri: `data:image/jpeg;base64,${values.userLogo}` } : defaultLogoImage} style={styles.logo} />
-                <AntDesign name="camera" size={50} color="grey" onPress={pickImageAsync}/>
-            
-                <TouchableOpacity style={styles.button} onPress={handleUpdateUserLogo}>
-            <Text style={styles.buttonText}>Confirm</Text>
-        </TouchableOpacity>
 
-       
+
+            <Image source={values.userLogo ? { uri: `data:image/jpeg;base64,${values.userLogo}` } : defaultLogoImage} style={styles.logo} />
+            <AntDesign name="camera" size={50} color="grey" onPress={pickImageAsync} />
+
+            <TouchableOpacity style={styles.button} onPress={handleUpdateUserLogo}>
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>
+
+
           </Card>
         </View>
 
       </View>
-      
+
     </View>
   );
 }

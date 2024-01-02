@@ -12,6 +12,9 @@ import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import { useRef } from 'react';
 import Draggable from 'react-native-draggable';
+import * as ImagePicker from 'expo-image-picker';
+
+import { AntDesign } from '@expo/vector-icons';
 
 const formatDate = (date) => {
   let d = new Date(date),
@@ -38,11 +41,13 @@ export default function EventCreate({ navigation, route }) {
     startTime: undefined,
     endTime: undefined,
     memberNumber: undefined,
+    currentNumber: 1,
     venue: undefined,
 
     //making poster
     isFilling: true,
     isFormat: false,
+    bgcolour: undefined
   })
 
   const {
@@ -161,6 +166,7 @@ export default function EventCreate({ navigation, route }) {
       .then((res) => {
         if (res.data === 'added') {
           shareViewToWhatsApp();
+          //navigation.navigate('GuildDetail');
         } else {
           alert('Failed to create the event.');
         }
@@ -187,14 +193,33 @@ export default function EventCreate({ navigation, route }) {
     }
   };
 
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
+      allowsEditing: true,
+      quality: 0.3, // Adjust the quality parameter (0-1) to reduce image size
+      base64: true, // Set base64 to true to get the image data in base64 format
+    });
+
+    if (!result.canceled) {
+      delete result.cancelled;
+
+      setValues({
+        ...values,
+        bgcolour: result.assets[0].base64,
+      })
+
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
       <View style={styles.margincontainer}>
         <ScrollView>
           <Text style={styles.heading}>Create Event Page</Text>
-
-
 
           {values.isFilling && (
             <>
@@ -338,6 +363,7 @@ export default function EventCreate({ navigation, route }) {
                   </TouchableOpacity>
                 ))}
               </View>
+              <AntDesign name="camera" size={24} color="grey" onPress={pickImageAsync} />
 
 
               <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Size</Text>
@@ -392,17 +418,48 @@ export default function EventCreate({ navigation, route }) {
                 />
                 */}
 
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: "grey" }}>* Can Hold the element and move to desired location.</Text>
+
               <View ref={viewRef} style={{ aspectRatio: ratio, backgroundColor: selectedbgColor }}>
 
-                <View style={[{ padding: 10, borderWidth: 2, borderColor: 'black', borderStyle: borderStyle }]}>
+                <View style={[{ padding: 10, borderWidth: 2, borderColor: 'grey', borderStyle: borderStyle, width: '100%', height: '100%' }]}>
+                  {/*
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime} - Event End Time: {values.endTime}</Text>
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
                   <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
+                 */}
+
+                  <Draggable x={10} y={10}>
+                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
+                  </Draggable>
+
+                  <Draggable x={10} y={30}>
+                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
+                  </Draggable>
+
+                  <Draggable x={10} y={50}>
+                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime}</Text>
+                  </Draggable>
+
+                  <Draggable x={10} y={70}>
+                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event End Time: {values.endTime}</Text>
+                  </Draggable>
+
+                  <Draggable x={10} y={90}>
+                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
+                  </Draggable>
+
+                  <Draggable x={10} y={110}>
+                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Member Limit: {values.memberNumber}</Text>
+                  </Draggable>
+
+                  <Draggable x={10} y={130}>
+                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
+                  </Draggable>
+
                 </View>
-
-
 
               </View>
 

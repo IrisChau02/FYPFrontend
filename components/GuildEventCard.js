@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet,TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 const GuildEventCard = ({ event, navigation }) => {
   return (
     <View style={styles.cardContainer}>
 
-<Text style={styles.eventName}>{event.eventName}</Text>
+      <Text style={styles.eventName}>{event.eventName}</Text>
       <Text style={styles.eventInfo}>Date: {event.eventDate}</Text>
       <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
       <Text style={styles.eventInfo}>Venue: {event.venue}</Text>
