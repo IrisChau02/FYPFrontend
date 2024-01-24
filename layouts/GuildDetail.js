@@ -8,6 +8,7 @@ import GuildCard from "../components/GuildCard";
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { CurrentUserID } from './CurrentUserID';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function GuildDetail({ navigation, route }) {
 
@@ -138,6 +139,13 @@ export default function GuildDetail({ navigation, route }) {
           <View style={styles.iconContainer}>
             <MaterialIcons name="event-note" size={24} color="white" />
             <Text style={styles.iconText}>Event </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.greybutton} onPress={() => navigation.navigate('MemberList')}>
+          <View style={styles.iconContainer}>
+            <AntDesign name="team" size={24} color="white" />
+            <Text style={styles.iconText}>Member List </Text>
           </View>
         </TouchableOpacity>
 

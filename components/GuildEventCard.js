@@ -1,11 +1,60 @@
 import React from 'react';
+import { useEffect } from "react";
+import useForm from '../hooks/useForm';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import axios from 'axios';
 
 const GuildEventCard = ({ event, navigation }) => {
+
+  const getFreshModel = () => ({
+    userID: undefined,
+    loginName: undefined,
+  })
+
+  const {
+    values,
+    setValues,
+    error,
+    setErrors,
+    handleInputChange
+  } = useForm(getFreshModel);
+
+  useEffect(() => { 
+    setValues({
+      ...values,
+      userID: event.initiatorID
+    })
+  }, [event]);
+
+  useEffect(() => {
+    if (values.userID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+          params: {
+            userID: values.userID,
+          },
+        })
+        .then((res) => {
+          if (res.data === 'failed') {
+          } else {
+            setValues({
+              ...values,
+              userID: res.data[0].userID,
+              loginName: res.data[0].loginName,
+            })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.userID]);
+
+
+
   return (
     <View style={styles.cardContainer}>
 
       <Text style={styles.eventName}>{event.eventName}</Text>
+      <Text style={styles.eventInfo}>Initiator: {values.loginName}</Text>
       <Text style={styles.eventInfo}>Date: {event.eventDate}</Text>
       <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
       <Text style={styles.eventInfo}>Venue: {event.venue}</Text>

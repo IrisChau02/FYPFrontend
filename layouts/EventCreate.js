@@ -16,6 +16,8 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { AntDesign } from '@expo/vector-icons';
 
+import { CurrentUserID } from './CurrentUserID';
+
 const formatDate = (date) => {
   let d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -33,6 +35,7 @@ const formatDate = (date) => {
 export default function EventCreate({ navigation, route }) {
 
   const getFreshModel = () => ({
+    userID: undefined,
     guildName: undefined,
     eventName: undefined,
     eventDetail: undefined,
@@ -58,22 +61,41 @@ export default function EventCreate({ navigation, route }) {
     handleInputChange
   } = useForm(getFreshModel);
 
-  useEffect(() => {
-    if (route && route.params) {
-      const { guildName } = route.params;
-
-      setValues({
-        ...values,
-        guildName: guildName,
-      })
-    }
-  }, [route]);
-
   const PlaceholderImage = require('../assets/loginbackground2.png');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const showDatePickerModal = () => {
     setShowDatePicker(true);
   };
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      userID: CurrentUserID
+    })
+  }, [CurrentUserID]);
+
+  useEffect(() => {
+    if (values.userID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+          params: {
+            userID: values.userID,
+          },
+        })
+        .then((res) => {
+          if (res.data === 'failed') {
+          } else {
+            setValues({
+              ...values,
+              userID: res.data[0].userID,
+              guildName: res.data[0].guildName,
+            })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.userID]);
+
 
   const viewRef = useRef(null);
   //custom ratio
