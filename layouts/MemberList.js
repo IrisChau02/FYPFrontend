@@ -10,6 +10,10 @@ import { Card, Title, Paragraph } from 'react-native-paper';
 import { Divider } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 
+import SelectDropdown from 'react-native-select-dropdown'
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 export default function MemberList() {
 
   const getFreshModel = () => ({
@@ -94,8 +98,8 @@ export default function MemberList() {
     }
   }, [values.userID]);
 
-
   const [memberList, setMemberList] = useState([]);
+  const [filterMemberList, setFilterMemberList] = useState([]);
 
   useEffect(() => {
     if (values.guildName) {
@@ -107,6 +111,7 @@ export default function MemberList() {
         })
         .then((res) => {
           setMemberList(res.data)
+          setFilterMemberList(res.data)
         })
         .catch((err) => console.log(err));
     }
@@ -128,14 +133,89 @@ export default function MemberList() {
       .catch((err) => console.log(err));
   }
 
+  const [selectedWorkMode, setSelectedWorkMode] = useState();
+  const [selectedSports, setSelectedSports] = useState();
+
+  const handleFilterMember = () => {
+    let filteredMembers = memberList;
+
+    if (selectedWorkMode !== undefined && selectedWorkMode !== null) {
+      filteredMembers = filteredMembers.filter(member => parseInt(member.workModeID) === selectedWorkMode);
+    }
+    
+    if (selectedSports !== undefined && selectedSports !== null) {
+      filteredMembers = filteredMembers.filter(member => member.sportsID.split(",").map(Number).includes(selectedSports));
+    }
+
+    setFilterMemberList(filteredMembers)
+  };
+
+  const handleCancelFilterMember = () => {
+    setFilterMemberList(memberList)
+  };
+
   return (
     <View style={styles.container}>
       <Image source={PlaceholderImage} style={styles.image} />
       <ScrollView style={styles.margincontainer}>
         <Text style={styles.heading}>Member List Page</Text>
 
+        <View style={{ marginBottom: 10 }}>
+          <SelectDropdown
+            data={workingModeList}
+            onSelect={(item) => setSelectedWorkMode(item.workModeID)}
+            buttonTextAfterSelection={(selectedItem) => selectedItem.workModeName}
+            rowTextForSelection={(item) => item.workModeName}
+
+            buttonStyle={{ width: '80%', height: 50, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
+            buttonTextStyle={{ color: '#444', textAlign: 'left' }}
+            rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
+            rowTextStyle={{ color: '#444', textAlign: 'left' }}
+
+            defaultButtonText={'Select working mode'}
+
+            renderDropdownIcon={isOpened => {
+              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
+            }}
+          />
+        </View>
+
+        <View style={{ marginBottom: 10 }}>
+          <SelectDropdown
+
+            data={sportsList}
+            onSelect={(item) => setSelectedSports(item.sportsID)}
+            buttonTextAfterSelection={(selectedItem) => selectedItem.sportsName}
+            rowTextForSelection={(item) => item.sportsName}
+
+            buttonStyle={{ width: '80%', height: 50, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
+            buttonTextStyle={{ color: '#444', textAlign: 'left' }}
+            rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
+            rowTextStyle={{ color: '#444', textAlign: 'left' }}
+
+            defaultButtonText={'Select sports'}
+
+            renderDropdownIcon={isOpened => {
+              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
+            }}
+          />
+        </View>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <TouchableOpacity onPress={handleFilterMember} style={[styles.button, { backgroundColor: 'green' }]}>
+          <Text style={styles.buttonText}>Confirm</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleCancelFilterMember} style={[styles.button, { backgroundColor: 'gray' }]}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
+        </View>
+       
+
+        <Divider style={{ borderWidth: 2, borderColor: 'gray', marginBottom: 10 }} />
+
         {
-          memberList.map(member => {
+          filterMemberList.map(member => {
             const workModeName = workingModeList.find(item => item.workModeID === member.workModeID).workModeName;
 
             const sportsID = member.sportsID;
@@ -185,14 +265,14 @@ export default function MemberList() {
                   />
 
                 </View>
-                
+
                 <Text style={styles.label} >Working Mode</Text>
 
                 <View style={[styles.button, { backgroundColor: '#728C69' }]}>
-                    <Text style={styles.buttonText}>{workModeName}</Text>
-                  </View>
+                  <Text style={styles.buttonText}>{workModeName}</Text>
+                </View>
 
-                  <Text style={styles.label} >Favourite Sports</Text>
+                <Text style={styles.label} >Favourite Sports</Text>
 
                 {sportsNameArray.map((item, index) => (
                   <View key={index} style={[styles.button, { backgroundColor: '#728C69' }]}>
