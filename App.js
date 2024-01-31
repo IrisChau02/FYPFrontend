@@ -27,7 +27,7 @@ import ProfileWMUpdate from "./layouts/ProfileWMUpdate";
 import MemberList from "./layouts/MemberList";
 import FriendList from "./layouts/FriendList";
 import WaitingFriendList from "./layouts/WaitingFriendList";
-
+import MissionCreate from "./layouts/MissionCreate";
 
 const Stack = createNativeStackNavigator();
 
@@ -57,6 +57,7 @@ export default function App() {
         <Stack.Screen name="MemberList" component={MemberList} />
         <Stack.Screen name="FriendList" component={FriendList} />
         <Stack.Screen name="WaitingFriendList" component={WaitingFriendList} />
+        <Stack.Screen name="MissionCreate" component={MissionCreate} />
         
       </Stack.Navigator>
     </NavigationContainer>
