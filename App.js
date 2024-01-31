@@ -25,6 +25,9 @@ import ProfileLogoUpdate from "./layouts/ProfileLogoUpdate";
 import ProfileSportsUpdate from "./layouts/ProfileSportsUpdate";
 import ProfileWMUpdate from "./layouts/ProfileWMUpdate";
 import MemberList from "./layouts/MemberList";
+import FriendList from "./layouts/FriendList";
+import WaitingFriendList from "./layouts/WaitingFriendList";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +55,8 @@ export default function App() {
         <Stack.Screen name="ProfileSportsUpdate" component={ProfileSportsUpdate} />
         <Stack.Screen name="ProfileWMUpdate" component={ProfileWMUpdate} />
         <Stack.Screen name="MemberList" component={MemberList} />
+        <Stack.Screen name="FriendList" component={FriendList} />
+        <Stack.Screen name="WaitingFriendList" component={WaitingFriendList} />
         
       </Stack.Navigator>
     </NavigationContainer>

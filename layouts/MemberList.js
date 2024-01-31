@@ -151,7 +151,7 @@ export default function MemberList() {
   };
 
   const handleCancelFilterMember = () => {
-    setFilterMemberList(memberList)
+    setFilterMemberList(memberList);
   };
 
   return (
@@ -161,6 +161,7 @@ export default function MemberList() {
         <Text style={styles.heading}>Member List Page</Text>
 
         <View style={{ marginBottom: 10 }}>
+
           <SelectDropdown
             data={workingModeList}
             onSelect={(item) => setSelectedWorkMode(item.workModeID)}
@@ -178,6 +179,7 @@ export default function MemberList() {
               return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
             }}
           />
+          
         </View>
 
         <View style={{ marginBottom: 10 }}>

@@ -11,6 +11,7 @@ import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 
 import { AntDesign } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
 import { setCurrentUserID } from './CurrentUserID';
@@ -59,6 +60,25 @@ export default function Home({ navigation, route }) {
       })
     }
   }, [route]);
+
+  const [waitingFriendList, setWaitingFriendList] = useState([]);
+
+  useEffect(() => {
+    if (values.userID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWaitingFriendList`, {
+          params: {
+            userID: values.userID,
+          },
+        })
+        .then((res) => {
+          if (res.data.length !== 0) {
+            setWaitingFriendList(res.data); // Update the waitingFriendList state
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.userID]);
 
   const [districtList, setDistrictList] = useState([]);
   const [workingModeList, setWorkingModeList] = useState([]);
@@ -113,7 +133,7 @@ export default function Home({ navigation, route }) {
               .filter(item => sportsIDArray.includes(item.sportsID))
               .map(item => item.sportsName);
 
-              setCurrentUserID(res.data[0].userID)
+            setCurrentUserID(res.data[0].userID)
 
             setValues({
               ...values,
@@ -202,6 +222,41 @@ export default function Home({ navigation, route }) {
                 />
 
               </View>
+            </Card>
+          </View>
+
+          <View style={styles.cardContainer}>
+            <Card style={styles.card}>
+              <View style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <AntDesign name="addusergroup" size={24} color="grey" />
+                <Text style={styles.label} >Friend List</Text>
+                {/*
+                 <MaterialCommunityIcons name="account-details" size={24} color="grey" />
+                */}
+              </View>
+              <Divider />
+
+
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FriendList')}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={styles.buttonText}>Details</Text>
+                    <AntDesign name="search1" size={24} color="#FFF" />
+                  </View>
+
+                  {waitingFriendList.length !== 0 && (
+                    <View style={{ backgroundColor: 'red', padding: 5, borderRadius: 30, marginTop: 1, marginBottom: 1, borderWidth: 2, borderColor: 'white' }}>
+                      <MaterialCommunityIcons name="alarm-plus" size={24} color="#FFF" />
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+
+
             </Card>
           </View>
 
