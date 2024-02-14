@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import React, { useState } from 'react';
-import useForm from '../hooks/useForm'; 
-import { TextField, Button, Card, CardContent } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import useForm from '../hooks/useForm';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
@@ -21,7 +19,25 @@ export default function Login({ navigation }) {
     handleInputChange
   } = useForm(getFreshModel);
 
-  const PlaceholderImage = require('../assets/loginbackground2.png');
+  const [forceUpdate, setForceUpdate] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setForceUpdate((prevValue) => !prevValue);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      username: '',
+      password: '',
+    })
+  }, [forceUpdate]);
+
+  const IconImage = require('../assets/Exbond.png');
 
   const validate = () => {
     const temp = {};
@@ -42,7 +58,7 @@ export default function Login({ navigation }) {
 
     return Object.values(temp).every((x) => x === "");
   };
-  
+
   const handleSubmit = () => {
     if (validate()) {
       axios
@@ -50,14 +66,14 @@ export default function Login({ navigation }) {
         .then((res) => {
           if (res.data === 'failed') {
             alert('There is no existing record. Please input again.');
-          } else { 
-            if(res.data[0].districtID == null || res.data[0].workModeID == null || res.data[0].sportsID == null){
+          } else {
+            if (res.data[0].districtID == null || res.data[0].workModeID == null || res.data[0].sportsID == null) {
               //if user is first log in
               navigation.navigate('InitialAccount', {
                 loginName: res.data[0].loginName,
                 password: res.data[0].password,
               });
-            } else{
+            } else {
               //if all the user info is filled
               navigation.navigate('Home', {
                 loginName: res.data[0].loginName,
@@ -72,30 +88,28 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
-      <Pressable style={styles.button}>
-        <Text style={styles.buttonText}>Login Page</Text>
-      </Pressable>
+      <Image source={IconImage} style={{ width: 100, height: 100, padding: 10 }} />
+
       <Text style={styles.text}>Please enter your login information</Text>
 
       <TextInput
-      style={styles.input}
-      placeholder="Username"
-      value={values.username}
-      onChangeText={(text) => handleInputChange('username', text)}
-      onFocus={() => setErrors({ ...error, username: '' })}
-    />
-    {error.username && <Text style={styles.errorText}>{error.username}</Text>}
+        style={styles.input}
+        placeholder="Username"
+        value={values.username}
+        onChangeText={(text) => handleInputChange('username', text)}
+        onFocus={() => setErrors({ ...error, username: '' })}
+      />
+      {error.username && <Text style={styles.errorText}>{error.username}</Text>}
 
-    <TextInput
-      style={styles.input}
-      placeholder="Password"
-      value={values.password}
-      onChangeText={(text) => handleInputChange('password', text)}
-      secureTextEntry
-      onFocus={() => setErrors({ ...error, password: '' })}
-    />
-    {error.password && <Text style={styles.errorText}>{error.password}</Text>}
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={values.password}
+        onChangeText={(text) => handleInputChange('password', text)}
+        secureTextEntry
+        onFocus={() => setErrors({ ...error, password: '' })}
+      />
+      {error.password && <Text style={styles.errorText}>{error.password}</Text>}
 
       <Text style={styles.text}>If you do not have an account</Text>
 
@@ -114,20 +128,15 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f1f1f1',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
   },
   button: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    margin: 10
   },
   buttonText: {
     color: '#fff',
@@ -135,23 +144,22 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'gray',
-    fontSize: 16,
-    marginTop: 20,
+    fontSize: 13,
+    margin: 5
   },
   input: {
     width: '80%',
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginTop: 10,
     padding: 10,
+    margin: 5,
     backgroundColor: 'lightgray', // Set the background color
   },
   submitButton: {
     backgroundColor: 'green',
     padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
+    borderRadius: 5
   },
   submitButtonText: {
     color: '#fff',

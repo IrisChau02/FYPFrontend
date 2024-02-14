@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-//import { TextField, Button, Card, CardContent } from '@mui/material';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
@@ -79,17 +78,25 @@ export default function ProfileLogoUpdate({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#F1F1F1' }}>
       <View style={styles.margincontainer}>
-        <Text style={styles.heading}>Update Logo Page</Text>
 
         <View style={styles.cardContainer}>
           <Card style={styles.card}>
 
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={styles.input}>Icon Preview</Text>
+            </View>
 
             <Image source={values.userLogo ? { uri: `data:image/jpeg;base64,${values.userLogo}` } : defaultLogoImage} style={styles.logo} />
-            <AntDesign name="camera" size={50} color="grey" onPress={pickImageAsync} />
+
+            <TouchableOpacity
+              onPress={pickImageAsync}
+              style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+            >
+              <AntDesign name="camera" size={50} color="grey" />
+              <Text style={styles.input}> Import Image</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={handleUpdateUserLogo}>
               <Text style={styles.buttonText}>Confirm</Text>
@@ -98,7 +105,10 @@ export default function ProfileLogoUpdate({ navigation, route }) {
 
           </Card>
         </View>
+      </View>
 
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
       </View>
 
     </View>
@@ -106,58 +116,34 @@ export default function ProfileLogoUpdate({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  margincontainer: { // Corrected style name
+  margincontainer: {
     margin: 16
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'brown',
-    textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
-  },
   cardContainer: {
-    height: 500, // Set the desired fixed height for the card
+    height: 500,
+    marginTop: 30,
     marginBottom: 16,
   },
   card: {
     flex: 1,
     padding: 16,
     backgroundColor: 'white',
-    // Set any other styles for the card if needed
   },
   input: {
-    height: 40,
-    //borderColor: 'gray',
-    //borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  column: {
-    flex: 1, // Use flex: 1 to make the column take up remaining horizontal space
-    //marginLeft: 10,
+    fontSize: 18,
+    color: 'grey',
+    fontWeight: 'bold',
+    margin: 5,
+    paddingHorizontal: 4,
   },
   logo: {
     width: 300,
     height: 300,
     marginBottom: 8,
+    borderRadius: 180,
   },
   button: {
-    backgroundColor: 'grey',
+    backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
     width: '100%',
@@ -168,5 +154,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });

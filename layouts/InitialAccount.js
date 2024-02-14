@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-//import { TextField, Button, Card, CardContent } from '@mui/material';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { Card, Title, Paragraph } from 'react-native-paper';
 import axios from 'axios';
 
 export default function InitialAccount({ navigation, route }) {
@@ -105,7 +103,6 @@ export default function InitialAccount({ navigation, route }) {
         isWorkingMode: true
       })
     }
-
   };
 
 
@@ -134,7 +131,7 @@ export default function InitialAccount({ navigation, route }) {
 
     return (
       <>
-        <TouchableOpacity style={styles.subbutton}>
+        <TouchableOpacity style={styles.titleButton}>
           {values.isDistrict ? <Text style={styles.buttonText}>{buttonText}</Text> : null}
         </TouchableOpacity>
 
@@ -173,7 +170,7 @@ export default function InitialAccount({ navigation, route }) {
 
     return (
       <>
-        <TouchableOpacity style={styles.subbutton}>
+        <TouchableOpacity style={styles.titleButton}>
           {values.isSport ? <Text style={styles.buttonText}>{buttonText}</Text> : null}
         </TouchableOpacity>
 
@@ -214,21 +211,16 @@ export default function InitialAccount({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Initial User Account</Text>
       <ScrollView ref={scrollViewRef} style={styles.margincontainer}>
-        <Text style={styles.heading}>Initial User Account Page</Text>
 
-        <TouchableOpacity style={styles.button}>
-          {values.isDistrict ? (<Text style={styles.buttonText}>Select Your District</Text>) : null}
-          {values.isWorkingMode ? (<Text style={styles.buttonText}>Select Your Working Mode</Text>) : null}
-          {values.isSport ? (<Text style={styles.buttonText}>Select Your Favourite Sports</Text>) : null}
-          {values.isSport ? (<Text style={{
-            color: '#fff',
-            fontSize: 12,
-            textAlign: 'center',
-          }}>(Max can choose 3)</Text>) : null}
-        </TouchableOpacity>
+        {values.isDistrict ? (<Text style={styles.label}>Select Your District</Text>) : null}
+        {values.isWorkingMode ? (<Text style={styles.label}>Select Your Working Mode</Text>) : null}
+        {values.isSport ? (<Text style={styles.label}>Select Your Favourite Sports</Text>) : null}
+        {values.isSport ? (<Text style={{ color: 'gray', fontSize: 12, textAlign: 'center' }}>(Max can choose 3)</Text>) : null}
+
+        <View style={styles.divider} />
 
         {values.isDistrict ? (<DistrictButton buttonText="Hong Kong Island" regionID={1} />) : null}
         {values.isDistrict ? (<DistrictButton buttonText="Kowloon" regionID={2} />) : null}
@@ -259,30 +251,28 @@ export default function InitialAccount({ navigation, route }) {
         ) : null}
 
 
-
-
         {values.isSport ? (<SportsButton buttonText="Individual Sports" sportsModeID={1} />) : null}
         {values.isSport ? (<SportsButton buttonText="Team Sports" sportsModeID={2} />) : null}
 
 
         <View style={{ flexDirection: 'row' }}>
           {values.isWorkingMode || values.isSport ? (
-            <TouchableOpacity style={[styles.submitButton, { marginRight: 'auto' }]} onPress={handleBackButton}>
-              <Text style={styles.submitButtonText}>Back</Text>
+            <TouchableOpacity style={[styles.greenButton, { marginRight: 'auto' }]} onPress={handleBackButton}>
+              <Text style={styles.whiteButtonText}>Back</Text>
             </TouchableOpacity>
           ) : null}
 
           {values.isDistrict || values.isWorkingMode ? (
-            <TouchableOpacity style={[styles.submitButton, { marginLeft: 'auto' }]} onPress={handleNextButton}>
-              <Text style={styles.submitButtonText}>Next</Text>
+            <TouchableOpacity style={[styles.greenButton, { marginLeft: 'auto' }]} onPress={handleNextButton}>
+              <Text style={styles.whiteButtonText}>Next</Text>
             </TouchableOpacity>
           ) : null}
         </View>
 
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           {values.isSport ? (
-            <TouchableOpacity style={styles.submitButton} onPress={handleConfirmButton}>
-              <Text style={styles.submitButtonText}>Confirm</Text>
+            <TouchableOpacity style={styles.greenButton} onPress={handleConfirmButton}>
+              <Text style={styles.whiteButtonText}>Confirm</Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -293,87 +283,79 @@ export default function InitialAccount({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
+  },
+  label: {
+    fontSize: 20,
+    color: 'grey',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+    margin: 10,
   },
   cardContainer: {
-    backgroundColor: '#F9F6F2', // Rice color
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#F9F6F2',
+    borderRadius: 30,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'gray',
+    borderWidth: 2,
   },
   cardContainerSelected: {
-    backgroundColor: 'green', // Rice color
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#B5CDC2',
+    borderRadius: 30,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'gray',
+    borderWidth: 2,
   },
   textInfo: {
     fontSize: 16,
     marginBottom: 4,
     textAlign: 'center',
+    color: 'grey',
   },
-  submitButton: {
+  greenButton: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 20,
     width: 100
   },
-  submitButtonText: {
+  whiteButtonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
   },
-  button: {
-    backgroundColor: 'grey',
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  subbutton: {
+  titleButton: {
     backgroundColor: '#91AC9A',
     padding: 10,
     borderRadius: 5,
     width: '100%',
     marginTop: 10,
     marginBottom: 10,
-    borderColor: '#9C9885', // Gray border color
-    borderWidth: 4, // Border width
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
-  },
+    fontWeight: 'bold'
+  }
 });

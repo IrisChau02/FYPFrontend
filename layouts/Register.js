@@ -9,14 +9,14 @@ import axios from 'axios';
 
 const formatDate = (date) => {
   let d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
 
   if (month.length < 2)
-      month = '0' + month;
+    month = '0' + month;
   if (day.length < 2)
-      day = '0' + day;
+    day = '0' + day;
 
   return [year, month, day].join('-');
 }
@@ -43,7 +43,6 @@ export default function Register({ navigation }) {
     handleInputChange
   } = useForm(getFreshModel);
 
-  const PlaceholderImage = require('../assets/loginbackground2.png');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const showDatePickerModal = () => {
     setShowDatePicker(true);
@@ -136,28 +135,26 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <ImageBackground source={PlaceholderImage} style={styles.image} resizeMode="cover">
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Register</Text>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.heading}>Register Page</Text>
-        <View style={styles.divider} />
+
         <Text style={styles.label}>Personal Information</Text>
+        <TextInput
+          style={[styles.input]}
+          placeholder="First Name"
+          value={values.firstName}
+          onChangeText={(text) => handleInputChange('firstName', text)}
+        />
+        {error.firstName && <Text style={styles.errorText}>{error.firstName}</Text>}
 
+        <TextInput
+          style={[styles.input]}
+          placeholder="Last Name"
+          value={values.lastName}
+          onChangeText={(text) => handleInputChange('lastName', text)}
+        />
 
-          <TextInput
-            style={[styles.input]}
-            placeholder="First Name"
-            value={values.firstName}
-            onChangeText={(text) => handleInputChange('firstName', text)}
-          />
-          {error.firstName && <Text style={styles.errorText}>{error.firstName}</Text>}
-
-          <TextInput
-            style={[styles.input]}
-            placeholder="Last Name"
-            value={values.lastName}
-            onChangeText={(text) => handleInputChange('lastName', text)}
-          />
-   
         {error.lastName && <Text style={styles.errorText}>{error.lastName}</Text>}
 
         <RadioButtonGroup
@@ -166,12 +163,11 @@ export default function Register({ navigation }) {
           onSelected={(value) => handleInputChange('gender', value)}
           radioBackground="green"
         >
-          <RadioButtonItem value="M" label="Male"/>
-          <RadioButtonItem value="F" label="Female" />
-          <RadioButtonItem value="NA" label="Prefer not to say" />
+          <RadioButtonItem value="M" label={<Text style={{ fontSize: 14, color: 'grey' }}>Male</Text>} />
+          <RadioButtonItem value="F" label={<Text style={{ fontSize: 14, color: 'grey' }}>Female</Text>} />
+          <RadioButtonItem value="NA" label={<Text style={{ fontSize: 14, color: 'grey' }}>Prefer not to say</Text>} />
         </RadioButtonGroup>
         {error.gender && <Text style={styles.errorText}>{error.gender}</Text>}
-
 
         <TouchableOpacity style={styles.birthdaybutton} onPress={showDatePickerModal}>
           <Text style={styles.buttonText}>Select Birthday</Text>
@@ -195,7 +191,7 @@ export default function Register({ navigation }) {
           placeholder="Birthday"
           value={values.formatbirthday}
         />
-         {error.formatbirthday && <Text style={styles.errorText}>{error.formatbirthday}</Text>}
+        {error.formatbirthday && <Text style={styles.errorText}>{error.formatbirthday}</Text>}
 
         <TextInput
           style={styles.input}
@@ -245,8 +241,9 @@ export default function Register({ navigation }) {
         <TouchableOpacity style={styles.button} onPress={handleRegisterSubmit}>
          <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
+
       </ScrollView>
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -254,42 +251,39 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   divider: {
     borderBottomWidth: 1,
     borderBottomColor: 'gray',
-    marginBottom: 15,
+    margin: 15,
   },
   label: {
     fontSize: 18,
-    color: 'brown',
+    color: 'grey',
     fontWeight: 'bold',
     marginBottom: 8,
   },
   input: {
     height: 40,
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: 1.2,
     marginBottom: 10,
     paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    resizeMode: 'cover',
+    borderRadius: 10,
   },
   button: {
-    backgroundColor: 'green',
+    backgroundColor: '#D89353',
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 20,

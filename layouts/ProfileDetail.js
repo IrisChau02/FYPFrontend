@@ -183,10 +183,12 @@ export default function ProfileDetail({ navigation, route }) {
       temp.confirmPassword = "";
     }
 
-    if (values.userIntro.length > 50) {
-      temp.userIntro = "Max is 50 characters.";
-    } else {
-      temp.userIntro = "";
+    if (values.userIntro !== null) {
+      if (values.userIntro.length > 50) {
+        temp.userIntro = "Max is 50 characters.";
+      } else {
+        temp.userIntro = "";
+      }
     }
 
     setErrors(temp);
@@ -212,12 +214,11 @@ export default function ProfileDetail({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+
+      <Text style={styles.heading}>Profile Update</Text>
+
       <ScrollView style={styles.margincontainer}>
-
-        <Text style={styles.heading}>Profile Detail Page</Text>
-
         <Text style={styles.label}>Personal Information</Text>
         <TextInput
           style={[styles.input]}
@@ -242,14 +243,21 @@ export default function ProfileDetail({ navigation, route }) {
           onSelected={(value) => handleInputChange('gender', value)}
           radioBackground="green"
         >
-          <RadioButtonItem value="M" label="Male" />
-          <RadioButtonItem value="F" label="Female" />
-          <RadioButtonItem value="NA" label="Prefer not to say" />
+          <RadioButtonItem value="M" label={<Text style={{ fontSize: 14, color: 'grey' }}>Male</Text>} />
+          <RadioButtonItem value="F" label={<Text style={{ fontSize: 14, color: 'grey' }}>Female</Text>} />
+          <RadioButtonItem value="NA" label={<Text style={{ fontSize: 14, color: 'grey' }}>Prefer not to say</Text>} />
         </RadioButtonGroup>
         {error.gender && <Text style={styles.errorText}>{error.gender}</Text>}
 
 
-        <TouchableOpacity style={styles.button} onPress={showDatePickerModal}>
+        <TouchableOpacity style={{
+          backgroundColor: 'grey',
+          padding: 10,
+          borderRadius: 5,
+          width: '100%',
+          marginTop: 10,
+          marginBottom: 10,
+        }} onPress={showDatePickerModal}>
           <View style={{
             flexDirection: 'row',
             justifyContent: 'center',
@@ -343,18 +351,24 @@ export default function ProfileDetail({ navigation, route }) {
         </TouchableOpacity>
 
       </ScrollView>
-      {/*<BottomBar navigation={navigation} />*/}
+
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
+
     </View>
   );
 }
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  margincontainer: { // Corrected style name
-    margin: 16
+  margincontainer: {
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginBottom: 50
   },
   image: {
     width: '100%',
@@ -364,13 +378,13 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   cardContainer: {
-    height: 200, // Set the desired fixed height for the card
+    height: 200,
     marginBottom: 16,
   },
   card: {
@@ -381,32 +395,19 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    //borderColor: 'gray',
-    //borderWidth: 1,
+    borderColor: 'gray',
+    borderWidth: 1.2,
     marginBottom: 10,
     paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  column: {
-    flex: 1, // Use flex: 1 to make the column take up remaining horizontal space
-    marginLeft: 16,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 8,
+    borderRadius: 10,
   },
   button: {
-    backgroundColor: 'grey',
+    backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
     width: '100%',
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 30,
   },
   buttonText: {
     color: '#fff',
@@ -420,15 +421,22 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    color: 'brown',
+    color: 'grey',
     fontWeight: 'bold',
     marginBottom: 8,
   },
   messageInput: {
     height: 100,
+    borderColor: 'gray',
+    borderWidth: 1.2,
     marginBottom: 10,
     paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
+    borderRadius: 10,
   },
-
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
 });

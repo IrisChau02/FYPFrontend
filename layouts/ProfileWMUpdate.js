@@ -1,12 +1,9 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-//import { TextField, Button, Card, CardContent } from '@mui/material';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { Card, Title, Paragraph } from 'react-native-paper';
 import axios from 'axios';
-import * as ImagePicker from 'expo-image-picker';
 
 import { AntDesign } from '@expo/vector-icons';
 
@@ -76,10 +73,11 @@ export default function ProfileWMUpdate({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+
+       <Text style={styles.heading}>Update Working Mode</Text>
+
       <ScrollView style={styles.margincontainer}>
-        <Text style={styles.heading}>Working Mode Update Page</Text>
 
         {
           workingModeList.map((item) => (
@@ -111,108 +109,69 @@ export default function ProfileWMUpdate({ navigation, route }) {
 
       </ScrollView>
 
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+  margincontainer: { 
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   cardContainer: {
-    backgroundColor: '#F9F6F2', // Rice color
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#F9F6F2',
+    borderRadius: 30,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'gray',
+    borderWidth: 2,
   },
   cardContainerSelected: {
-    backgroundColor: 'green', // Rice color
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#B5CDC2',
+    borderRadius: 30,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'gray',
+    borderWidth: 2,
   },
-  input: {
-    height: 40,
-    //borderColor: 'gray',
-    //borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  column: {
-    flex: 1, // Use flex: 1 to make the column take up remaining horizontal space
-    //marginLeft: 10,
-  },
-  logo: {
-    width: 300,
-    height: 300,
-    marginBottom: 8,
-  },
-  button: {
-    backgroundColor: 'grey',
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  subbutton: {
-    backgroundColor: '#91AC9A',
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 10,
-    borderColor: '#9C9885', // Gray border color
-    borderWidth: 4, // Border width
-  },
-  buttonText: {
-    color: '#fff',
+  textInfo: {
     fontSize: 16,
+    marginBottom: 4,
     textAlign: 'center',
+    color: 'grey',
   },
   submitButton: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 80,
     width: 100
   },
   submitButtonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
