@@ -51,6 +51,7 @@ export default function Home({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setForceUpdate(true);
+      fetchUserData();
     });
 
     return unsubscribe;
@@ -77,7 +78,7 @@ export default function Home({ navigation, route }) {
         password: password
       })
     }
-  }, [route, forceUpdate]);
+  }, [route]);
 
   const [waitingFriendList, setWaitingFriendList] = useState([]);
 
@@ -127,6 +128,11 @@ export default function Home({ navigation, route }) {
   }, [forceUpdate]);
 
   useEffect(() => {
+    fetchUserData();
+  }, [values, districtList, workingModeList, sportsList]); //values.loginName, values.password, values.userLogo
+
+
+  const fetchUserData = async () => {
     if (values.loginName !== undefined && values.password !== undefined && districtList.length !== 0 && workingModeList.length !== 0 && sportsList.length !== 0) {
 
       axios
@@ -176,7 +182,7 @@ export default function Home({ navigation, route }) {
         })
         .catch((err) => console.log(err));
     }
-  }, [values, districtList, workingModeList, sportsList, forceUpdate]); //values.loginName, values.password, values.userLogo
+  };
 
 
   const [isShow, setIsShow] = useState(false);

@@ -202,8 +202,8 @@ export default function ProfileDetail({ navigation, route }) {
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/updateUser`, values)
         .then((res) => {
           if (res.data === 'updated') {
-            alert('success. Please Login again');
-            navigation.navigate('Login');
+            alert('success.');
+            navigation.navigate('Home');
           } else {
             alert('fail');
           }

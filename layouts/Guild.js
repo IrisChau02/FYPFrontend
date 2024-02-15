@@ -66,7 +66,7 @@ export default function Guild({ navigation }) {
           },
         })
         .then((res) => {
-          //console.log(res.data)
+
           setGuildList(res.data)
         })
         .catch((err) => console.log(err));
@@ -75,14 +75,14 @@ export default function Guild({ navigation }) {
 
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
-
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Guild</Text>
+      
       <FlatList
         data={[{ key: 'guildPage' }]}
         renderItem={() => (
-          <SafeAreaView style={styles.margincontainer}>
-            <Text style={styles.heading}>Guild Page</Text>
+         
+          <SafeAreaView>
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GuildCreate', { props: values })}>
               <Text style={styles.buttonText}>Create your own guild!</Text>
@@ -94,10 +94,11 @@ export default function Guild({ navigation }) {
               keyExtractor={(item, index) => index.toString()}
               style={styles.cardList}
             />
+
           </SafeAreaView>
         )}
         keyExtractor={(item) => item.key}
-        style={{ flex: 1 }}
+        style={styles.margincontainer}
       />
 
       <View style={styles.bottomBarContainer}>
@@ -108,24 +109,21 @@ export default function Guild({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+  margincontainer: { 
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginBottom: 50
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: 'green',

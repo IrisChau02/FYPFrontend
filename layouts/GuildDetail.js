@@ -4,11 +4,12 @@ import useForm from '../hooks/useForm';
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList, Linking } from 'react-native';
 import axios from 'axios';
 import BottomBar from "./BottomBar";
-import GuildCard from "../components/GuildCard";
+import { Divider } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { CurrentUserID } from './CurrentUserID';
 import { AntDesign } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
 
 export default function GuildDetail({ navigation, route }) {
 
@@ -16,9 +17,12 @@ export default function GuildDetail({ navigation, route }) {
     userID: undefined,
     guildLogo: undefined,
     guildName: undefined,
+    masterUserID: undefined,
+    masterName: undefined,
     guildIntro: undefined,
     districtID: undefined,
     level: undefined,
+    maxMemberLimit: undefined,
     memberNo: undefined,
   })
 
@@ -71,14 +75,14 @@ export default function GuildDetail({ navigation, route }) {
         .then((res) => {
           if (res.data === 'failed') {
           } else {
-            //console.log(res.data)
-
             setValues({
               ...values,
               guildLogo: res.data[0].guildLogo,
               guildIntro: res.data[0].guildIntro,
+              masterUserID: res.data[0].masterUserID,
               districtID: res.data[0].districtID,
               level: res.data[0].level,
+              maxMemberLimit: res.data[0].maxMemberLimit,
               memberNo: res.data[0].memberNo,
             })
           }
@@ -87,51 +91,72 @@ export default function GuildDetail({ navigation, route }) {
     }
   }, [values.guildName]);
 
-  /*
+  //get master name
   useEffect(() => {
-    if (route && route.params) {
-      const { guild } = route.params;
-
-      setValues({
-        ...values,
-        guildName: guild.guildName,
-        guildIntro: guild.guildIntro,
-        guildLogo: guild.guildLogo,
-        level: guild.level,
-        memberNo: guild.memberNo,
-      })
+    if (values.masterUserID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+          params: {
+            userID: values.masterUserID,
+          },
+        })
+        .then((res) => {
+          setValues({
+            ...values,
+            masterName: res.data[0].loginName,
+          })
+        })
+        .catch((err) => console.log(err));
     }
-  }, [route]);*/
-
-  const PlaceholderImage = require('../assets/loginbackground2.png');
+  }, [values.masterUserID]);
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Guild</Text>
       <View style={styles.margincontainer}>
-
-        <Text style={styles.heading}>Guild Detail Page</Text>
 
         <View style={styles.cardContainer}>
           <View style={styles.row}>
             <Image source={{ uri: `data:image/jpeg;base64,${values.guildLogo}` }} style={styles.logo} />
             <View style={styles.column}>
+
+              {/* only master can edit the guild info */}
+              {values.userID === values.masterUserID && (
+                <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={() => { }}>
+                  <Text><AntDesign name="edit" size={22} color="grey" /></Text>
+                </TouchableOpacity>
+              )}
+
               <Text style={styles.guildName}>Name: {values.guildName}</Text>
-              <Text style={styles.guildInfo}>Detail: {values.guildIntro}</Text>
-              <Text style={styles.guildDetails}>
-                Level: {values.level} | Members: {values.memberNo}
+
+
+              <Text style={{ fontSize: 16, color: 'grey' }}>
+                <EvilIcons name="user" size={22} color="grey" />
+                {values.masterName}
               </Text>
+
+              <Text style={styles.guildDetails}>
+                Lv {values.level} | Member {values.memberNo}/{values.maxMemberLimit} |
+              </Text>
+
             </View>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://chat.whatsapp.com/BbKplYG4XqHGGvsjzJx895')}>
+          <Divider style={{ margin: 5 }} />
 
+          <View style={styles.InfoBox} >
+            <Text style={styles.guildInfo}>{values.guildIntro}</Text>
+          </View>
+
+          {/*
+          <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://chat.whatsapp.com/BbKplYG4XqHGGvsjzJx895')}>
             <Text style={styles.buttonText}>Join WhatsApp Group <FontAwesome name="whatsapp" size={24} color="white" /> </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://wa.me/85265022979?text=Hello, nice to meet you!')}>
             <Text style={styles.buttonText}>Chat With Master <FontAwesome name="whatsapp" size={24} color="white" /> </Text>
           </TouchableOpacity>
+          */}
 
         </View>
 
@@ -150,9 +175,12 @@ export default function GuildDetail({ navigation, route }) {
         </TouchableOpacity>
 
 
-
       </View>
-      <BottomBar navigation={navigation} />
+
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
+
     </View>
   );
 }
@@ -162,20 +190,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   margincontainer: {
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginBottom: 50
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: 'green',
@@ -195,25 +223,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cardContainer: {
-    backgroundColor: '#F9F6F2', // Rice color
+    backgroundColor: '#F9F6F2',
     borderRadius: 8,
-    padding: 16,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'grey',
+    borderWidth: 1.5,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 85,
+    height: 85,
     marginBottom: 8,
+    borderRadius: 90,
   },
   column: {
     flex: 1,
@@ -221,11 +246,21 @@ const styles = StyleSheet.create({
   },
   guildName: {
     fontSize: 20,
+    color: 'grey',
     fontWeight: 'bold',
     marginBottom: 4,
   },
+  InfoBox: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    margin: 5,
+    padding: 10,
+    borderColor: 'grey',
+    borderWidth: 1.5,
+  },
   guildInfo: {
     fontSize: 16,
+    color: 'grey',
     marginBottom: 8,
   },
   guildDetails: {
@@ -241,5 +276,11 @@ const styles = StyleSheet.create({
     color: '#F5F5DC',
     fontWeight: 'bold',
     marginLeft: 5, // Add some spacing between the icon and text
+  },
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });

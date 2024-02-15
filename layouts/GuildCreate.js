@@ -5,14 +5,12 @@ import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, 
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import BottomBar from "./BottomBar";
-import SelectDropdown from 'react-native-select-dropdown'
-import { Dimensions } from 'react-native';
-
 
 export default function GuildCreate({ navigation, route }) {
 
   const getFreshModel = () => ({
     userID: undefined,
+    loginName: undefined,
     guildLogo: null,
     guildName: undefined,
     guildIntro: undefined,
@@ -37,22 +35,17 @@ export default function GuildCreate({ navigation, route }) {
       setValues({
         ...values,
         userID: props.props.userID,
-        districtID: props.props.districtID,
       })
     }
   }, [route]);
 
-  const PlaceholderImage = require('../assets/loginbackground2.png');
   const defaultLogoImage = require('../assets/defaultLogo.png');
 
-  //receives an object in which different options are specified. 
-  //This object is an ImagePickerOptions object. 
-  //We can pass the object to specify different options when invoking the method
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
       allowsEditing: true,
-      quality: 0.3, // Adjust the quality parameter (0-1) to reduce image size
+      quality: 0.3,
       base64: true, // Set base64 to true to get the image data in base64 format
     });
 
@@ -69,6 +62,28 @@ export default function GuildCreate({ navigation, route }) {
       alert('You did not select any image.');
     }
   };
+
+  useEffect(() => {
+    if (values.userID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+          params: {
+            userID: values.userID,
+          },
+        })
+        .then((res) => {
+          if (res.data === 'failed') {
+          } else {
+            setValues({
+              ...values,
+              loginName: res.data[0].loginName,
+              districtID: res.data[0].districtID,
+            })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [values.userID]);
 
   useEffect(() => {
     if (values.districtID) {
@@ -108,85 +123,93 @@ export default function GuildCreate({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
-      <View style={styles.margincontainer}>
-        <ScrollView>
-          <Text style={styles.heading}>Guild Create Page</Text>
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Create Guild</Text>
 
-          <TouchableOpacity style={styles.button} onPress={pickImageAsync}>
-            <Text style={styles.buttonText}>Import Guild Logo</Text>
-          </TouchableOpacity>
+      <ScrollView style={styles.margincontainer}>
 
-          <View style={styles.imageContainer}>
-            <Image source={values.guildLogo ? { uri: `data:image/jpeg;base64,${values.guildLogo}` } : defaultLogoImage}
-              style={{
-                width: 150, height: 150, borderWidth: 3,
-                borderColor: 'grey',
-              }} />
-          </View>
-
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Guild Name</Text>
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Guild Name"
-            value={values.guildName}
-            onChangeText={(text) => handleInputChange('guildName', text)}
-          />
-
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Guild Introduction</Text>
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Guild Introduction"
-            value={values.guildIntro}
-            onChangeText={(text) => handleInputChange('guildIntro', text)}
-            multiline={true}
-            keyboardType="ascii-capable"
-          />
+        <View style={styles.button} onPress={pickImageAsync}>
+          <Text style={styles.buttonText}>Guild Logo</Text>
+        </View>
+        <TouchableOpacity onPress={pickImageAsync} style={styles.imageContainer}>
+          <Image source={values.guildLogo ? { uri: `data:image/jpeg;base64,${values.guildLogo}` } : defaultLogoImage}
+            style={{ width: 150, height: 150, borderWidth: 1.5, borderColor: 'grey', borderRadius: 90 }} />
+        </TouchableOpacity>
 
 
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Select District</Text>
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Level"
-            value={values.districtName}
-          />
-
-
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Level</Text>
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Level"
-            value={values.level.toString()}
-          />
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Guild Name</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Input Guild Name..."
+          value={values.guildName}
+          onChangeText={(text) => handleInputChange('guildName', text)}
+        />
 
 
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Member</Text>
-          </TouchableOpacity>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Guild Introduction</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Input Guild Introduction..."
+          value={values.guildIntro}
+          onChangeText={(text) => handleInputChange('guildIntro', text)}
+          multiline={true}
+          keyboardType="ascii-capable"
+        />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Member"
-            value={values.member.toString()}
-          />
 
-          <TouchableOpacity style={styles.greenbutton} onPress={handleGuildCreate}>
-            <Text style={styles.buttonText}>Create</Text>
-          </TouchableOpacity>
-        </ScrollView>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Master</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Level"
+          value={values.loginName}
+          editable={false}
+        />
+
+
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>District</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          value={values.districtName}
+          editable={false}
+        />
+
+
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Level</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Level"
+          value={values.level.toString()}
+          editable={false}
+        />
+
+
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Member</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Member"
+          value={values.member.toString()}
+          editable={false}
+        />
+
+        <TouchableOpacity style={styles.greenbutton} onPress={handleGuildCreate}>
+          <Text style={styles.buttonText}>Create</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
       </View>
 
     </View>
@@ -194,27 +217,24 @@ export default function GuildCreate({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginBottom: 50
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   button: {
-    backgroundColor: 'grey',
+    backgroundColor: '#91AC9A',
     padding: 10,
     borderRadius: 5,
     width: '100%',
@@ -227,7 +247,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: '100%',
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 50,
   },
   buttonText: {
     color: '#fff',
@@ -239,12 +259,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    width: 150,
     height: 40,
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: 1.2,
+    marginBottom: 10,
     paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
-    width: '100%',
+    borderRadius: 10,
+  },
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
