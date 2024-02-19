@@ -160,19 +160,17 @@ export default function GuildDetail({ navigation, route }) {
 
         </View>
 
-        <TouchableOpacity style={styles.greybutton} onPress={() => navigation.navigate('Event', { guildName: values.guildName })}>
-          <View style={styles.iconContainer}>
-            <MaterialIcons name="event-note" size={24} color="white" />
-            <Text style={styles.iconText}>Event </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.greybutton} onPress={() => navigation.navigate('MemberList')}>
-          <View style={styles.iconContainer}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, }}>
+        <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('MemberList')}>
             <AntDesign name="team" size={24} color="white" />
-            <Text style={styles.iconText}>Member List </Text>
-          </View>
-        </TouchableOpacity>
+            <Text style={styles.iconText}>Member List</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('Event', { guildName: values.guildName })}>
+            <MaterialIcons name="event-note" size={24} color="white" />
+            <Text style={styles.iconText}>Event</Text>
+          </TouchableOpacity>
+        </View>
 
 
       </View>
@@ -211,11 +209,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 10,
   },
-  greybutton: {
-    backgroundColor: 'grey',
+  displaybutton: {
+    width: '45%',
+    height: 100,
     padding: 10,
-    borderRadius: 5,
-    margin: 10,
+    borderRadius: 20,
+    borderColor: 'grey',
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#a9a9a9'
   },
   buttonText: {
     color: '#fff',

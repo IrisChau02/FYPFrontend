@@ -12,6 +12,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
 import { setCurrentUserID } from './CurrentUserID';
@@ -31,6 +32,7 @@ export default function Home({ navigation, route }) {
     districtName: undefined,
     workModeID: undefined,
     workModeName: undefined,
+    timeslotID: undefined,
     sportsID: [],
     sportsName: [],
     userLogo: undefined,
@@ -129,7 +131,7 @@ export default function Home({ navigation, route }) {
 
   useEffect(() => {
     fetchUserData();
-  }, [values, districtList, workingModeList, sportsList]); //values.loginName, values.password, values.userLogo
+  }, [values.loginName, values.password, districtList, workingModeList, sportsList]); //values.loginName, values.password, values.userLogo
 
 
   const fetchUserData = async () => {
@@ -173,6 +175,7 @@ export default function Home({ navigation, route }) {
               districtName: selectedDistrict.districtName,
               workModeID: res.data[0].workModeID,
               workModeName: selectedworkMode.workModeName,
+              timeslotID: res.data[0].timeslotID,
               sportsID: sportsIDArray,
               sportsName: sportsNameArray,
               guildName: res.data[0].guildName,
@@ -275,6 +278,16 @@ export default function Home({ navigation, route }) {
 
                 <Divider style={{ margin: 10 }} />
 
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('ProfileTimeSlotUpdate', { props: values })}
+                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+                >
+                  <Feather name="sun" size={24} color="grey" />
+                  <Text style={styles.label}> Change Timeslot</Text>
+                </TouchableOpacity>
+
+                <Divider style={{ margin: 10 }} />
+
               </View>
             </Pressable>
           </Modal>
@@ -312,6 +325,7 @@ export default function Home({ navigation, route }) {
                     backgroundColor: values.gender === 'F' ? 'pink' : '#1E90FF',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    marginRight: 10
                   }}
                 >
                   {values.gender === 'F' ? (
@@ -321,7 +335,36 @@ export default function Home({ navigation, route }) {
                   )}
                 </View>
               )}
+
+              <View
+                style={{
+                  width: 35,
+                  height: 35,
+                  borderRadius: 90,
+                  backgroundColor: values.timeslotID === 1 ? 'orange' : values.timeslotID === 2 ? '#EED202' : values.timeslotID === 3 ? '#FFAE42' : '#30106B',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {values.timeslotID === 1 ? (
+                  <Feather name="sunrise" size={24} color="white" />
+                ) : null}
+
+                {values.timeslotID === 2 ? (
+                  <Feather name="sun" size={24} color="white" />
+                ) : null}
+
+                {values.timeslotID === 3 ? (
+                  <Feather name="sunset" size={24} color="white" />
+                ) : null}
+
+                {values.timeslotID === 4 ? (
+                  <Feather name="moon" size={24} color="white" />
+                ) : null}
+              </View>
+
             </View>
+
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
               {values.sportsName.map((item, index) => (
@@ -358,7 +401,7 @@ export default function Home({ navigation, route }) {
           <Card style={{
             height: 'auto',
             padding: 5,
-            marginTop: 10,
+            marginTop: 20,
             backgroundColor: '#F1F1F1',
             justifyContent: 'center',
           }}>

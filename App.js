@@ -24,10 +24,11 @@ import ProfileDetail from "./layouts/ProfileDetail";
 import ProfileLogoUpdate from "./layouts/ProfileLogoUpdate";
 import ProfileSportsUpdate from "./layouts/ProfileSportsUpdate";
 import ProfileWMUpdate from "./layouts/ProfileWMUpdate";
+import ProfileTimeSlotUpdate from "./layouts/ProfileTimeSlotUpdate";
 import MemberList from "./layouts/MemberList";
 import FriendList from "./layouts/FriendList";
 import WaitingFriendList from "./layouts/WaitingFriendList";
-import MissionCreate from "./layouts/MissionCreate";
+import MissionCreate from "./layouts/MissionCreate";ProfileTimeSlotUpdate
 
 const Stack = createNativeStackNavigator();
 
@@ -54,10 +55,12 @@ export default function App() {
         <Stack.Screen name="ProfileLogoUpdate" component={ProfileLogoUpdate} />
         <Stack.Screen name="ProfileSportsUpdate" component={ProfileSportsUpdate} />
         <Stack.Screen name="ProfileWMUpdate" component={ProfileWMUpdate} />
+        <Stack.Screen name="ProfileTimeSlotUpdate" component={ProfileTimeSlotUpdate} />
         <Stack.Screen name="MemberList" component={MemberList} />
         <Stack.Screen name="FriendList" component={FriendList} />
         <Stack.Screen name="WaitingFriendList" component={WaitingFriendList} />
-        <Stack.Screen name="MissionCreate" component={MissionCreate} />
+        <Stack.Screen name="MissionCreate" component={MissionCreate} />  
+
         
       </Stack.Navigator>
     </NavigationContainer>

@@ -9,12 +9,14 @@ import { CurrentUserID } from './CurrentUserID';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import { Divider } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function MemberList() {
+export default function MemberList({ navigation, route }) {
 
   const getFreshModel = () => ({
     userID: undefined,
@@ -41,19 +43,27 @@ export default function MemberList() {
 
   const [workingModeList, setWorkingModeList] = useState([]);
   const [sportsList, setSportsList] = useState([]);
+  const [timeslotList, setTimeslotList] = useState([]);
+  const [genderList, setGenderList] = useState([
+    { id: 1, gender: 'M' },
+    { id: 2, gender: 'F' }
+  ]);
 
   const fetchData = async () => {
     try {
       const workingModeResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWorkingMode`);
       const sportsResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getSports`);
+      const timeslotResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getTimeslot`);
 
-      const [workingModeData, sportsData] = await Promise.all([
+      const [workingModeData, sportsData, timeslotData] = await Promise.all([
         workingModeResponse,
         sportsResponse,
+        timeslotResponse
       ]);
 
       setWorkingModeList(workingModeData.data);
       setSportsList(sportsData.data);
+      setTimeslotList(timeslotData.data);
     } catch (err) {
       console.log(err);
     }
@@ -92,6 +102,7 @@ export default function MemberList() {
           },
         })
         .then((res) => {
+          console.log(res.data)
           setUserFriendList(res.data)
         })
         .catch((err) => console.log(err));
@@ -133,232 +144,309 @@ export default function MemberList() {
       .catch((err) => console.log(err));
   }
 
-  const [selectedWorkMode, setSelectedWorkMode] = useState();
+  const [selectedGender, setSelectedGender] = useState();
+  const [selectedTimeslot, setSelectedTimeslot] = useState();
   const [selectedSports, setSelectedSports] = useState();
 
-  const handleFilterMember = () => {
+
+  useEffect(() => {
     let filteredMembers = memberList;
 
-    if (selectedWorkMode !== undefined && selectedWorkMode !== null) {
-      filteredMembers = filteredMembers.filter(member => parseInt(member.workModeID) === selectedWorkMode);
+    //filter gender
+    if (selectedGender !== undefined && selectedGender !== null) {
+      filteredMembers = filteredMembers.filter(member => member.gender === selectedGender);
     }
-    
+
+    //filter timeslot
+    if (selectedTimeslot !== undefined && selectedTimeslot !== null) {
+      filteredMembers = filteredMembers.filter(member => parseInt(member.timeslotID) === selectedTimeslot);
+    }
+
+    //filter sport
     if (selectedSports !== undefined && selectedSports !== null) {
       filteredMembers = filteredMembers.filter(member => member.sportsID.split(",").map(Number).includes(selectedSports));
     }
 
     setFilterMemberList(filteredMembers)
-  };
+  }, [selectedSports, selectedGender, selectedTimeslot]);
 
   const handleCancelFilterMember = () => {
     setFilterMemberList(memberList);
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+
+      <Text style={styles.heading}>Member List</Text>
+
       <ScrollView style={styles.margincontainer}>
-        <Text style={styles.heading}>Member List Page</Text>
 
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginBottom: 20 }}>
 
-          <SelectDropdown
-            data={workingModeList}
-            onSelect={(item) => setSelectedWorkMode(item.workModeID)}
-            buttonTextAfterSelection={(selectedItem) => selectedItem.workModeName}
-            rowTextForSelection={(item) => item.workModeName}
+          <View style={{ marginBottom: 10 }}>
+            <SelectDropdown
+              data={genderList}
+              onSelect={(item) => setSelectedGender(item.gender)}
+              buttonTextAfterSelection={(selectedItem) => selectedItem.gender}
+              rowTextForSelection={(item) => item.gender}
 
-            buttonStyle={{ width: '80%', height: 50, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
-            buttonTextStyle={{ color: '#444', textAlign: 'left' }}
-            rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
-            rowTextStyle={{ color: '#444', textAlign: 'left' }}
+              buttonStyle={{ width: '80%', height: 40, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
+              buttonTextStyle={{ color: '#444', textAlign: 'left' }}
+              rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
+              rowTextStyle={{ color: '#444', textAlign: 'left' }}
 
-            defaultButtonText={'Select working mode'}
+              defaultButtonText={'Select gender'}
 
-            renderDropdownIcon={isOpened => {
-              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
-            }}
-          />
-          
-        </View>
+              renderDropdownIcon={isOpened => {
+                return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
+              }}
+            />
+          </View>
 
-        <View style={{ marginBottom: 10 }}>
-          <SelectDropdown
 
-            data={sportsList}
-            onSelect={(item) => setSelectedSports(item.sportsID)}
-            buttonTextAfterSelection={(selectedItem) => selectedItem.sportsName}
-            rowTextForSelection={(item) => item.sportsName}
+          <View style={{ marginBottom: 10 }}>
+            <SelectDropdown
+              data={timeslotList}
+              onSelect={(item) => setSelectedTimeslot(item.timeslotID)}
+              buttonTextAfterSelection={(selectedItem) => selectedItem.timeslotName}
+              rowTextForSelection={(item) => item.timeslotName}
 
-            buttonStyle={{ width: '80%', height: 50, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
-            buttonTextStyle={{ color: '#444', textAlign: 'left' }}
-            rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
-            rowTextStyle={{ color: '#444', textAlign: 'left' }}
+              buttonStyle={{ width: '80%', height: 40, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
+              buttonTextStyle={{ color: '#444', textAlign: 'left' }}
+              rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
+              rowTextStyle={{ color: '#444', textAlign: 'left' }}
 
-            defaultButtonText={'Select sports'}
+              defaultButtonText={'Select Timeslot'}
 
-            renderDropdownIcon={isOpened => {
-              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
-            }}
-          />
-        </View>
+              renderDropdownIcon={isOpened => {
+                return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
+              }}
+            />
+          </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <TouchableOpacity onPress={handleFilterMember} style={[styles.button, { backgroundColor: 'green' }]}>
-          <Text style={styles.buttonText}>Confirm</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleCancelFilterMember} style={[styles.button, { backgroundColor: 'gray' }]}>
-          <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
-        </View>
-       
+          <View style={{ marginBottom: 10 }}>
+            <SelectDropdown
+              data={sportsList}
+              onSelect={(item) => setSelectedSports(item.sportsID)}
+              buttonTextAfterSelection={(selectedItem) => selectedItem.sportsName}
+              rowTextForSelection={(item) => item.sportsName}
 
-        <Divider style={{ borderWidth: 2, borderColor: 'gray', marginBottom: 10 }} />
+              buttonStyle={{ width: '80%', height: 40, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
+              buttonTextStyle={{ color: '#444', textAlign: 'left' }}
+              rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
+              rowTextStyle={{ color: '#444', textAlign: 'left' }}
 
-        {
-          filterMemberList.map(member => {
-            const workModeName = workingModeList.find(item => item.workModeID === member.workModeID).workModeName;
+              defaultButtonText={'Select sports'}
 
-            const sportsID = member.sportsID;
-            const sportsIDArray = sportsID.split(",").map(Number);
+              renderDropdownIcon={isOpened => {
+                return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
+              }}
+            />
+          </View>
 
-            const sportsNameArray = sportsList
-              .filter((item) => sportsIDArray.includes(item.sportsID))
-              .map((item) => item.sportsName);
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity
+              onPress={handleCancelFilterMember}
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: 90,
+                backgroundColor: 'grey',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 8
+              }}
+            >
+              <MaterialIcons name="cancel" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
 
-            return (
-              <Card style={styles.card} key={member.userID}>
+          <Divider style={{ borderWidth: 2, borderColor: 'gray', marginBottom: 10 }} />
 
-                <View style={styles.row}>
-                  <View style={styles.column}>
-                    <Image source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage} style={styles.logo} />
+          {
+            filterMemberList.map(member => {
+              const workModeName = workingModeList.find(item => item.workModeID === member.workModeID).workModeName;
 
-                  </View>
-                  <View style={styles.column}>
+              const sportsID = member.sportsID;
+              const sportsIDArray = sportsID.split(",").map(Number);
 
-                    <TextInput
-                      style={styles.input}
-                      value={member.loginName}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={member.gender}
-                    />
+              const sportsNameArray = sportsList
+                .filter((item) => sportsIDArray.includes(item.sportsID))
+                .map((item) => item.sportsName);
 
-                    <TextInput
-                      style={styles.input}
-                      value={member.birthday}
-                    />
-
-                  </View>
-                </View>
-
-                <View style={{
-                  flexDirection: 'row',
+              return (
+                <Card style={{
+                  height: 'auto',
+                  backgroundColor: '#F1F1F1',
+                  borderColor: 'grey',
+                  borderWidth: 1.5,
                   justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                  <AntDesign name="message1" size={24} color="grey" />
-                  <TextInput
-                    style={styles.messageInput}
-                    value={member.userIntro ?? "There is no message."}
-                    multiline={true}
-                  />
+                  padding: 10,
+                  marginBottom: 10,
+                }} key={member.userID}>
 
-                </View>
+                  <View style={{ flexDirection: 'row' }}>
 
-                <Text style={styles.label} >Working Mode</Text>
+                    {/* left */}
+                    <View style={{ flex: 1 }}>
+                      <Image source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage} style={styles.logo} />
+                    </View>
 
-                <View style={[styles.button, { backgroundColor: '#728C69' }]}>
-                  <Text style={styles.buttonText}>{workModeName}</Text>
-                </View>
+                    {/* right */}
+                    <View style={{ flex: 1.5 }}>
+                      <View style={{ flexDirection: 'row' }}>
+                        <TextInput
+                          style={styles.input}
+                          value={member.loginName}
+                        />
 
-                <Text style={styles.label} >Favourite Sports</Text>
+                        {member.gender !== 'NA' && (
+                          <View
+                            style={{
+                              width: 35,
+                              height: 35,
+                              borderRadius: 90,
+                              backgroundColor: member.gender === 'F' ? 'pink' : '#1E90FF',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              marginRight: 10
+                            }}
+                          >
+                            {member.gender === 'F' ? (
+                              <Ionicons name="female" size={24} color="white" />
+                            ) : (
+                              <Ionicons name="male" size={24} color="white" />
+                            )}
+                          </View>
+                        )}
 
-                {sportsNameArray.map((item, index) => (
-                  <View key={index} style={[styles.button, { backgroundColor: '#728C69' }]}>
-                    <Text style={styles.buttonText}>{item}</Text>
+                        <View
+                          style={{
+                            width: 35,
+                            height: 35,
+                            borderRadius: 90,
+                            backgroundColor: member.timeslotID === 1 ? 'orange' : member.timeslotID === 2 ? '#EED202' : member.timeslotID === 3 ? '#FFAE42' : '#30106B',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {member.timeslotID === 1 ? (
+                            <Feather name="sunrise" size={24} color="white" />
+                          ) : null}
+
+                          {member.timeslotID === 2 ? (
+                            <Feather name="sun" size={24} color="white" />
+                          ) : null}
+
+                          {member.timeslotID === 3 ? (
+                            <Feather name="sunset" size={24} color="white" />
+                          ) : null}
+
+                          {member.timeslotID === 4 ? (
+                            <Feather name="moon" size={24} color="white" />
+                          ) : null}
+                        </View>
+
+                      </View>
+
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+                        {sportsNameArray.map((item, index) => (
+                          <View key={index} style={{
+                            height: 30,
+                            borderColor: 'grey',
+                            borderWidth: 1.2,
+                            marginBottom: 10,
+                            paddingHorizontal: 5,
+                            borderRadius: 30,
+                            marginRight: 5,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          }}>
+                            <Text style={{ fontSize: 12, color: 'grey' }}>{item}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
                   </View>
-                ))}
 
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <TextInput
+                      style={styles.messageInput}
+                      value={member.userIntro ?? "There is no message."}
+                      multiline={true}
+                      editable={false}
+                    />
+                  </View>
 
-                {values.userID !== member.userID && !userFriendList.some((friend) => friend.acceptUserID === member.userID)
-                  && (
-                    <TouchableOpacity onPress={() => handleAddFriend(member.userID)} style={[styles.button, { backgroundColor: 'green' }]}>
-                      <Text style={styles.buttonText}>Add Friend</Text>
-                    </TouchableOpacity>
-                  )
-                }
+                  {values.userID !== member.userID && !userFriendList.some((friend) => friend.acceptUserID === member.userID)
+                    && (
+                      <TouchableOpacity onPress={() => handleAddFriend(member.userID)} style={[styles.button, { backgroundColor: 'green' }]}>
+                        <Text style={styles.buttonText}>Add Friend</Text>
+                      </TouchableOpacity>
+                    )
+                  }
 
-                {values.userID !== member.userID && userFriendList.some((friend) => friend.acceptUserID === member.userID && friend.isAccept === "0")
-                  && (
-                    <TouchableOpacity style={[styles.button, { backgroundColor: 'gray' }]}>
-                      <Text style={styles.buttonText}>Requested</Text>
-                    </TouchableOpacity>
-                  )}
+                  {values.userID !== member.userID && userFriendList.some((friend) => friend.acceptUserID === member.userID && friend.isAccept === "0")
+                    && (
+                      <TouchableOpacity style={[styles.button, { backgroundColor: 'gray' }]}>
+                        <Text style={styles.buttonText}>Requested</Text>
+                      </TouchableOpacity>
+                    )}
 
-                {values.userID !== member.userID && userFriendList.some((friend) => friend.acceptUserID === member.userID && friend.isAccept === "1")
-                  && (
-                    <TouchableOpacity style={[styles.button, { backgroundColor: 'gray' }]}>
-                      <Text style={styles.buttonText}>Friend</Text>
-                    </TouchableOpacity>
-                  )}
+                  {values.userID !== member.userID && userFriendList.some((friend) => friend.acceptUserID === member.userID && friend.isAccept === "1")
+                    && (
+                      <TouchableOpacity style={[styles.button, { backgroundColor: 'gray' }]}>
+                        <Text style={styles.buttonText}>Friend</Text>
+                      </TouchableOpacity>
+                    )}
 
-              </Card>
-            );
-          })
+                </Card>
+              );
+            })
 
-        }
+          }
 
+        </View>
       </ScrollView>
+
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: {
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginBottom: 50
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
-  },
-  card: {
-    height: 'auto',
-    padding: 16,
-    backgroundColor: 'white',
-    marginBottom: 10
+    marginTop: 40,
+    marginBottom: 10,
   },
   input: {
-    height: 40,
-    marginBottom: 10,
-    paddingHorizontal: 8,
-    backgroundColor: 'lightgray',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  column: {
-    flex: 1
+    fontSize: 18,
+    color: 'grey',
+    fontWeight: 'bold',
+    margin: 5,
+    paddingHorizontal: 4,
   },
   logo: {
     width: 100,
     height: 100,
     marginBottom: 8,
+    borderRadius: 90,
   },
   button: {
     backgroundColor: 'grey',
@@ -371,35 +459,27 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     borderRadius: 5,
-    margin: 10,
+    marginTop: 10,
+    marginBottom: 10,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
   },
-  label: {
-    fontSize: 18,
+  messageInput: {
+    flex: 1,
+    height: 'auto',
+    width: '80%',
+    borderColor: '#ccc',
     color: 'grey',
-    fontWeight: 'bold',
-    marginBottom: 8,
+    borderWidth: 1.3,
+    padding: 5
   },
   bottomBarContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-  },
-  messageInput: {
-    flex: 1,
-    height: 'auto',
-    borderWidth: 2,
-    borderColor: '#ccc',
-    paddingHorizontal: 5,
-    color: "grey",
-    marginTop: 10,
-    marginBottom: 10,
-    marginRight: 5,
-    marginLeft: 5,
   },
 });

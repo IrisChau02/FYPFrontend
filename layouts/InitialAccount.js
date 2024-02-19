@@ -11,11 +11,13 @@ export default function InitialAccount({ navigation, route }) {
     isDistrict: true,
     isWorkingMode: false,
     isSport: false,
+    isTimeslot: false,
     loginName: undefined,
     password: undefined,
     workModeID: undefined,
     districtID: undefined,
     sportsID: [],
+    timeslotID: undefined,
   })
 
   const {
@@ -44,22 +46,26 @@ export default function InitialAccount({ navigation, route }) {
   const [districtList, setDistrictList] = useState([]);
   const [workingModeList, setWorkingModeList] = useState([]);
   const [sportsList, setSportsList] = useState([]);
+  const [timeslotList, setTimeslotList] = useState([]);
 
   const fetchData = async () => {
     try {
       const districtResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getDistrict`);
       const workingModeResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWorkingMode`);
       const sportsResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getSports`);
+      const timeslotResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getTimeslot`);
 
-      const [districtData, workingModeData, sportsData] = await Promise.all([
+      const [districtData, workingModeData, sportsData, timeslotData] = await Promise.all([
         districtResponse,
         workingModeResponse,
         sportsResponse,
+        timeslotResponse
       ]);
 
       setDistrictList(districtData.data);
       setWorkingModeList(workingModeData.data);
       setSportsList(sportsData.data);
+      setTimeslotList(timeslotData.data);
     } catch (err) {
       console.log(err);
     }
@@ -81,34 +87,45 @@ export default function InitialAccount({ navigation, route }) {
       setValues({
         ...values,
         isWorkingMode: false,
+        isTimeslot: true
+      })
+    } else if (values.isTimeslot) {
+      setValues({
+        ...values,
+        isTimeslot: false,
         isSport: true
       })
     }
-
 
   };
 
   const handleBackButton = () => {
     scrollViewRef.current.scrollTo({ y: 0, animated: true });
-    if (values.isWorkingMode) {
+    if (values.isSport) {
+      setValues({
+        ...values,
+        isSport: false,
+        isTimeslot: true
+      })
+    } else if (values.isTimeslot) {
+      setValues({
+        ...values,
+        isTimeslot: false,
+        isWorkingMode: true
+      })
+    } else if (values.isWorkingMode) {
       setValues({
         ...values,
         isWorkingMode: false,
         isDistrict: true
-      })
-    } else if (values.isSport) {
-      setValues({
-        ...values,
-        isSport: false,
-        isWorkingMode: true
       })
     }
   };
 
 
   const handleConfirmButton = () => {
-    if (!values.districtID || !values.workModeID || !values.sportsID) {
-      alert("District, Work Mode, Favourite Sport cannot be empty.")
+    if (!values.districtID || !values.workModeID || !values.sportsID || !values.timeslotID) {
+      alert("District, Work Mode, Favourite Sport, Timeslot cannot be empty.")
     } else {
 
       axios
@@ -217,6 +234,7 @@ export default function InitialAccount({ navigation, route }) {
 
         {values.isDistrict ? (<Text style={styles.label}>Select Your District</Text>) : null}
         {values.isWorkingMode ? (<Text style={styles.label}>Select Your Working Mode</Text>) : null}
+        {values.isTimeslot ? (<Text style={styles.label}>Select Your Favourite Timeslot</Text>) : null}
         {values.isSport ? (<Text style={styles.label}>Select Your Favourite Sports</Text>) : null}
         {values.isSport ? (<Text style={{ color: 'gray', fontSize: 12, textAlign: 'center' }}>(Max can choose 3)</Text>) : null}
 
@@ -251,18 +269,43 @@ export default function InitialAccount({ navigation, route }) {
         ) : null}
 
 
+        {values.isTimeslot ? (
+          timeslotList.map((item) => (
+            <TouchableOpacity
+              key={item.timeslotID}
+              onPress={() =>
+                setValues({
+                  ...values,
+                  timeslotID: item.timeslotID,
+                })
+              }
+            >
+              <View
+                style={
+                  values.timeslotID === item.timeslotID
+                    ? styles.cardContainerSelected
+                    : styles.cardContainer
+                }
+              >
+                <Text style={styles.textInfo}>{item.timeslotName}</Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : null}
+
+
         {values.isSport ? (<SportsButton buttonText="Individual Sports" sportsModeID={1} />) : null}
         {values.isSport ? (<SportsButton buttonText="Team Sports" sportsModeID={2} />) : null}
 
 
         <View style={{ flexDirection: 'row' }}>
-          {values.isWorkingMode || values.isSport ? (
+          {values.isWorkingMode || values.isTimeslot || values.isSport ? (
             <TouchableOpacity style={[styles.greenButton, { marginRight: 'auto' }]} onPress={handleBackButton}>
               <Text style={styles.whiteButtonText}>Back</Text>
             </TouchableOpacity>
           ) : null}
 
-          {values.isDistrict || values.isWorkingMode ? (
+          {values.isDistrict || values.isWorkingMode || values.isTimeslot ? (
             <TouchableOpacity style={[styles.greenButton, { marginLeft: 'auto' }]} onPress={handleNextButton}>
               <Text style={styles.whiteButtonText}>Next</Text>
             </TouchableOpacity>
