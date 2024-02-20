@@ -17,7 +17,7 @@ import { Feather } from '@expo/vector-icons';
 import BottomBar from "./BottomBar";
 import { setCurrentUserID } from './CurrentUserID';
 
-export default function Home({ navigation, route }) {
+export default function HomeOther({ navigation, route }) {
 
   const getFreshModel = () => ({
     userID: undefined,
@@ -48,63 +48,19 @@ export default function Home({ navigation, route }) {
     handleInputChange
   } = useForm(getFreshModel);
 
-  const [forceUpdate, setForceUpdate] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setForceUpdate(true);
-      fetchUserData();
-      getWaitingFriend();
-    });
-
-    return unsubscribe;
-  }, [navigation, route]);
-
-  useEffect(() => {
-    if (forceUpdate) {
-      console.log('Home component has been rerendered');
-      setIsShow(false); //set the dialog as close
-      getWaitingFriend();
-      setForceUpdate(false); // Reset forceUpdate to false after the rerender
-    }
-  }, [forceUpdate]);
-
   const PlaceholderImage = require('../assets/background.png');
   const defaultLogoImage = require('../assets/defaultUserLogo.png');
 
   useEffect(() => {
     if (route && route.params) {
-      const { loginName, password } = route.params;
+      const { userID } = route.params;
 
       setValues({
         ...values,
-        loginName: loginName,
-        password: password
+        userID: userID
       })
     }
   }, [route]);
-
-  const [waitingFriendList, setWaitingFriendList] = useState([]);
-
-  useEffect(() => {
-    if (values.userID) {
-      getWaitingFriend()
-    }
-  }, [values.userID]);
-
-
-  const getWaitingFriend = () => {
-    axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWaitingFriendList`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-            setWaitingFriendList(res.data); // Update the waitingFriendList state
-        })
-        .catch((err) => console.log(err));
-  };
 
   const [districtList, setDistrictList] = useState([]);
   const [workingModeList, setWorkingModeList] = useState([]);
@@ -132,28 +88,23 @@ export default function Home({ navigation, route }) {
 
   useEffect(() => {
     fetchData();
-  }, [forceUpdate]);
+  }, []);
 
   useEffect(() => {
     fetchUserData();
-  }, [values.loginName, values.password, districtList, workingModeList, sportsList]); //values.loginName, values.password, values.userLogo
-
+  }, [values.userID, values.password, districtList, workingModeList, sportsList]);
 
   const fetchUserData = async () => {
-    if (values.loginName !== undefined && values.password !== undefined && districtList.length !== 0 && workingModeList.length !== 0 && sportsList.length !== 0) {
+    if (values.userID !== undefined && districtList.length !== 0 && workingModeList.length !== 0 && sportsList.length !== 0) {
 
       axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserData`, {
-          params: {
-            loginName: values.loginName,
-            password: values.password,
-          },
-        })
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+        params: {
+          userID: values.userID,
+        },
+      })
         .then((res) => {
-          if (res.data === 'failed') {
-            //alert('No existing record');
-          } else {
-
+          if (res.data !== 'failed') {
             const selectedDistrict = districtList.find(item => item.districtID === res.data[0].districtID);
             const selectedworkMode = workingModeList.find(item => item.workModeID === res.data[0].workModeID);
 
@@ -169,6 +120,7 @@ export default function Home({ navigation, route }) {
             setValues({
               ...values,
               userID: res.data[0].userID,
+              loginName: res.data[0].loginName,
               firstName: res.data[0].firstName,
               lastName: res.data[0].lastName,
               formatbirthday: res.data[0].birthday,
@@ -185,20 +137,11 @@ export default function Home({ navigation, route }) {
               sportsName: sportsNameArray,
               guildName: res.data[0].guildName,
             })
-
           }
         })
         .catch((err) => console.log(err));
     }
   };
-
-
-  const [isShow, setIsShow] = useState(false);
-
-  const hideModal = () => {
-    setIsShow(false);
-  };
-
 
   return (
     <View style={{ flex: 1 }}>
@@ -211,92 +154,6 @@ export default function Home({ navigation, route }) {
           marginTop: 30,
           marginBottom: 16,
         }}>
-
-          {/*
-          <TouchableOpacity onPress={() => setIsShow(true)}>
-            <AntDesign name="setting" size={25} color="grey" style={{ alignSelf: 'flex-end', padding: 2, marginBottom: 2 }} />
-          </TouchableOpacity>
-          */}
-
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isShow}
-          >
-            <Pressable
-              onPress={hideModal}
-              style={{
-                flex: 1,
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              }}
-            >
-              <View
-                style={{
-                  width: '100%',
-                  height: 400,
-                  backgroundColor: 'white',
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  padding: 20,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ProfileLogoUpdate', { props: values })}
-                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
-                >
-                  <AntDesign name="camera" size={24} color="grey" />
-                  <Text style={styles.label}> Change Icon</Text>
-                </TouchableOpacity>
-
-                <Divider style={{ margin: 10 }} />
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ProfileDetail', { props: values })}
-                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
-                >
-                  <AntDesign name="form" size={24} color="grey" />
-                  <Text style={styles.label}> Edit Profile</Text>
-                </TouchableOpacity>
-
-                <Divider style={{ margin: 10 }} />
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ProfileSportsUpdate', { props: values })}
-                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
-                >
-                  <AntDesign name="heart" size={24} color="grey" />
-                  <Text style={styles.label}> Change Favourite Sports</Text>
-                </TouchableOpacity>
-
-                <Divider style={{ margin: 10 }} />
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ProfileWMUpdate', { props: values })}
-                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
-                >
-                  <AntDesign name="idcard" size={24} color="grey" />
-                  <Text style={styles.label}> Change Working Mode</Text>
-                </TouchableOpacity>
-
-                <Divider style={{ margin: 10 }} />
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ProfileTimeSlotUpdate', { props: values })}
-                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
-                >
-                  <Feather name="sun" size={24} color="grey" />
-                  <Text style={styles.label}> Change Timeslot</Text>
-                </TouchableOpacity>
-
-                <Divider style={{ margin: 10 }} />
-
-              </View>
-            </Pressable>
-          </Modal>
-
 
           <Card style={{
             height: 'auto',
@@ -312,10 +169,6 @@ export default function Home({ navigation, route }) {
                   style={styles.logo}
                 />
               </View>
-
-              <TouchableOpacity onPress={() => setIsShow(true)} style={{ position: 'absolute', top: 0, right: 0 }}>
-                <AntDesign name="setting" size={25} color="grey" />
-              </TouchableOpacity>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
@@ -392,9 +245,16 @@ export default function Home({ navigation, route }) {
             <Divider style={{ margin: 10 }} />
 
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <AntDesign name="idcard" size={24} color="grey" />
+              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.workModeName}</Text>
+            </View>
+
+            <Divider style={{ margin: 10 }} />
+
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <TextInput
                 style={styles.messageInput}
-                placeholder="You do not input any message."
+                placeholder="He/She does not input any message."
                 value={values.userIntro}
                 multiline={true}
                 editable={false}
@@ -403,57 +263,9 @@ export default function Home({ navigation, route }) {
 
           </Card>
 
-          <Card style={{
-            height: 'auto',
-            padding: 5,
-            marginTop: 20,
-            backgroundColor: '#F1F1F1',
-            justifyContent: 'center',
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-              <AntDesign name="idcard" size={24} color="grey" />
-              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.workModeName}</Text>
-            </View>
-          </Card>
-
         </View>
 
       </View>
-
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View
-          style={{
-            padding: 10,
-            backgroundColor: '#F1F1F1',
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            flex: 1,
-          }}
-        >
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate('FriendList')}
-            style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
-          >
-            <AntDesign name="team" size={24} color="grey" />
-            <Text style={styles.label}> Friend List </Text>
-
-            {waitingFriendList.length !== 0 && (
-              <View style={{ backgroundColor: '#B9020A', padding: 5, borderRadius: 30 }}>
-                <MaterialCommunityIcons name="alarm-plus" size={24} color="#FFF" />
-              </View>
-            )}
-
-            <View style={{ marginLeft: 'auto' }}>
-              <AntDesign name="right" size={24} color="grey" />
-            </View>
-          </TouchableOpacity>
-
-          <Divider style={{ margin: 10 }} />
-
-
-        </View>
-      </ScrollView>
 
       <View style={styles.bottomBarContainer}>
         <BottomBar navigation={navigation} />

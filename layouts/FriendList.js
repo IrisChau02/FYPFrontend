@@ -12,6 +12,8 @@ import { Divider } from 'react-native-paper';
 
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 export default function FriendList({ navigation, route }) {
@@ -29,6 +31,25 @@ export default function FriendList({ navigation, route }) {
   } = useForm(getFreshModel);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
+  const defaultLogoImage = require('../assets/defaultUserLogo.png');
+
+  const [forceUpdate, setForceUpdate] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setForceUpdate(true);
+      fetchData();
+    });
+
+    return unsubscribe;
+  }, [navigation, route]);
+
+  useEffect(() => {
+    if (forceUpdate) {
+      fetchData();
+      setForceUpdate(false); // Reset forceUpdate to false after the rerender
+    }
+  }, [forceUpdate]);
 
   useEffect(() => {
     setValues({
@@ -38,100 +59,204 @@ export default function FriendList({ navigation, route }) {
   }, [CurrentUserID]);
 
   const [waitingFriendList, setWaitingFriendList] = useState([]);
-
-  useEffect(() => {
-    if (values.userID) {
-      axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWaitingFriendList`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-          if (res.data.length !== 0) {
-            setWaitingFriendList(res.data); // Update the waitingFriendList state
-          }
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [values.userID]);
-
-
   const [friendList, setFriendList] = useState([]);
 
   useEffect(() => {
     if (values.userID) {
-      axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getFriendListWithDetail`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-          if (res.data.length !== 0) {
-            setFriendList(res.data);
-          }
-        })
-        .catch((err) => console.log(err));
+      fetchData()
     }
   }, [values.userID]);
 
+  const fetchData = async () => {
+    try {
+      const WaitingFriendListResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWaitingFriendList`, {
+        params: {
+          userID: values.userID,
+        },
+      });
+      const FriendListResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getFriendListWithDetail`, {
+        params: {
+          userID: values.userID,
+        },
+      });
 
+      const FriendRequestListResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getRequestFriendListWithDetail`, {
+        params: {
+          userID: values.userID,
+        },
+      });
+
+      const [WaitingFriendListData, FriendListData, FriendRequestListData] = await Promise.all([
+        WaitingFriendListResponse,
+        FriendListResponse,
+        FriendRequestListResponse,
+      ]);
+
+      const combinedFriendArray = FriendListData.data.concat(FriendRequestListData.data);
+
+      setWaitingFriendList(WaitingFriendListData.data);
+      setFriendList(combinedFriendArray);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const [sportsList, setSportsList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getSports`)
+      .then((res) => {
+        if (res.data) {
+          setSportsList(res.data)
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+
+      <Text style={styles.heading}>Friend List Page</Text>
+
       <ScrollView style={styles.margincontainer}>
-        <Text style={styles.heading}>Friend List Page</Text>
-
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('WaitingFriendList')}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <View style={{ flex: 1, alignItems: 'center' }}>
-              <Text style={styles.buttonText}>Requested</Text>
-            </View>
-            {waitingFriendList.length !== 0 && (
-              <View style={{ backgroundColor: 'red', padding: 5, borderRadius: 30, marginTop: 1, marginBottom: 1, borderWidth: 2, borderColor: 'white' }}>
-                <MaterialCommunityIcons name="alarm-plus" size={24} color="#FFF" />
+        <View style={{ marginBottom: 70 }}>
+          <TouchableOpacity style={{
+            backgroundColor: '#F9F6F2',
+            borderRadius: 30,
+            padding: 10,
+            marginBottom: 16,
+            borderColor: 'gray',
+            borderWidth: 2,
+          }} onPress={() => navigation.navigate('WaitingFriendList')}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ flex: 1, alignItems: 'center' }}>
+                <Text style={{ fontSize: 16, marginBottom: 4, textAlign: 'center', color: 'grey', }}>Waiting List</Text>
               </View>
-            )}
-          </View>
-        </TouchableOpacity>
 
-
-        {
-          friendList.map(member => {
-        
-            return (
-              <Card style={styles.card} key={member.userID}>
-                <View style={styles.row}>
-                  <View style={styles.column}>
-                    <Image source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage} style={styles.logo} />
-
-                  </View>
-                  <View style={styles.column}>
-
-                    <TextInput
-                      style={styles.input}
-                      value={member.loginName}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={member.gender}
-                    />
-
-                    <TextInput
-                      style={styles.input}
-                      value={member.birthday}
-                    />
-
-                  </View>
+              {waitingFriendList.length !== 0 && (
+                <View style={{ backgroundColor: '#B9020A', padding: 5, borderRadius: 30 }}>
+                  <MaterialCommunityIcons name="alarm-plus" size={24} color="#FFF" />
                 </View>
+              )}
+            </View>
+          </TouchableOpacity>
 
-              </Card>
-            );
-          })
-        }
 
+          {
+            friendList.map(member => {
+              const sportsID = member.sportsID;
+              const sportsIDArray = sportsID.split(",").map(Number);
+
+              const sportsNameArray = sportsList
+                .filter((item) => sportsIDArray.includes(item.sportsID))
+                .map((item) => item.sportsName);
+
+              return (
+                <Card style={styles.card} key={member.userID}>
+
+                  <View style={{ flexDirection: 'row' }}>
+
+                    {/* left */}
+                    <View style={{ flex: 1 }}>
+                      <TouchableOpacity onPress={() => navigation.navigate('HomeOther', { userID: member.userID })}>
+                        <Image source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage} style={styles.logo} />
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* right */}
+                    <View style={{ flex: 1.5 }}>
+                      <View style={{ flexDirection: 'row' }}>
+
+                        <TextInput
+                          style={styles.input}
+                          value={member.loginName}
+                        />
+
+                        {member.gender !== 'NA' && (
+                          <View
+                            style={{
+                              width: 35,
+                              height: 35,
+                              borderRadius: 90,
+                              backgroundColor: member.gender === 'F' ? 'pink' : '#1E90FF',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              marginRight: 10
+                            }}
+                          >
+                            {member.gender === 'F' ? (
+                              <Ionicons name="female" size={24} color="white" />
+                            ) : (
+                              <Ionicons name="male" size={24} color="white" />
+                            )}
+                          </View>
+                        )}
+
+                        <View
+                          style={{
+                            width: 35,
+                            height: 35,
+                            borderRadius: 90,
+                            backgroundColor: member.timeslotID === 1 ? 'orange' : member.timeslotID === 2 ? '#EED202' : member.timeslotID === 3 ? '#FFAE42' : '#30106B',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {member.timeslotID === 1 ? (
+                            <Feather name="sunrise" size={24} color="white" />
+                          ) : null}
+
+                          {member.timeslotID === 2 ? (
+                            <Feather name="sun" size={24} color="white" />
+                          ) : null}
+
+                          {member.timeslotID === 3 ? (
+                            <Feather name="sunset" size={24} color="white" />
+                          ) : null}
+
+                          {member.timeslotID === 4 ? (
+                            <Feather name="moon" size={24} color="white" />
+                          ) : null}
+                        </View>
+
+                      </View>
+
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+                        {sportsNameArray.map((item, index) => (
+                          <View key={index} style={{
+                            height: 30,
+                            borderColor: 'grey',
+                            borderWidth: 1.2,
+                            marginBottom: 10,
+                            paddingHorizontal: 5,
+                            borderRadius: 30,
+                            marginRight: 5,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          }}>
+                            <Text style={{ fontSize: 12, color: 'grey' }}>{item}</Text>
+                          </View>
+                        ))}
+                      </View>
+
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <TextInput
+                      style={styles.messageInput}
+                      value={member.userIntro ?? "There is no message."}
+                      multiline={true}
+                      editable={false}
+                    />
+                  </View>
+
+                </Card>
+              );
+            })
+          }
+        </View>
       </ScrollView>
       <View style={styles.bottomBarContainer}>
         <BottomBar navigation={navigation} />
@@ -141,48 +266,42 @@ export default function FriendList({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: {
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   card: {
     height: 'auto',
-    padding: 16,
-    backgroundColor: 'white',
-    marginBottom: 10
+    backgroundColor: '#F1F1F1',
+    borderColor: 'grey',
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    padding: 10,
+    marginBottom: 10,
   },
   input: {
-    height: 40,
-    marginBottom: 10,
-    paddingHorizontal: 8,
-    backgroundColor: 'lightgray',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  column: {
-    flex: 1
+    fontSize: 18,
+    color: 'grey',
+    fontWeight: 'bold',
+    margin: 5,
+    paddingHorizontal: 4,
   },
   logo: {
     width: 100,
     height: 100,
     marginBottom: 8,
+    borderRadius: 90,
   },
   button: {
     backgroundColor: 'grey',
@@ -197,28 +316,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-  label: {
-    fontSize: 18,
+  messageInput: {
+    flex: 1,
+    height: 'auto',
+    width: '80%',
+    borderColor: '#ccc',
     color: 'grey',
-    fontWeight: 'bold',
-    marginBottom: 8,
+    borderWidth: 1.3,
+    padding: 5
   },
   bottomBarContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-  },
-  messageInput: {
-    flex: 1,
-    height: 'auto',
-    borderWidth: 2,
-    borderColor: '#ccc',
-    paddingHorizontal: 5,
-    color: "grey",
-    marginTop: 10,
-    marginBottom: 10,
-    marginRight: 5,
-    marginLeft: 5,
   },
 });

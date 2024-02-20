@@ -10,8 +10,8 @@ import { CurrentUserID } from './CurrentUserID';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import { Divider } from 'react-native-paper';
 
-import { AntDesign } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 export default function WaitingFriendList({ navigation, route }) {
@@ -29,6 +29,7 @@ export default function WaitingFriendList({ navigation, route }) {
   } = useForm(getFreshModel);
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
+  const defaultLogoImage = require('../assets/defaultUserLogo.png');
 
   useEffect(() => {
     setValues({
@@ -74,10 +75,9 @@ export default function WaitingFriendList({ navigation, route }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Waiting Friend List</Text>
       <ScrollView style={styles.margincontainer}>
-        <Text style={styles.heading}>Waiting Friend List Page</Text>
 
         {
           waitingFriendList.map(member => {
@@ -85,33 +85,87 @@ export default function WaitingFriendList({ navigation, route }) {
 
             return (
               <Card style={styles.card} key={member.userID}>
-                <View style={styles.row}>
-                  <View style={styles.column}>
-                    <Image source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage} style={styles.logo} />
+                <View style={{ flexDirection: 'row' }}>
 
+                  {/* left */}
+                  <View style={{ flex: 1 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('HomeOther', { userID: member.userID })}>
+                      <Image
+                        source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage}
+                        style={styles.logo}
+                      />
+                    </TouchableOpacity>
                   </View>
-                  <View style={styles.column}>
 
-                    <TextInput
-                      style={styles.input}
-                      value={member.loginName}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={member.gender}
-                    />
 
-                    <TextInput
-                      style={styles.input}
-                      value={member.birthday}
-                    />
+                  {/* center */}
+                  <View style={{ flex: 2 }}>
 
+                    <View style={{ flexDirection: 'row' }}>
+                      <TextInput
+                        style={styles.input}
+                        value={member.loginName}
+                      />
+
+                      {member.gender !== 'NA' && (
+                        <View
+                          style={{
+                            width: 35,
+                            height: 35,
+                            borderRadius: 90,
+                            backgroundColor: member.gender === 'F' ? 'pink' : '#1E90FF',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 10
+                          }}
+                        >
+                          {member.gender === 'F' ? (
+                            <Ionicons name="female" size={24} color="white" />
+                          ) : (
+                            <Ionicons name="male" size={24} color="white" />
+                          )}
+                        </View>
+                      )}
+
+                      <View
+                        style={{
+                          width: 35,
+                          height: 35,
+                          borderRadius: 90,
+                          backgroundColor: member.timeslotID === 1 ? 'orange' : member.timeslotID === 2 ? '#EED202' : member.timeslotID === 3 ? '#FFAE42' : '#30106B',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {member.timeslotID === 1 ? (
+                          <Feather name="sunrise" size={24} color="white" />
+                        ) : null}
+
+                        {member.timeslotID === 2 ? (
+                          <Feather name="sun" size={24} color="white" />
+                        ) : null}
+
+                        {member.timeslotID === 3 ? (
+                          <Feather name="sunset" size={24} color="white" />
+                        ) : null}
+
+                        {member.timeslotID === 4 ? (
+                          <Feather name="moon" size={24} color="white" />
+                        ) : null}
+                      </View>
+
+                    </View>
+                  </View>
+
+                  {/* right */}
+                  <View style={{ flex: 1 }}>
+                    <TouchableOpacity onPress={() => handleAddFriend(member.userID)} style={styles.button}>
+                      <Text style={styles.buttonText}>Accept</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
 
-                <TouchableOpacity onPress={() => handleAddFriend(member.userID)} style={styles.button}>
-                  <Text style={styles.buttonText}>Add Friend</Text>
-                </TouchableOpacity>
+
 
               </Card>
             );
@@ -127,48 +181,42 @@ export default function WaitingFriendList({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: {
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   card: {
     height: 'auto',
-    padding: 16,
-    backgroundColor: 'white',
-    marginBottom: 10
+    backgroundColor: '#F1F1F1',
+    borderColor: 'grey',
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    padding: 10,
+    marginBottom: 10,
   },
   input: {
-    height: 40,
-    marginBottom: 10,
-    paddingHorizontal: 8,
-    backgroundColor: 'lightgray',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  column: {
-    flex: 1
+    fontSize: 18,
+    color: 'grey',
+    fontWeight: 'bold',
+    margin: 5,
+    paddingHorizontal: 4,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 70,
+    height: 70,
     marginBottom: 8,
+    borderRadius: 90,
   },
   button: {
     backgroundColor: 'green',
@@ -183,28 +231,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-  label: {
-    fontSize: 18,
-    color: 'grey',
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
   bottomBarContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-  },
-  messageInput: {
-    flex: 1,
-    height: 'auto',
-    borderWidth: 2,
-    borderColor: '#ccc',
-    paddingHorizontal: 5,
-    color: "grey",
-    marginTop: 10,
-    marginBottom: 10,
-    marginRight: 5,
-    marginLeft: 5,
   },
 });

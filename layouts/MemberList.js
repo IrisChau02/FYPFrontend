@@ -77,37 +77,40 @@ export default function MemberList({ navigation, route }) {
 
   useEffect(() => {
     if (values.userID) {
-      axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-          if (res.data === 'failed') {
-          } else {
-            setValues({
-              ...values,
-              userID: res.data[0].userID,
-              guildName: res.data[0].guildName,
-            })
-          }
-        })
-        .catch((err) => console.log(err));
-
-      axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserFriendList`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-          console.log(res.data)
-          setUserFriendList(res.data)
-        })
-        .catch((err) => console.log(err));
+      fetch_User_Friend_Data()
     }
   }, [values.userID]);
+
+  const fetch_User_Friend_Data = () => {
+    axios
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+        params: {
+          userID: values.userID,
+        },
+      })
+      .then((res) => {
+        if (res.data === 'failed') {
+        } else {
+          setValues({
+            ...values,
+            userID: res.data[0].userID,
+            guildName: res.data[0].guildName,
+          })
+        }
+      })
+      .catch((err) => console.log(err));
+
+    axios
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserFriendList`, {
+        params: {
+          userID: values.userID,
+        },
+      })
+      .then((res) => {
+        setUserFriendList(res.data)
+      })
+      .catch((err) => console.log(err));
+  }
 
   const [memberList, setMemberList] = useState([]);
   const [filterMemberList, setFilterMemberList] = useState([]);
@@ -137,12 +140,14 @@ export default function MemberList({ navigation, route }) {
       .then((res) => {
         if (res.data == "added") {
           alert("added")
+          fetch_User_Friend_Data()
         } else {
           alert("fail to add")
         }
       })
       .catch((err) => console.log(err));
   }
+
 
   const [selectedGender, setSelectedGender] = useState();
   const [selectedTimeslot, setSelectedTimeslot] = useState();
@@ -379,7 +384,7 @@ export default function MemberList({ navigation, route }) {
                     />
                   </View>
 
-                  {values.userID !== member.userID && !userFriendList.some((friend) => friend.acceptUserID === member.userID)
+                  {values.userID !== member.userID && !userFriendList.some((friend) => friend.requestUserID === member.userID || friend.acceptUserID === member.userID)
                     && (
                       <TouchableOpacity onPress={() => handleAddFriend(member.userID)} style={[styles.button, { backgroundColor: 'green' }]}>
                         <Text style={styles.buttonText}>Add Friend</Text>
@@ -387,16 +392,23 @@ export default function MemberList({ navigation, route }) {
                     )
                   }
 
-                  {values.userID !== member.userID && userFriendList.some((friend) => friend.acceptUserID === member.userID && friend.isAccept === "0")
+                  {values.userID !== member.userID && userFriendList.some((friend) => friend.requestUserID === values.userID && friend.acceptUserID === member.userID && friend.isAccept === "0")
                     && (
-                      <TouchableOpacity style={[styles.button, { backgroundColor: 'gray' }]}>
+                      <TouchableOpacity style={[styles.button, { backgroundColor: 'grey' }]}>
                         <Text style={styles.buttonText}>Requested</Text>
                       </TouchableOpacity>
                     )}
 
-                  {values.userID !== member.userID && userFriendList.some((friend) => friend.acceptUserID === member.userID && friend.isAccept === "1")
+                  {values.userID !== member.userID && userFriendList.some((friend) => friend.requestUserID === member.userID && friend.acceptUserID === values.userID && friend.isAccept === "0")
                     && (
-                      <TouchableOpacity style={[styles.button, { backgroundColor: 'gray' }]}>
+                      <TouchableOpacity style={[styles.button, { backgroundColor: 'grey' }]}>
+                        <Text style={styles.buttonText}>Wait Accept</Text>
+                      </TouchableOpacity>
+                    )}
+
+                  {values.userID !== member.userID && userFriendList.some((friend) => (friend.requestUserID === member.userID || friend.acceptUserID === member.userID) && friend.isAccept === "1")
+                    && (
+                      <TouchableOpacity style={[styles.button, { backgroundColor: 'green' }]}>
                         <Text style={styles.buttonText}>Friend</Text>
                       </TouchableOpacity>
                     )}
