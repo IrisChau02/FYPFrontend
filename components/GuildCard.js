@@ -13,6 +13,7 @@ const GuildCard = ({ guild, navigation }) => {
 
   const getFreshModel = () => ({
     userID: undefined,
+    currentUserBirthday: undefined,
     masterName: undefined,
   })
 
@@ -25,40 +26,61 @@ const GuildCard = ({ guild, navigation }) => {
   } = useForm(getFreshModel);
 
 
- /* 
- // do with get master name, otherwise, 2 set value have error
-  useEffect(() => {
-    setValues({
-      ...values,
-      userID: CurrentUserID
-    })
-  }, [CurrentUserID]);*/
+  /* 
+  // do with get master name, otherwise, 2 set value have error
+   useEffect(() => {
+     setValues({
+       ...values,
+       userID: CurrentUserID
+     })
+   }, [CurrentUserID]);*/
 
   //get master name
   useEffect(() => {
-    if (guild.masterUserID) {
-      axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
-          params: {
-            userID: guild.masterUserID,
-          },
-        })
-        .then((res) => {
-          setValues({
-            ...values,
-            masterName: res.data[0].loginName,
-            userID: CurrentUserID
-          })
-        })
-        .catch((err) => console.log(err));
+    if (guild.masterUserID && CurrentUserID) {
+      fetchData();
     }
   }, [guild.masterUserID, CurrentUserID]);
+
+  const fetchData = async () => {
+    try {
+      const masterUserResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+        params: {
+          userID: guild.masterUserID,
+        },
+      });
+
+      const currentUserResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+        params: {
+          userID: CurrentUserID,
+        },
+      });
+
+
+      const [masterUserData, currentUserData] = await Promise.all([
+        masterUserResponse,
+        currentUserResponse,
+      ]);
+
+      setValues({
+        ...values,
+        masterName: masterUserData.data.loginName,
+        userID: CurrentUserID,
+        currentUserBirthday: currentUserData.data[0].birthday
+      })
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
 
   const handleJoinGuild = () => {
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/joinGuild`, {
         userID: values.userID,
         guildName: guild.guildName,
+        birthday: values.currentUserBirthday,
         memberNo: guild.memberNo,
       })
       .then((res) => {
@@ -126,7 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: 90,
   },
   column: {
-    flex: 1, 
+    flex: 1,
     marginLeft: 16,
   },
   guildName: {

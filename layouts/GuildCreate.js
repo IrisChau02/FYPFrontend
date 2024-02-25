@@ -10,6 +10,7 @@ export default function GuildCreate({ navigation, route }) {
 
   const getFreshModel = () => ({
     userID: undefined,
+    birthday: undefined,
     loginName: undefined,
     guildLogo: null,
     guildName: undefined,
@@ -77,6 +78,7 @@ export default function GuildCreate({ navigation, route }) {
             setValues({
               ...values,
               loginName: res.data[0].loginName,
+              birthday: res.data[0].birthday,
               districtID: res.data[0].districtID,
             })
           }

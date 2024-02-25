@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEffect } from "react";
 import useForm from '../hooks/useForm';
 import { View, Text, StyleSheet } from 'react-native';
@@ -7,7 +7,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { CurrentUserID } from './CurrentUserID';
 import axios from 'axios';
 
-export default function BottomBar({ navigation }) {
+export default function BottomBar({ navigation, route }) {
 
   const getFreshModel = () => ({
     userID: undefined,
@@ -22,6 +22,24 @@ export default function BottomBar({ navigation }) {
     handleInputChange
   } = useForm(getFreshModel);
 
+  const [forceUpdate, setForceUpdate] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData()
+      setForceUpdate(true);
+    });
+
+    return unsubscribe;
+  }, [navigation, route]);
+
+  useEffect(() => {
+    if (forceUpdate) {
+      fetchData()
+      setForceUpdate(false); // Reset forceUpdate to false after the rerender
+    }
+  }, [forceUpdate]);
+
   useEffect(() => {
     setValues({
       ...values,
@@ -31,8 +49,12 @@ export default function BottomBar({ navigation }) {
 
   useEffect(() => {
     if (values.userID) {
-      //console.log("called")
-      axios
+      fetchData()
+    }
+  }, [values.userID]);
+
+  const fetchData = () => {
+    axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
           params: {
             userID: values.userID,
@@ -49,8 +71,7 @@ export default function BottomBar({ navigation }) {
           }
         })
         .catch((err) => console.log(err));
-    }
-  }, [values.userID]);
+  };
 
   const navigateToGuild = () => {
     if (values.guildName) {

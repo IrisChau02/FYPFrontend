@@ -173,6 +173,16 @@ export default function GuildDetail({ navigation, route }) {
         </View>
 
 
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, }}>
+        <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('Mission')}>
+            <AntDesign name="calendar" size={24} color="white" />
+            <Text style={styles.iconText}>Mission</Text>
+          </TouchableOpacity>
+          
+      
+        </View>
+
+
       </View>
 
       <View style={styles.bottomBarContainer}>

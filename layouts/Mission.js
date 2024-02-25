@@ -50,43 +50,48 @@ export default function Mission({ navigation }) {
     }
   }, [values.userID]);
 
-  const PlaceholderImage = require('../assets/loginbackground2.png');
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Mission</Text>
       <View style={styles.margincontainer}>
-        <Text style={styles.heading}>Mission Page</Text>
+
 
         <ScrollView style={{ marginBottom: 100 }}>
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MissionCreate')}>
             <Text style={styles.buttonText}>Create Mission</Text>
           </TouchableOpacity>
 
-
           {
             missionList.map(mission => {
-
-
               return (
                 <Card style={styles.card} key={mission.missionName}>
 
-                  <View style={{
-                    backgroundColor: 'grey',
-                    padding: 10,
-                    borderRadius: 5,
-                    width: '100%',
-                    marginTop: 10,
-                    marginBottom: 10,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
+                  <View
+                    style={{
+                      padding: 5,
+                      borderRadius: 7,
+                      width: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor:
+                        mission.missionDifficulty === 'Easy'
+                          ? '#919492'
+                          : mission.missionDifficulty === 'Normal'
+                            ? '#ACB984'
+                            : mission.missionDifficulty === 'Medium'
+                              ? '#E7C27D'
+                              : mission.missionDifficulty === 'Hard'
+                                ? '#F2ACB9'
+                                : 'light grey'
+                    }}
+                  >
 
                     <View style={{
                       backgroundColor: '#fff',
-                      padding: 10,
-                      borderRadius: 5,
-                      width: '80%',
+                      padding: 7,
+                      borderRadius: 30,
+                      width: '60%',
                       marginTop: 10,
                       marginBottom: 10,
 
@@ -94,13 +99,14 @@ export default function Mission({ navigation }) {
                       <Text style={{ color: 'grey', fontSize: 16, textAlign: 'center' }}>{mission.missionMode}</Text>
                     </View>
 
-                    <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionDifficulty}</Text>
 
                     <View style={{
                       flexDirection: 'row',
                       justifyContent: 'center',
                       alignItems: 'center',
                     }}>
+                      <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionDifficulty} </Text>
+
                       {mission.missionDifficulty === 'Easy' && (
                         <AntDesign name="star" size={24} color="#FFF" />
                       )}
@@ -129,24 +135,22 @@ export default function Mission({ navigation }) {
 
                   </View>
 
-                  <View style={{
+                  <View style={{ padding: 5, justifyContent: 'center', alignItems: 'center' }}>
 
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
                     <Text style={{
                       fontSize: 18,
                       color: 'grey',
                       fontWeight: 'bold',
-                      marginBottom: 8,
-                    }}>Name: {mission.missionName}</Text>
-                    <Text style={{
-                      fontSize: 15,
-                      color: 'grey',
-                      marginBottom: 8,
-                    }}>Detail: {mission.missionDetail}</Text>
-                  </View>
+                      marginBottom: 5,
+                    }}>{mission.missionName}</Text>
 
+                    <Text style={{
+                      fontSize: 12,
+                      color: 'grey',
+                      marginBottom: 5,
+                    }}>{mission.missionDetail}</Text>
+
+                  </View>
 
                 </Card>
               );
@@ -164,24 +168,21 @@ export default function Mission({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingBottom: 30
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: 'green',
@@ -196,10 +197,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   card: {
-    height: 'auto',
-    padding: 16,
-    backgroundColor: 'white',
-    marginBottom: 10
+    flex: 1, //flexible in height
+    backgroundColor: '#F9F6F2',
+    borderRadius: 8,
+    marginBottom: 16,
+    borderColor: 'grey',
+    borderWidth: 1.8,
   },
   bottomBarContainer: {
     position: 'absolute',

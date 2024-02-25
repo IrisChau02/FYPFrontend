@@ -58,10 +58,11 @@ export default function MissionCreate({ navigation }) {
 
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+
+      <Text style={styles.heading}>Create Mission</Text>
+
       <View style={styles.margincontainer}>
-        <Text style={styles.heading}>Mission Create Page</Text>
 
         <ScrollView style={{ marginBottom: 100 }}>
 
@@ -155,15 +156,15 @@ export default function MissionCreate({ navigation }) {
             buttonTextAfterSelection={(selectedItem) => selectedItem.mode}
             rowTextForSelection={(item) => item.mode}
 
-            buttonStyle={{ width: '80%', height: 50, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
-            buttonTextStyle={{ color: '#444', textAlign: 'left' }}
+            buttonStyle={{ width: '80%', height: 40, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1.3, borderColor: 'grey', width: '100%' }}
+            buttonTextStyle={{ color: 'grey', textAlign: 'left' }}
             rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
-            rowTextStyle={{ color: '#444', textAlign: 'left' }}
+            rowTextStyle={{ color: 'grey', textAlign: 'left' }}
 
             defaultButtonText={'Select mission mode'}
 
             renderDropdownIcon={isOpened => {
-              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
+              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'grey'} size={18} />;
             }}
           />
 
@@ -171,46 +172,45 @@ export default function MissionCreate({ navigation }) {
             <Text style={styles.submitButtonText}>Create</Text>
           </TouchableOpacity>
 
-
-
         </ScrollView>
 
       </View>
-      <BottomBar navigation={navigation} />
+
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingBottom: 50
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   input: {
-    width: '100%',
     height: 40,
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: 1.2,
+    marginBottom: 10,
     paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
+    borderRadius: 10,
   },
   button: {
-    backgroundColor: 'grey',
+    backgroundColor: '#91AC9A',
     padding: 10,
     borderRadius: 5,
     width: '100%',
@@ -223,33 +223,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cardContainer: {
-    backgroundColor: '#F9F6F2', // Rice color
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#F9F6F2',
+    borderRadius: 30,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'gray',
+    borderWidth: 2,
   },
   cardContainerSelected: {
-    backgroundColor: '#D4D4D4', // Rice color
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#B5CDC2',
+    borderRadius: 30,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'gray',
+    borderWidth: 2,
   },
   textInfo: {
     fontSize: 16,
     marginBottom: 4,
     textAlign: 'center',
+    color: 'grey',
   },
   submitButton: {
     backgroundColor: 'green',
@@ -262,5 +255,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  bottomBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
