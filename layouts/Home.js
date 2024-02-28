@@ -13,6 +13,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
 import { setCurrentUserID } from './CurrentUserID';
@@ -38,6 +39,7 @@ export default function Home({ navigation, route }) {
     userLogo: undefined,
     userIntro: undefined,
     guildName: undefined,
+    checkPoint: undefined,
   })
 
   const {
@@ -95,15 +97,15 @@ export default function Home({ navigation, route }) {
 
   const getWaitingFriend = () => {
     axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWaitingFriendList`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-            setWaitingFriendList(res.data); // Update the waitingFriendList state
-        })
-        .catch((err) => console.log(err));
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWaitingFriendList`, {
+        params: {
+          userID: values.userID,
+        },
+      })
+      .then((res) => {
+        setWaitingFriendList(res.data); // Update the waitingFriendList state
+      })
+      .catch((err) => console.log(err));
   };
 
   const [districtList, setDistrictList] = useState([]);
@@ -184,6 +186,7 @@ export default function Home({ navigation, route }) {
               sportsID: sportsIDArray,
               sportsName: sportsNameArray,
               guildName: res.data[0].guildName,
+              checkPoint: res.data[0].checkPoint,
             })
 
           }
@@ -367,9 +370,13 @@ export default function Home({ navigation, route }) {
                   <Feather name="moon" size={24} color="white" />
                 ) : null}
               </View>
-
             </View>
 
+
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <MaterialIcons name="monetization-on" size={30} color="#FFC000" />
+              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.checkPoint}</Text>
+            </View>
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
               {values.sportsName.map((item, index) => (

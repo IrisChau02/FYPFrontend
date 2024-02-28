@@ -30,6 +30,7 @@ import FriendList from "./layouts/FriendList";
 import WaitingFriendList from "./layouts/WaitingFriendList";
 import MissionCreate from "./layouts/MissionCreate";
 import HomeOther from "./layouts/HomeOther";
+import MissionFinish from "./layouts/MissionFinish";
 
 const Stack = createNativeStackNavigator();
 
@@ -62,6 +63,7 @@ export default function App() {
         <Stack.Screen name="WaitingFriendList" component={WaitingFriendList} />
         <Stack.Screen name="MissionCreate" component={MissionCreate} />  
         <Stack.Screen name="HomeOther" component={HomeOther} />
+        <Stack.Screen name="MissionFinish" component={MissionFinish} />
         
       </Stack.Navigator>
     </NavigationContainer>

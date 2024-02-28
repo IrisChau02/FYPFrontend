@@ -10,9 +10,10 @@ import BottomBar from "./BottomBar";
 import { CurrentUserID } from './CurrentUserID';
 
 import { AntDesign } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-export default function Mission({ navigation }) {
+export default function Mission({ navigation, route }) {
 
   const getFreshModel = () => ({
     userID: undefined,
@@ -26,6 +27,24 @@ export default function Mission({ navigation }) {
     handleInputChange
   } = useForm(getFreshModel);
 
+  const [forceUpdate, setForceUpdate] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setForceUpdate(true);
+      fetchData();
+    });
+
+    return unsubscribe;
+  }, [navigation, route]);
+
+  useEffect(() => {
+    if (forceUpdate) {
+      fetchData();
+      setForceUpdate(false);
+    }
+  }, [forceUpdate]);
+
   useEffect(() => {
     setValues({
       ...values,
@@ -37,18 +56,38 @@ export default function Mission({ navigation }) {
 
   useEffect(() => {
     if (values.userID) {
-      axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getMissionList`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-          setMissionList(res.data)
-        })
-        .catch((err) => console.log(err));
+      fetchData();
     }
   }, [values.userID]);
+
+
+  const fetchData = async () => {
+    try {
+      const SystemMissionListResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getSystemMissionList`, {
+        params: {
+          userID: values.userID,
+        },
+      });
+
+      const SelfDefineMissionListResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getSelfDefineMissionList`, {
+        params: {
+          userID: values.userID,
+        },
+      });
+
+      const [SystemMissionData, SelfDefineMissionData] = await Promise.all([
+        SystemMissionListResponse,
+        SelfDefineMissionListResponse,
+      ]);
+
+      const combinedMissionArray = SystemMissionData.data.concat(SelfDefineMissionData.data);
+
+      setMissionList(combinedMissionArray)
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
 
   return (
@@ -131,6 +170,23 @@ export default function Mission({ navigation }) {
                           <AntDesign name="star" size={24} color="#FFF" />
                         </>
                       )}
+
+                      {mission.missionMode === 'Daily' && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons name="local-fire-department" size={24} color="#FFF" style={{ marginLeft: 10 }} />
+                          <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionKeepTime} day</Text>
+                        </View>
+                      )}
+
+                      {mission.missionMode === 'Weekly' && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons name="local-fire-department" size={24} color="#FFF" style={{ marginLeft: 10 }} />
+                          <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionKeepTime} week</Text>
+                        </View>
+                      )}
+
+
+
                     </View>
 
                   </View>
@@ -152,10 +208,39 @@ export default function Mission({ navigation }) {
 
                   </View>
 
+                  {!mission.isFinish ? (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('MissionFinish', { mission: mission })}
+                      style={{
+                        backgroundColor: '#91AC9A',
+                        padding: 8,
+                        borderRadius: 30,
+                        margin: 10
+                      }}
+                    >
+                      <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>Finish</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: '#91AC9A',
+                        padding: 8,
+                        borderRadius: 30,
+                        margin: 10,
+                        flex: 1,
+                        alignItems: 'center'
+                      }}
+                    >
+                      <AntDesign name="checkcircle" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+
+
                 </Card>
               );
             })
           }
+
 
         </ScrollView>
 

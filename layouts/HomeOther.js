@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
 
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView, Modal, Animated } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView, Linking } from 'react-native';
 import Dialog, { SlideAnimation, DialogContent, DialogButton, DialogTitle, DialogFooter } from 'react-native-popup-dialog';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import { Divider } from 'react-native-paper';
@@ -13,6 +13,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
 import { setCurrentUserID } from './CurrentUserID';
@@ -261,6 +262,17 @@ export default function HomeOther({ navigation, route }) {
               />
             </View>
 
+            <TouchableOpacity
+  style={styles.button}
+  onPress={() =>
+    Linking.openURL(`https://wa.me/${values.phoneNumber}?text=Hello, nice to meet you!`)
+  }
+>
+  <Text style={styles.buttonText}>
+    Chat <FontAwesome name="whatsapp" size={24} color="white" />
+  </Text>
+</TouchableOpacity>
+
           </Card>
 
         </View>
@@ -302,7 +314,7 @@ const styles = StyleSheet.create({
     borderRadius: 90,
   },
   button: {
-    backgroundColor: 'grey',
+    backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
     width: '100%',
