@@ -56,14 +56,14 @@ export default function Event({ navigation, route }) {
 
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Event</Text>
 
       <FlatList
         data={[{ key: 'eventPage' }]}
         renderItem={() => (
-          <SafeAreaView style={styles.margincontainer}>
-            <Text style={styles.heading}>Event Page</Text>
+          <SafeAreaView>
+
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName })}>
               <Text style={styles.buttonText}>Create Event</Text>
@@ -79,44 +79,44 @@ export default function Event({ navigation, route }) {
           </SafeAreaView>
         )}
         keyExtractor={(item) => item.key}
-        style={{ flex: 1 }}
+        style={styles.margincontainer}
       />
-      
+
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginBottom: 50
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
-    margin: 20,
+    margin: 10,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
-    fontWeight: 'bold',
   },
   bottomBarContainer: {
     position: 'absolute',

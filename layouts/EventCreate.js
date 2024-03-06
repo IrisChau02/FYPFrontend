@@ -237,12 +237,12 @@ export default function EventCreate({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={PlaceholderImage} style={styles.image} />
-      <View style={styles.margincontainer}>
-        <ScrollView>
-          <Text style={styles.heading}>Create Event Page</Text>
+    <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
+      <Text style={styles.heading}>Create Event</Text>
 
+
+      <ScrollView style={styles.margincontainer}>
+        <View style={{ marginBottom: 30 }}>
           {values.isFilling && (
             <>
               <TouchableOpacity style={styles.button}>
@@ -274,28 +274,42 @@ export default function EventCreate({ navigation, route }) {
                 <Text style={styles.buttonText}>Event Date</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button} onPress={showDatePickerModal}>
-                <Text style={styles.buttonText}>Select Event Date</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row' }}>
+
+                <View style={{ flex: 4 }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Event Time"
+                    value={values.formateventDate}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <TouchableOpacity style={{
+                    backgroundColor: '#91AC9A',
+                    padding: 10,
+                    borderRadius: 30,
+                    width: 45,
+                    marginLeft: 10,
+                    marginBottom: 10
+                  }} onPress={showDatePickerModal}>
+                    <AntDesign name="calendar" size={24} color="white" />
+                  </TouchableOpacity>
+
+                </View>
+              </View>
 
               {showDatePicker && (
-                <DateTimePicker
-                  value={values.eventDate}
-                  mode="date"
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    handleInputChange('eventDate', selectedDate);
-                    handleInputChange('formateventDate', formatDate(selectedDate));
-                  }}
-                />
-              )}
-
-              <TextInput
-                style={styles.input}
-                placeholder="Event Time"
-                value={values.formateventDate}
-              />
+                    <DateTimePicker
+                      value={values.eventDate}
+                      mode="date"
+                      display="default"
+                      onChange={(event, selectedDate) => {
+                        setShowDatePicker(false);
+                        handleInputChange('eventDate', selectedDate);
+                        handleInputChange('formateventDate', formatDate(selectedDate));
+                      }}
+                    />
+                  )}
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Start Time</Text>
@@ -445,14 +459,7 @@ export default function EventCreate({ navigation, route }) {
               <View ref={viewRef} style={{ aspectRatio: ratio, backgroundColor: selectedbgColor }}>
 
                 <View style={[{ padding: 10, borderWidth: 2, borderColor: 'grey', borderStyle: borderStyle, width: '100%', height: '100%' }]}>
-                  {/*
-                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
-                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
-                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime} - Event End Time: {values.endTime}</Text>
-                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
-                  <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
-                 */}
-
+        
                   <Draggable x={10} y={10}>
                     <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
                   </Draggable>
@@ -495,36 +502,35 @@ export default function EventCreate({ navigation, route }) {
 
             </>
           )}
+        </View>
+      </ScrollView>
 
-
-        </ScrollView>
+      <View style={styles.bottomBarContainer}>
+        <BottomBar navigation={navigation} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   margincontainer: { // Corrected style name
-    margin: 16
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#F1F1F1',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginBottom: 50
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'brown',
+    color: 'white',
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 40,
+    marginBottom: 10,
   },
   button: {
-    backgroundColor: 'grey',
+    backgroundColor: '#91AC9A',
     padding: 10,
     borderRadius: 5,
     width: '100%',
@@ -550,32 +556,19 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    margin: 10,
-
-  },
-  col: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    //margin: 10,
-    width: Dimensions.get('window').width / 2,
-    justifyContent: 'center'
-  },
   input: {
-    width: '100%',
     height: 40,
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: 1.2,
+    marginBottom: 10,
     paddingHorizontal: 8,
-    backgroundColor: 'lightgray', // Set the background color
+    borderRadius: 10,
   },
   label: {
     fontSize: 18,
-    color: 'brown',
+    color: '#91AC9A',
     fontWeight: 'bold',
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 10,
   },
 });

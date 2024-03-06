@@ -223,7 +223,7 @@ export default function Mission({ navigation, route }) {
                   ) : (
                     <TouchableOpacity
                       style={{
-                        backgroundColor: '#91AC9A',
+                        backgroundColor: 'grey',
                         padding: 8,
                         borderRadius: 30,
                         margin: 10,
