@@ -116,14 +116,41 @@ export default function EventCreate({ navigation, route }) {
   //custom font colour
   const [fontColor, setFontColor] = useState('black');
   const buttonfontColour = [
-    { color: '#000000', label: '' }, //Black
-    { color: '#FFFFFF', label: '' }, //White
-    { color: '#333333', label: '' }, //Dark Gray
-    { color: '#666666', label: '' }, //Gray
-    { color: '#999999', label: '' }, //Light Gray
-    { color: '#AAAAAA', label: '' }, //Silver
-    { color: '#BBBBBB', label: '' }, //Light Silver
-    { color: '#CCCCCC', label: '' }, //Pale Gray
+    { color: '#FFFFFF', label: '' }, // White
+    { color: '#CCCCCC', label: '' }, // Pale Gray
+    { color: '#999999', label: '' }, // Light Gray
+    { color: '#666666', label: '' }, // Gray
+    { color: '#000000', label: '' }, // Black
+    //pink theme
+    { color: '#ffe8d5', label: '' }, // #ffe8d5
+    { color: '#f8b4aa', label: '' }, // #f8b4aa
+    { color: '#f08080', label: '' }, // #f08080
+    { color: '#dc90a9', label: '' }, // #dc90a9
+    { color: '#c7a0d2', label: '' },  // #c7a0d2
+    //yellow brown theme 
+    { color: '#ffdbac', label: '' },  // #ffdbac
+    { color: '#f1c27d', label: '' }, // #f1c27d
+    { color: '#e0ac69', label: '' }, // #e0ac69
+    { color: '#c68642', label: '' }, // #c68642
+    { color: '#8d5524', label: '' }, // #8d5524
+    //green theme
+    { color: '#c1d08a', label: '' }, // #c1d08a
+    { color: '#7cb46b', label: '' }, // #7cb46b
+    { color: '#769a6e', label: '' }, // #769a6e
+    { color: '#b0c1b3', label: '' }, // #b0c1b3
+    { color: '#96845a', label: '' },  // #96845a
+    //blue theme
+    { color: '#b3cde0', label: '' },  // #b3cde0
+    { color: '#6497b1', label: '' }, // #6497b1
+    { color: '#005b96', label: '' }, // #005b96
+    { color: '#03396c', label: '' }, // #03396c
+    { color: '#011f4b', label: '' }, // #011f4b
+
+
+
+
+
+
   ];
 
   const handleNextButton = () => {
@@ -180,6 +207,14 @@ export default function EventCreate({ navigation, route }) {
 
   const hideModal = () => {
     setIsShow(false);
+  };
+
+  //open the Custom all dialog
+  const [isCustomAllFont, setIsCustomAllFont] = useState(false);
+
+
+  const hideCustomAllModal = () => {
+    setIsCustomAllFont(false);
   };
 
   //open the Custom dialog
@@ -386,6 +421,130 @@ export default function EventCreate({ navigation, route }) {
       </Modal>
       {/* choose the template */}
 
+      {/* choose the all font size */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isCustomAllFont}
+      >
+        <Pressable
+          style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.25)',
+          }}
+        >
+          <View
+            style={{
+              width: '100%',
+              height: 300,
+              backgroundColor: 'white',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 20,
+            }}
+          >
+            <TouchableOpacity onPress={hideCustomAllModal} style={styles.button}>
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>
+
+            <ScrollView>
+
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Size</Text>
+              <View style={{ flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-between' }}>
+                {buttonSizes.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      const updatedDraggableItems = Object.keys(draggableItems).reduce((acc, key) => {
+                        const item = draggableItems[key];
+                        const updatedItem = { ...item, fontSize: button.size };
+                        return { ...acc, [key]: updatedItem };
+                      }, {});
+
+                      setDraggableItems(updatedDraggableItems);
+                    }}
+                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flexBasis: '15%', borderRadius: 30 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 14 }}>
+                      {button.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Weight</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  style={{ borderRadius: 30, backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                  onPress={() => {
+                    const updatedDraggableItems = Object.keys(draggableItems).reduce((acc, key) => {
+                      const item = draggableItems[key];
+                      const updatedItem = { ...item, fontWeight: 'bold' };
+                      return { ...acc, [key]: updatedItem };
+                    }, {});
+
+                    setDraggableItems(updatedDraggableItems);
+                  }}
+                >
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Bold</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ borderRadius: 30, backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                  onPress={() => {
+                    const updatedDraggableItems = Object.keys(draggableItems).reduce((acc, key) => {
+                      const item = draggableItems[key];
+                      const updatedItem = { ...item, fontWeight: null };
+                      return { ...acc, [key]: updatedItem };
+                    }, {});
+
+                    setDraggableItems(updatedDraggableItems);
+                  }}
+                >
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Unbold</Text>
+                </TouchableOpacity>
+              </View>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Color</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                {buttonfontColour.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      const updatedDraggableItems = Object.keys(draggableItems).reduce((acc, key) => {
+                        const item = draggableItems[key];
+                        const updatedItem = { ...item, fontColor: button.color };
+                        return { ...acc, [key]: updatedItem };
+                      }, {});
+
+                      setDraggableItems(updatedDraggableItems);
+                    }}
+                    style={{
+                      height: 40,
+                      borderRadius: 30,
+                      borderWidth: 1.5,
+                      borderColor: '#ccc',
+                      backgroundColor: button.color,
+                      margin: 4,
+                      padding: 10,
+                      flexBasis: '15%' // 100% divided by 6 buttons
+                    }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+            </ScrollView>
+
+          </View>
+        </Pressable>
+      </Modal>
+      {/* choose the all font size */}
+
       {/* choose the font size */}
       <Modal
         animationType="slide"
@@ -397,23 +556,25 @@ export default function EventCreate({ navigation, route }) {
             flex: 1,
             justifyContent: 'flex-end',
             alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: 'rgba(0, 0, 0, 0.25)',
           }}
         >
           <View
             style={{
               width: '100%',
-              height: 400,
+              height: 300,
               backgroundColor: 'white',
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               padding: 20,
             }}
           >
+            <TouchableOpacity onPress={hideCustomModal} style={styles.button}>
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>
+
             <ScrollView>
-              <TouchableOpacity onPress={hideCustomModal} style={styles.button}>
-                <Text style={styles.buttonText}>Confirm</Text>
-              </TouchableOpacity>
+
 
               <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Size</Text>
               <View style={{ flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -438,36 +599,64 @@ export default function EventCreate({ navigation, route }) {
                 ))}
               </View>
 
-              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Color</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                {buttonfontColour.map((button, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => setDraggableItems(prevState => ({
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Weight</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity style={{ borderRadius: 30, backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                  onPress={() =>
+                    setDraggableItems(prevState => ({
                       ...prevState,
                       [customItem]: {
                         ...prevState[customItem],
-                        fontColor: button.color
+                        fontWeight: 'bold'
                       }
-                    }))}
-                    style={{ borderWidth: 1.5, borderColor: '#ccc', backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
-                  >
-                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
-                  </TouchableOpacity>
-                ))}
+                    }))
+                  }
+                >
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Bold</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{ borderRadius: 30, backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                  onPress={() =>
+                    setDraggableItems(prevState => ({
+                      ...prevState,
+                      [customItem]: {
+                        ...prevState[customItem],
+                        fontWeight: null
+                      }
+                    }))
+                  }
+                >
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Unbold</Text>
+                </TouchableOpacity>
               </View>
 
-              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Weight</Text>
-              <TouchableOpacity style={{ borderWidth: 1.5, borderColor: '#ccc', backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
-                onPress={() => setDraggableItems(prevState => ({
-                  ...prevState,
-                  [customItem]: {
-                    ...prevState[customItem],
-                    fontWeight: 'bold'
-                  }
-                }))}>
-                <Text style={{ color: 'white', textAlign: 'center' }}>Bold</Text>
-              </TouchableOpacity>
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Color</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                {buttonfontColour.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() =>
+                      setDraggableItems((prevState) => ({
+                        ...prevState,
+                        [customItem]: {
+                          ...prevState[customItem],
+                          fontColor: button.color
+                        }
+                      }))
+                    }
+                    style={{
+                      height: 40,
+                      borderRadius: 30,
+                      borderWidth: 1.5,
+                      borderColor: '#ccc',
+                      backgroundColor: button.color,
+                      margin: 4,
+                      padding: 10,
+                      flexBasis: '15%' // 100% divided by 6 buttons
+                    }}
+                  />
+                ))}
+              </View>
 
             </ScrollView>
 
@@ -609,6 +798,15 @@ export default function EventCreate({ navigation, route }) {
                 <Text style={styles.buttonText}>Select Template</Text>
               </TouchableOpacity>
 
+              <TouchableOpacity onPress={() => setIsCustomAllFont(true)} style={styles.button}>
+                <Text style={styles.buttonText}>Custom Font</Text>
+              </TouchableOpacity>
+
+              
+              <Text style={{ marginTop: 10, textAlign: 'center', fontWeight: 'bold', color: "grey" }}>Useless elements can drag here.</Text>
+              <View style={{ marginBottom: 10, height: 100, backgroundColor: '#D3D3D3', borderColor: '#ccc', borderWidth: 1.5, }}/>
+             
+
               <Text style={{ textAlign: 'center', fontWeight: 'bold', color: "grey" }}>* Can Hold the element and move to desired location.</Text>
 
               <View ref={viewRef} style={{ aspectRatio: 3 / 4 }}>
@@ -704,7 +902,6 @@ export default function EventCreate({ navigation, route }) {
                 </ImageBackground>
               </View>
 
-
               <TouchableOpacity style={styles.greenbutton} onPress={handleBackButton}>
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
@@ -715,6 +912,7 @@ export default function EventCreate({ navigation, route }) {
 
             </>
           )}
+
         </View>
       </ScrollView>
 
