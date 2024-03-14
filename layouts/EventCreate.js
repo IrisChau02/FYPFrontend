@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList, ScrollView, SafeAreaView, Linking } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList, ScrollView, SafeAreaView, Linking, Modal } from 'react-native';
 import axios from 'axios';
 
 import BottomBar from "./BottomBar";
@@ -49,8 +49,7 @@ export default function EventCreate({ navigation, route }) {
 
     //making poster
     isFilling: true,
-    isFormat: false,
-    bgcolour: undefined
+    isFormat: false
   })
 
   const {
@@ -98,31 +97,6 @@ export default function EventCreate({ navigation, route }) {
 
 
   const viewRef = useRef(null);
-  //custom ratio
-  const [ratio, setRatio] = useState(1);
-  const buttonRatio = [
-    { ratio: 16 / 9, label: '16:9' },
-    { ratio: 1, label: '1:1' },
-    { ratio: 9 / 12, label: '9:12' },
-  ];
-  const handleRatioChange = (ratio) => {
-    setRatio(ratio);
-  };
-
-  //custom background colour
-  const [selectedbgColor, setSelectedbgColor] = useState('#E5C1CD');
-  const buttonColors = [
-    { color: '#E5C1CD', label: '' }, //Pink
-    { color: '#F3DBCF', label: '' }, //Orange
-    { color: '#7E9680', label: '' }, //Green
-    { color: '#AAC9C2', label: '' }, //Blue
-    { color: '#B6B4C2', label: '' }, //Purple
-    { color: '#E4DFD9', label: '' }, //Gray
-  ];
-
-  const handlebgColorChange = (color) => {
-    setSelectedbgColor(color);
-  };
 
   //custom font size
   const [fontSize, setFontSize] = useState(16);
@@ -133,10 +107,11 @@ export default function EventCreate({ navigation, route }) {
     { size: 15, label: '15' },
     { size: 16, label: '16' },
     { size: 17, label: '17' },
+    { size: 18, label: '18' },
+    { size: 19, label: '19' },
+    { size: 20, label: '20' },
+    { size: 21, label: '21' },
   ];
-  const handleFontSizeChange = (size) => {
-    setFontSize(size);
-  };
 
   //custom font colour
   const [fontColor, setFontColor] = useState('black');
@@ -150,21 +125,6 @@ export default function EventCreate({ navigation, route }) {
     { color: '#BBBBBB', label: '' }, //Light Silver
     { color: '#CCCCCC', label: '' }, //Pale Gray
   ];
-  const handleFontColorChange = (color) => {
-    setFontColor(color);
-  };
-
-  //custom border Style
-  const [borderStyle, setBorderStyle] = useState(null);
-  const defaultBorderStyle = [
-    { border: null, label: 'Line' },
-    { border: 'dotted', label: 'Dotted' },
-    { border: 'dashed', label: 'Dashed' },
-  ];
-
-  const handleBorderStyleChange = (border) => {
-    setBorderStyle(border);
-  };
 
   const handleNextButton = () => {
     setValues({
@@ -215,31 +175,306 @@ export default function EventCreate({ navigation, route }) {
     }
   };
 
-  const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
-      allowsEditing: true,
-      quality: 0.3, // Adjust the quality parameter (0-1) to reduce image size
-      base64: true, // Set base64 to true to get the image data in base64 format
-    });
+  //open the dialog
+  const [isShow, setIsShow] = useState(false);
 
-    if (!result.canceled) {
-      delete result.cancelled;
-
-      setValues({
-        ...values,
-        bgcolour: result.assets[0].base64,
-      })
-
-    } else {
-      alert('You did not select any image.');
-    }
+  const hideModal = () => {
+    setIsShow(false);
   };
+
+  //open the Custom dialog
+  const [isCustomFont, setIsCustomFont] = useState(false);
+  const [customItem, setCustomItem] = useState('');
+
+  const hideCustomModal = () => {
+    setIsCustomFont(false);
+  };
+
+  const template1 = require('../assets/template_1.png');
+  const template2 = require('../assets/template_2.png');
+  const template3 = require('../assets/template_3.png');
+  const template4 = require('../assets/template_4.png');
+  const template5 = require('../assets/template_5.png');
+  const template6 = require('../assets/template_6.png');
+  const template7 = require('../assets/template_7.png');
+  const template8 = require('../assets/template_8.png');
+  const template9 = require('../assets/template_9.png');
+  const template10 = require('../assets/template_10.png');
+
+  const [backgroundImg, setBackgroundImg] = useState(null);
+
+  const [draggableItems, setDraggableItems] = useState({
+    EventName: {
+      x: 10,
+      y: 10,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EventNameValue: {
+      x: 160,
+      y: 10,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EventDate: {
+      x: 10,
+      y: 30,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EventDateValue: {
+      x: 160,
+      y: 30,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    StartTime: {
+      x: 10,
+      y: 50,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    StartTimeValue: {
+      x: 160,
+      y: 50,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EndTime: {
+      x: 10,
+      y: 70,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EndTimeValue: {
+      x: 160,
+      y: 70,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EventVenue: {
+      x: 10,
+      y: 90,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EventVenueValue: {
+      x: 160,
+      y: 90,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    MemberLimit: {
+      x: 10,
+      y: 110,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    MemberLimitValue: {
+      x: 160,
+      y: 110,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EventDetail: {
+      x: 10,
+      y: 130,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    },
+    EventDetailValue: {
+      x: 160,
+      y: 130,
+      fontSize: 16,
+      fontColor: '#000000',
+      fontWeight: null
+    }
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
       <Text style={styles.heading}>Create Event</Text>
 
+      {/* choose the template */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isShow}
+      >
+        <Pressable
+          style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          <View
+            style={{
+              width: '100%',
+              height: 400,
+              backgroundColor: 'white',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 20,
+            }}
+          >
+            <TouchableOpacity onPress={hideModal} style={styles.button}>
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>
+            <ScrollView>
+
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template1) }}>
+                  <Image style={styles.template} source={template1} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => { setBackgroundImg(template2) }}>
+                  <Image style={styles.template} source={template2} />
+                </TouchableOpacity>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template3) }}>
+                  <Image style={styles.template} source={template3} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template4) }}>
+                  <Image style={styles.template} source={template4} />
+                </TouchableOpacity>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template5) }}>
+                  <Image style={styles.template} source={template5} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template6) }}>
+                  <Image style={styles.template} source={template6} />
+                </TouchableOpacity>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template7) }}>
+                  <Image style={styles.template} source={template7} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template8) }}>
+                  <Image style={styles.template} source={template8} />
+                </TouchableOpacity>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template9) }}>
+                  <Image style={styles.template} source={template9} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { setBackgroundImg(template10) }}>
+                  <Image style={styles.template} source={template10} />
+                </TouchableOpacity>
+              </View>
+
+            </ScrollView>
+
+          </View>
+        </Pressable>
+      </Modal>
+      {/* choose the template */}
+
+      {/* choose the font size */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isCustomFont}
+      >
+        <Pressable
+          style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          <View
+            style={{
+              width: '100%',
+              height: 400,
+              backgroundColor: 'white',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 20,
+            }}
+          >
+            <ScrollView>
+              <TouchableOpacity onPress={hideCustomModal} style={styles.button}>
+                <Text style={styles.buttonText}>Confirm</Text>
+              </TouchableOpacity>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Size</Text>
+              <View style={{ flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-between' }}>
+                {buttonSizes.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() =>
+                      setDraggableItems((prevState) => ({
+                        ...prevState,
+                        [customItem]: {
+                          ...prevState[customItem],
+                          fontSize: button.size,
+                        },
+                      }))
+                    }
+                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flexBasis: '15%', borderRadius: 30 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 14 }}>
+                      {button.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Color</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                {buttonfontColour.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setDraggableItems(prevState => ({
+                      ...prevState,
+                      [customItem]: {
+                        ...prevState[customItem],
+                        fontColor: button.color
+                      }
+                    }))}
+                    style={{ borderWidth: 1.5, borderColor: '#ccc', backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
+                  >
+                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: 'gray', marginBottom: 5, fontSize: 18 }}>Font Weight</Text>
+              <TouchableOpacity style={{ borderWidth: 1.5, borderColor: '#ccc', backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
+                onPress={() => setDraggableItems(prevState => ({
+                  ...prevState,
+                  [customItem]: {
+                    ...prevState[customItem],
+                    fontWeight: 'bold'
+                  }
+                }))}>
+                <Text style={{ color: 'white', textAlign: 'center' }}>Bold</Text>
+              </TouchableOpacity>
+
+            </ScrollView>
+
+          </View>
+        </Pressable>
+      </Modal>
+      {/* choose the font size */}
 
       <ScrollView style={styles.margincontainer}>
         <View style={{ marginBottom: 30 }}>
@@ -299,17 +534,17 @@ export default function EventCreate({ navigation, route }) {
               </View>
 
               {showDatePicker && (
-                    <DateTimePicker
-                      value={values.eventDate}
-                      mode="date"
-                      display="default"
-                      onChange={(event, selectedDate) => {
-                        setShowDatePicker(false);
-                        handleInputChange('eventDate', selectedDate);
-                        handleInputChange('formateventDate', formatDate(selectedDate));
-                      }}
-                    />
-                  )}
+                <DateTimePicker
+                  value={values.eventDate}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    handleInputChange('eventDate', selectedDate);
+                    handleInputChange('formateventDate', formatDate(selectedDate));
+                  }}
+                />
+              )}
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Start Time</Text>
@@ -370,127 +605,105 @@ export default function EventCreate({ navigation, route }) {
             <>
               <Text style={styles.label}>Poster to whatsapp Group</Text>
 
-
-              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Ratio</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                {buttonRatio.map((button, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleRatioChange(button.ratio)}
-                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
-                  >
-                    <Text style={{ color: 'white', textAlign: 'center', fontSize: button.size }}>
-                      {button.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-
-              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Background Colour</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                {buttonColors.map((button, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handlebgColorChange(button.color)}
-                    style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
-                  >
-                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <AntDesign name="camera" size={24} color="grey" onPress={pickImageAsync} />
-
-
-              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Size</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                {buttonSizes.map((button, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleFontSizeChange(button.size)}
-                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
-                  >
-                    <Text style={{ color: 'white', textAlign: 'center', fontSize: button.size }}>
-                      {button.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Font Colour</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                {buttonfontColour.map((button, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleFontColorChange(button.color)}
-                    style={{ backgroundColor: button.color, margin: 5, padding: 10, flex: 1 }}
-                  >
-                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Border Style</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                {defaultBorderStyle.map((button, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleBorderStyleChange(button.border)}
-                    style={{ backgroundColor: 'gray', margin: 5, padding: 10, flex: 1 }}
-                  >
-                    <Text style={{ color: 'white', textAlign: 'center' }}>{button.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              {/**padding: 10, margin: 10 
-                 <Draggable
-                  x={20}
-                  y={30}
-                  renderColor='red'
-                  renderText='B'
-                  dragStartThreshold={100}
-                  onShortPressRelease={() => alert('Hold long and drag')}
-                  style={{ position: 'absolute', zIndex: 1 }}
-                />
-                */}
+              <TouchableOpacity onPress={() => setIsShow(true)} style={styles.button}>
+                <Text style={styles.buttonText}>Select Template</Text>
+              </TouchableOpacity>
 
               <Text style={{ textAlign: 'center', fontWeight: 'bold', color: "grey" }}>* Can Hold the element and move to desired location.</Text>
 
-              <View ref={viewRef} style={{ aspectRatio: ratio, backgroundColor: selectedbgColor }}>
+              <View ref={viewRef} style={{ aspectRatio: 3 / 4 }}>
+                <ImageBackground source={backgroundImg}
+                  style={[
+                    { width: '100%', height: '100%' },
+                    backgroundImg === null ? { borderWidth: 1.8, borderColor: 'gray' } : null
+                  ]}
+                >
 
-                <View style={[{ padding: 10, borderWidth: 2, borderColor: 'grey', borderStyle: borderStyle, width: '100%', height: '100%' }]}>
-        
-                  <Draggable x={10} y={10}>
-                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Name: {values.eventName}</Text>
+                  <Draggable x={draggableItems.EventName.x} y={draggableItems.EventName.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventName'); }}>
+                      <Text style={{ fontSize: draggableItems.EventName.fontSize, color: draggableItems.EventName.fontColor, fontWeight: draggableItems.EventName.fontWeight }}>Event Name:</Text>
+                    </TouchableOpacity>
+                  </Draggable>
+                  <Draggable x={draggableItems.EventNameValue.x} y={draggableItems.EventNameValue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventNameValue'); }}>
+                      <Text style={{ fontSize: draggableItems.EventNameValue.fontSize, color: draggableItems.EventNameValue.fontColor, fontWeight: draggableItems.EventNameValue.fontWeight }}>{values.eventName}</Text>
+                    </TouchableOpacity>
                   </Draggable>
 
-                  <Draggable x={10} y={30}>
-                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Date: {values.formateventDate}</Text>
+
+                  <Draggable x={draggableItems.EventDate.x} y={draggableItems.EventDate.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventDate'); }}>
+                      <Text style={{ fontSize: draggableItems.EventDate.fontSize, color: draggableItems.EventDate.fontColor, fontWeight: draggableItems.EventDate.fontWeight }}>Event Date:</Text>
+                    </TouchableOpacity>
+                  </Draggable>
+                  <Draggable x={draggableItems.EventDateValue.x} y={draggableItems.EventDateValue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventDateValue'); }}>
+                      <Text style={{ fontSize: draggableItems.EventDateValue.fontSize, color: draggableItems.EventDateValue.fontColor, fontWeight: draggableItems.EventDateValue.fontWeight }}>{values.formateventDate}</Text>
+                    </TouchableOpacity>
                   </Draggable>
 
-                  <Draggable x={10} y={50}>
-                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Start Time: {values.startTime}</Text>
+
+                  <Draggable x={draggableItems.StartTime.x} y={draggableItems.StartTime.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('StartTime'); }}>
+                      <Text style={{ fontSize: draggableItems.StartTime.fontSize, color: draggableItems.StartTime.fontColor, fontWeight: draggableItems.StartTime.fontWeight }}>Event Start Time:</Text>
+                    </TouchableOpacity>
+                  </Draggable>
+                  <Draggable x={draggableItems.StartTimeValue.x} y={draggableItems.StartTimeValue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('StartTimeValue'); }}>
+                      <Text style={{ fontSize: draggableItems.StartTimeValue.fontSize, color: draggableItems.StartTimeValue.fontColor, fontWeight: draggableItems.StartTimeValue.fontWeight }}>{values.startTime}</Text>
+                    </TouchableOpacity>
                   </Draggable>
 
-                  <Draggable x={10} y={70}>
-                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event End Time: {values.endTime}</Text>
+
+                  <Draggable x={draggableItems.EndTime.x} y={draggableItems.EndTime.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EndTime'); }}>
+                      <Text style={{ fontSize: draggableItems.EndTime.fontSize, color: draggableItems.EndTime.fontColor, fontWeight: draggableItems.EndTime.fontWeight }}>Event End Time:</Text>
+                    </TouchableOpacity>
+                  </Draggable>
+                  <Draggable x={draggableItems.EndTimeValue.x} y={draggableItems.EndTimeValue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EndTimeValue'); }}>
+                      <Text style={{ fontSize: draggableItems.EndTimeValue.fontSize, color: draggableItems.EndTimeValue.fontColor, fontWeight: draggableItems.EndTimeValue.fontWeight }}>{values.endTime}</Text>
+                    </TouchableOpacity>
                   </Draggable>
 
-                  <Draggable x={10} y={90}>
-                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Venue: {values.venue}</Text>
+
+                  <Draggable x={draggableItems.EventVenue.x} y={draggableItems.EventVenue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventVenue'); }}>
+                      <Text style={{ fontSize: draggableItems.EventVenue.fontSize, color: draggableItems.EventVenue.fontColor, fontWeight: draggableItems.EventVenue.fontWeight }}>Event Venue:</Text>
+                    </TouchableOpacity>
+                  </Draggable>
+                  <Draggable x={draggableItems.EventVenueValue.x} y={draggableItems.EventVenueValue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventVenueValue'); }}>
+                      <Text style={{ fontSize: draggableItems.EventVenueValue.fontSize, color: draggableItems.EventVenueValue.fontColor, fontWeight: draggableItems.EventVenueValue.fontWeight }}>{values.venue}</Text>
+                    </TouchableOpacity>
                   </Draggable>
 
-                  <Draggable x={10} y={110}>
-                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Member Limit: {values.memberNumber}</Text>
+
+                  <Draggable x={draggableItems.MemberLimit.x} y={draggableItems.MemberLimit.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('MemberLimit'); }}>
+                      <Text style={{ fontSize: draggableItems.MemberLimit.fontSize, color: draggableItems.MemberLimit.fontColor, fontWeight: draggableItems.MemberLimit.fontWeight }}>Event Member Limit:</Text>
+                    </TouchableOpacity>
+                  </Draggable>
+                  <Draggable x={draggableItems.MemberLimitValue.x} y={draggableItems.MemberLimitValue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('MemberLimitValue'); }}>
+                      <Text style={{ fontSize: draggableItems.MemberLimitValue.fontSize, color: draggableItems.MemberLimitValue.fontColor, fontWeight: draggableItems.MemberLimitValue.fontWeight }}>{values.memberNumber}</Text>
+                    </TouchableOpacity>
                   </Draggable>
 
-                  <Draggable x={10} y={130}>
-                    <Text style={{ fontSize: fontSize, color: fontColor }}>Event Detail: {values.eventDetail}</Text>
+
+                  <Draggable x={draggableItems.EventDetail.x} y={draggableItems.EventDetail.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventDetail'); }}>
+                      <Text style={{ fontSize: draggableItems.EventDetail.fontSize, color: draggableItems.EventDetail.fontColor, fontWeight: draggableItems.EventDetail.fontWeight }}>Event Detail:</Text>
+                    </TouchableOpacity>
                   </Draggable>
-
-                </View>
-
+                  <Draggable x={draggableItems.EventDetailValue.x} y={draggableItems.EventDetailValue.y}>
+                    <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EventDetailValue'); }}>
+                      <Text style={{ fontSize: draggableItems.EventDetailValue.fontSize, color: draggableItems.EventDetailValue.fontColor, fontWeight: draggableItems.EventDetailValue.fontWeight }}>{values.eventDetail}</Text>
+                    </TouchableOpacity>
+                  </Draggable>
+                </ImageBackground>
               </View>
+
 
               <TouchableOpacity style={styles.greenbutton} onPress={handleBackButton}>
                 <Text style={styles.buttonText}>Back</Text>
@@ -513,6 +726,13 @@ export default function EventCreate({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+  template: {
+    width: 150,
+    height: 200,
+    borderColor: 'grey',
+    borderWidth: 1.8,
+    margin: 5
+  },
   margincontainer: { // Corrected style name
     flexGrow: 1,
     padding: 16,
