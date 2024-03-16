@@ -399,7 +399,7 @@ export default function Home({ navigation, route }) {
             <Divider style={{ margin: 10 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <AntDesign name="team" size={24} color="grey" />
-              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.guildName ? values.guildName : "No guild"} |  |  </Text>
+              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.guildName ? values.guildName : "No guild"} | </Text>
 
               <MaterialIcons name="monetization-on" size={30} color="#FFC000" />
               <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.checkPoint}</Text>

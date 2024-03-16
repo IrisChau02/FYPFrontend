@@ -7,6 +7,8 @@ import axios from 'axios';
 import { Dimensions } from 'react-native';
 import BottomBar from "./BottomBar";
 
+import { CurrentUserID } from './CurrentUserID';
+
 
 export default function EventDetail({ navigation, route }) {
 
@@ -14,13 +16,16 @@ export default function EventDetail({ navigation, route }) {
     guildName: undefined,
     eventName: undefined,
     eventDetail: undefined,
-
     formateventDate: undefined,
     startTime: undefined,
     endTime: undefined,
     memberNumber: undefined,
     currentNumber: undefined,
     venue: undefined,
+    guildName: undefined,
+    initiatorID: undefined,
+    memberID: undefined,
+    memberIDArray: undefined,
   })
 
   const {
@@ -52,7 +57,6 @@ export default function EventDetail({ navigation, route }) {
           },
         })
         .then((res) => {
-
           setValues({
             ...values,
             eventDetail: res.data[0].eventDetail,
@@ -62,17 +66,41 @@ export default function EventDetail({ navigation, route }) {
             memberNumber: res.data[0].memberNumber.toString(),
             currentNumber: res.data[0].currentNumber.toString(),
             venue: res.data[0].venue,
+            guildName: res.data[0].guildName,
+            initiatorID: res.data[0].initiatorID,
+            memberID: res.data[0].memberID, //string
+            memberIDArray: res.data[0].memberID.split(',') //array
           })
-
-
         })
         .catch((err) => console.log(err));
-
-
     }
   }, [values.eventName]);
 
-  const PlaceholderImage = require('../assets/loginbackground2.png');
+  const handleJoinEvent = () => {
+    let newMemberID;
+    if (values.memberID === null) {
+      newMemberID = CurrentUserID; // Set `newMemberID` to `CurrentUserID`
+    } else {
+      newMemberID = values.memberID + `,${CurrentUserID}`; // Append `CurrentUserID` to `memberID`
+    }
+
+    axios
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/joinEvent`, {
+        memberID: newMemberID,
+        guildName: values.guildName,
+        eventName: values.eventName,
+        currentNumber: parseInt(values.currentNumber) + 1
+      })
+      .then((res) => {
+        if (res.data === 'updated') {
+          alert('Join successfully');
+          navigation.navigate('Event');
+        } else {
+          alert('Failed to Join');
+        }
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
@@ -170,6 +198,25 @@ export default function EventDetail({ navigation, route }) {
               value={values.venue}
               editable={false}
             />
+
+            {/* initiator cannot join the event */}
+            {CurrentUserID !== values.initiatorID && (
+              parseInt(values.currentNumber) < parseInt(values.memberNumber) ? (
+                values.memberIDArray.includes(CurrentUserID) ? (
+                  <TouchableOpacity style={{ backgroundColor: 'grey', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
+                    <Text style={styles.buttonText}>Joined</Text>
+                  </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={handleJoinEvent} style={{ backgroundColor: 'green', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
+                      <Text style={styles.buttonText}>Join</Text>
+                    </TouchableOpacity>
+                )
+              ) : (
+                <TouchableOpacity style={{ backgroundColor: 'grey', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
+                  <Text style={styles.buttonText}>Full</Text>
+                </TouchableOpacity>
+              )
+            )}
 
           </View>
         </ScrollView>
