@@ -372,12 +372,6 @@ export default function Home({ navigation, route }) {
               </View>
             </View>
 
-
-            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-              <MaterialIcons name="monetization-on" size={30} color="#FFC000" />
-              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.checkPoint}</Text>
-            </View>
-
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
               {values.sportsName.map((item, index) => (
                 <View key={index} style={{
@@ -397,7 +391,21 @@ export default function Home({ navigation, route }) {
             </View>
 
             <Divider style={{ margin: 10 }} />
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <AntDesign name="idcard" size={24} color="grey" />
+              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.workModeName}</Text>
+            </View>
 
+            <Divider style={{ margin: 10 }} />
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <AntDesign name="team" size={24} color="grey" />
+              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.guildName ? values.guildName : "No guild"} |  |  </Text>
+
+              <MaterialIcons name="monetization-on" size={30} color="#FFC000" />
+              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.checkPoint}</Text>
+            </View>
+
+            <Divider style={{ margin: 10 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <TextInput
                 style={styles.messageInput}
@@ -408,19 +416,6 @@ export default function Home({ navigation, route }) {
               />
             </View>
 
-          </Card>
-
-          <Card style={{
-            height: 'auto',
-            padding: 5,
-            marginTop: 20,
-            backgroundColor: '#F1F1F1',
-            justifyContent: 'center',
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-              <AntDesign name="idcard" size={24} color="grey" />
-              <Text style={{ fontSize: 16, color: 'grey', margin: 5 }}>{values.workModeName}</Text>
-            </View>
           </Card>
 
         </View>
@@ -457,6 +452,18 @@ export default function Home({ navigation, route }) {
           </TouchableOpacity>
 
           <Divider style={{ margin: 10 }} />
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate(values.guildName ? 'GuildDetail' : 'Guild')}
+            style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+          >
+            <AntDesign name="team" size={24} color="grey" />
+            <Text style={styles.label}> Guild </Text>
+
+            <View style={{ marginLeft: 'auto' }}>
+              <AntDesign name="right" size={24} color="grey" />
+            </View>
+          </TouchableOpacity>
 
 
         </View>

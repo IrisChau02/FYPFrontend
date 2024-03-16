@@ -2,6 +2,7 @@ import React from 'react';
 import { useEffect } from "react";
 import useForm from '../hooks/useForm';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import axios from 'axios';
 
 const GuildEventCard = ({ event, navigation }) => {
@@ -19,7 +20,7 @@ const GuildEventCard = ({ event, navigation }) => {
     handleInputChange
   } = useForm(getFreshModel);
 
-  useEffect(() => { 
+  useEffect(() => {
     setValues({
       ...values,
       userID: event.initiatorID
@@ -55,11 +56,18 @@ const GuildEventCard = ({ event, navigation }) => {
 
       <Text style={styles.eventName}>{event.eventName}</Text>
       <Text style={styles.eventInfo}>Initiator: {values.loginName}</Text>
-      <Text style={styles.eventInfo}>Date: {event.eventDate}</Text>
-      <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.eventInfo}>Date: {event.eventDate}  |  </Text>
+        <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
+      </View>
+
       <Text style={styles.eventInfo}>Venue: {event.venue}</Text>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventDetail', { event: event })}>
-        <Text style={styles.buttonText}>View Details</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+          <AntDesign name="search1" size={24} color="white" />
+          <Text style={styles.buttonText}>View Details</Text>
+        </View>
       </TouchableOpacity>
     </View>
 
@@ -68,32 +76,30 @@ const GuildEventCard = ({ event, navigation }) => {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#F9F6F2', // Rice color
+    flex: 1, //flexible in height
+    backgroundColor: '#F9F6F2',
     borderRadius: 8,
-    padding: 16,
+    padding: 10,
     marginBottom: 16,
-    elevation: 4,
-    borderColor: 'gray', // Gray border color
-    borderWidth: 4, // Border width
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    borderColor: 'grey',
+    borderWidth: 1.5,
   },
   eventName: {
     fontSize: 18,
+    color: 'grey',
     fontWeight: 'bold',
     marginBottom: 8,
   },
   eventInfo: {
     fontSize: 16,
     marginBottom: 4,
+    color: 'grey',
   },
   button: {
-    backgroundColor: 'green',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginBottom: 10,
+    backgroundColor: '#91AC9A',
+    padding: 8,
+    borderRadius: 30,
+    margin: 10
   },
   buttonText: {
     color: 'white',

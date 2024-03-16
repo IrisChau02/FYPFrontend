@@ -295,7 +295,9 @@ export default function MemberList({ navigation, route }) {
 
                     {/* left */}
                     <View style={{ flex: 1 }}>
-                      <Image source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage} style={styles.logo} />
+                      <TouchableOpacity onPress={() => navigation.navigate('HomeOther', { userID: member.userID })}>
+                        <Image source={member.userLogo ? { uri: `data:image/jpeg;base64,${member.userLogo}` } : defaultLogoImage} style={styles.logo} />
+                      </TouchableOpacity>
                     </View>
 
                     {/* right */}

@@ -3,25 +3,22 @@ import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
 
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView, Linking } from 'react-native';
-import Dialog, { SlideAnimation, DialogContent, DialogButton, DialogTitle, DialogFooter } from 'react-native-popup-dialog';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import { Divider } from 'react-native-paper';
 import axios from 'axios';
-import * as ImagePicker from 'expo-image-picker';
 
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { CurrentUserID } from './CurrentUserID'; //current userID
 
 import BottomBar from "./BottomBar";
-import { setCurrentUserID } from './CurrentUserID';
 
 export default function HomeOther({ navigation, route }) {
 
   const getFreshModel = () => ({
-    userID: undefined,
+    userID: undefined, //not current user, is the user by passed params
     firstName: undefined,
     lastName: undefined,
     formatbirthday: undefined,
@@ -99,11 +96,11 @@ export default function HomeOther({ navigation, route }) {
     if (values.userID !== undefined && districtList.length !== 0 && workingModeList.length !== 0 && sportsList.length !== 0) {
 
       axios
-      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
-        params: {
-          userID: values.userID,
-        },
-      })
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+          params: {
+            userID: values.userID,
+          },
+        })
         .then((res) => {
           if (res.data !== 'failed') {
             const selectedDistrict = districtList.find(item => item.districtID === res.data[0].districtID);
@@ -115,8 +112,6 @@ export default function HomeOther({ navigation, route }) {
             const sportsNameArray = sportsList
               .filter(item => sportsIDArray.includes(item.sportsID))
               .map(item => item.sportsName);
-
-            setCurrentUserID(res.data[0].userID)
 
             setValues({
               ...values,
@@ -138,6 +133,31 @@ export default function HomeOther({ navigation, route }) {
               sportsName: sportsNameArray,
               guildName: res.data[0].guildName,
             })
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  const [isFriend, setIsFriend] = useState(false);
+
+  useEffect(() => {
+    fetchIsFriend();
+  }, [values.userID, CurrentUserID]);
+
+  const fetchIsFriend = async () => {
+    if (values.userID && CurrentUserID) {
+      axios
+        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserIsFriendWithUser`, {
+          params: {
+            user1ID: values.userID,
+            user2ID: CurrentUserID
+          },
+        })
+        .then((res) => {
+          //console.log(res.data) //not friend: []
+          if (res.data.length !== 0) { //have data in the array
+            setIsFriend(true)
           }
         })
         .catch((err) => console.log(err));
@@ -262,16 +282,18 @@ export default function HomeOther({ navigation, route }) {
               />
             </View>
 
-            <TouchableOpacity
-  style={styles.button}
-  onPress={() =>
-    Linking.openURL(`https://wa.me/${values.phoneNumber}?text=Hello, nice to meet you!`)
-  }
->
-  <Text style={styles.buttonText}>
-    Chat <FontAwesome name="whatsapp" size={24} color="white" />
-  </Text>
-</TouchableOpacity>
+            {isFriend && (
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() =>
+                  Linking.openURL(`https://wa.me/${values.phoneNumber}?text=Hello, nice to meet you!`)
+                }
+              >
+                <Text style={styles.buttonText}>
+                  Chat <FontAwesome name="whatsapp" size={24} color="white" />
+                </Text>
+              </TouchableOpacity>
+            )}
 
           </Card>
 

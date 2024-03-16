@@ -62,6 +62,8 @@ export default function EventCreate({ navigation, route }) {
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const scrollViewRef = useRef(null);
+
   const showDatePickerModal = () => {
     setShowDatePicker(true);
   };
@@ -145,15 +147,10 @@ export default function EventCreate({ navigation, route }) {
     { color: '#005b96', label: '' }, // #005b96
     { color: '#03396c', label: '' }, // #03396c
     { color: '#011f4b', label: '' }, // #011f4b
-
-
-
-
-
-
   ];
 
   const handleNextButton = () => {
+    scrollViewRef.current.scrollTo({ y: 0, animated: true });
     setValues({
       ...values,
       isFilling: false,
@@ -175,7 +172,9 @@ export default function EventCreate({ navigation, route }) {
       .then((res) => {
         if (res.data === 'added') {
           shareViewToWhatsApp();
-          //navigation.navigate('GuildDetail');
+          setTimeout(() => {
+            navigation.navigate('Guild');
+          }, 1000); 
         } else {
           alert('Failed to create the event.');
         }
@@ -665,7 +664,7 @@ export default function EventCreate({ navigation, route }) {
       </Modal>
       {/* choose the font size */}
 
-      <ScrollView style={styles.margincontainer}>
+      <ScrollView ref={scrollViewRef} style={styles.margincontainer}>
         <View style={{ marginBottom: 30 }}>
           {values.isFilling && (
             <>
@@ -799,15 +798,16 @@ export default function EventCreate({ navigation, route }) {
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => setIsCustomAllFont(true)} style={styles.button}>
-                <Text style={styles.buttonText}>Custom Font</Text>
+                <Text style={styles.buttonText}>Custom Font Style</Text>
               </TouchableOpacity>
 
-              
-              <Text style={{ marginTop: 10, textAlign: 'center', fontWeight: 'bold', color: "grey" }}>Useless elements can drag here.</Text>
-              <View style={{ marginBottom: 10, height: 100, backgroundColor: '#D3D3D3', borderColor: '#ccc', borderWidth: 1.5, }}/>
-             
+              <Text style={{ fontSize: 10, textAlign: 'center', fontWeight: 'bold', color: "grey" }}>* Can Hold the element and move to desired location.</Text>
+              <Text style={{ fontSize: 10, textAlign: 'center', fontWeight: 'bold', color: "grey", marginBottom: 10 }}>* Can Press the element to custom specifically.</Text>
 
-              <Text style={{ textAlign: 'center', fontWeight: 'bold', color: "grey" }}>* Can Hold the element and move to desired location.</Text>
+
+              <View style={{ marginBottom: 10, height: 100, backgroundColor: '#D3D3D3', borderColor: '#ccc', borderWidth: 1.5, }}>
+                <Text style={{ fontSize: 10, marginTop: 2, textAlign: 'center', fontWeight: 'bold', color: "grey" }}>Useless elements can drag here.</Text>
+              </View>
 
               <View ref={viewRef} style={{ aspectRatio: 3 / 4 }}>
                 <ImageBackground source={backgroundImg}
@@ -954,6 +954,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 10,
     marginBottom: 10,
+    borderRadius: 30,
   },
   greenbutton: {
     backgroundColor: 'green',

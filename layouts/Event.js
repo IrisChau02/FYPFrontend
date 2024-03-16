@@ -62,21 +62,22 @@ export default function Event({ navigation, route }) {
       <FlatList
         data={[{ key: 'eventPage' }]}
         renderItem={() => (
+
           <SafeAreaView>
+            <View style={{ marginBottom: 30 }}>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName })}>
+                <Text style={styles.buttonText}>Create Event</Text>
+              </TouchableOpacity>
 
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName })}>
-              <Text style={styles.buttonText}>Create Event</Text>
-            </TouchableOpacity>
-
-            <FlatList
-              data={eventList}
-              renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
-              keyExtractor={(item, index) => index.toString()}
-              style={styles.cardList}
-            />
-
+              <FlatList
+                data={eventList}
+                renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
+                keyExtractor={(item, index) => index.toString()}
+                style={styles.cardList}
+              />
+            </View>
           </SafeAreaView>
+
         )}
         keyExtractor={(item) => item.key}
         style={styles.margincontainer}
