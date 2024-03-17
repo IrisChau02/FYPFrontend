@@ -24,6 +24,7 @@ export default function GuildDetail({ navigation, route }) {
     level: undefined,
     maxMemberLimit: undefined,
     memberNo: undefined,
+    groupID: undefined,
   })
 
   const {
@@ -33,6 +34,20 @@ export default function GuildDetail({ navigation, route }) {
     setErrors,
     handleInputChange
   } = useForm(getFreshModel);
+
+  const [forceUpdate, setForceUpdate] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setForceUpdate((prevValue) => !prevValue);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    fetchGuildData();
+  }, [forceUpdate]);
 
   useEffect(() => {
     setValues({
@@ -65,6 +80,10 @@ export default function GuildDetail({ navigation, route }) {
 
 
   useEffect(() => {
+    fetchGuildData();
+  }, [values.guildName]);
+
+  const fetchGuildData = () => {
     if (values.guildName) {
       axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildDetailByName`, {
@@ -84,12 +103,13 @@ export default function GuildDetail({ navigation, route }) {
               level: res.data[0].level,
               maxMemberLimit: res.data[0].maxMemberLimit,
               memberNo: res.data[0].memberNo,
+              groupID: res.data[0].groupID
             })
           }
         })
         .catch((err) => console.log(err));
     }
-  }, [values.guildName]);
+  };
 
   //get master name
   useEffect(() => {
@@ -122,7 +142,7 @@ export default function GuildDetail({ navigation, route }) {
 
               {/* only master can edit the guild info */}
               {values.userID === values.masterUserID && (
-                <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={() => { }}>
+                <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={() => navigation.navigate('GuildUpdate', values)}>
                   <Text><AntDesign name="edit" size={22} color="grey" /></Text>
                 </TouchableOpacity>
               )}
@@ -148,11 +168,15 @@ export default function GuildDetail({ navigation, route }) {
             <Text style={styles.guildInfo}>{values.guildIntro}</Text>
           </View>
 
-          {/*
-          <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://chat.whatsapp.com/BbKplYG4XqHGGvsjzJx895')}>
-            <Text style={styles.buttonText}>Join WhatsApp Group <FontAwesome name="whatsapp" size={24} color="white" /> </Text>
-          </TouchableOpacity>
 
+          {values.groupID && (
+            <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(`https://chat.whatsapp.com/${values.groupID}`)}>
+              <Text style={styles.buttonText}>Join WhatsApp Group <FontAwesome name="whatsapp" size={24} color="white" /> </Text>
+            </TouchableOpacity>
+          )}
+
+
+          {/*
           <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://wa.me/85265022979?text=Hello, nice to meet you!')}>
             <Text style={styles.buttonText}>Chat With Master <FontAwesome name="whatsapp" size={24} color="white" /> </Text>
           </TouchableOpacity>
@@ -161,11 +185,11 @@ export default function GuildDetail({ navigation, route }) {
         </View>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, }}>
-        <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('MemberList')}>
+          <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('MemberList')}>
             <AntDesign name="team" size={24} color="white" />
             <Text style={styles.iconText}>Member List</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('Event', { guildName: values.guildName })}>
             <MaterialIcons name="event-note" size={24} color="white" />
             <Text style={styles.iconText}>Event</Text>
@@ -174,12 +198,12 @@ export default function GuildDetail({ navigation, route }) {
 
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, }}>
-        <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('Mission')}>
+          <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('Mission')}>
             <AntDesign name="calendar" size={24} color="white" />
             <Text style={styles.iconText}>Mission</Text>
           </TouchableOpacity>
-          
-      
+
+
         </View>
 
 

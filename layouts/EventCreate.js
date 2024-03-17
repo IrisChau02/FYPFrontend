@@ -239,99 +239,99 @@ export default function EventCreate({ navigation, route }) {
 
   const [draggableItems, setDraggableItems] = useState({
     EventName: {
-      x: 10,
-      y: 10,
+      x: 10 + 30,
+      y: 10 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EventNameValue: {
-      x: 160,
-      y: 10,
+      x: 160 + 30,
+      y: 10 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EventDate: {
-      x: 10,
-      y: 30,
+      x: 10 + 30,
+      y: 30 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EventDateValue: {
-      x: 160,
-      y: 30,
+      x: 160 + 30,
+      y: 30 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     StartTime: {
-      x: 10,
-      y: 50,
+      x: 10 + 30,
+      y: 50 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     StartTimeValue: {
-      x: 160,
-      y: 50,
+      x: 160 + 30,
+      y: 50 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EndTime: {
-      x: 10,
-      y: 70,
+      x: 10 + 30,
+      y: 70 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EndTimeValue: {
-      x: 160,
-      y: 70,
+      x: 160 + 30,
+      y: 70 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EventVenue: {
-      x: 10,
-      y: 90,
+      x: 10 + 30,
+      y: 90 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EventVenueValue: {
-      x: 160,
-      y: 90,
+      x: 160 + 30,
+      y: 90 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     MemberLimit: {
-      x: 10,
-      y: 110,
+      x: 10 + 30,
+      y: 110 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     MemberLimitValue: {
-      x: 160,
-      y: 110,
+      x: 160 + 30,
+      y: 110 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EventDetail: {
-      x: 10,
-      y: 130,
+      x: 10 + 30,
+      y: 130 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
     },
     EventDetailValue: {
-      x: 160,
-      y: 130,
+      x: 160 + 30,
+      y: 130 + 50,
       fontSize: 16,
       fontColor: '#000000',
       fontWeight: null
@@ -899,6 +899,7 @@ export default function EventCreate({ navigation, route }) {
                       <Text style={{ fontSize: draggableItems.EventDetailValue.fontSize, color: draggableItems.EventDetailValue.fontColor, fontWeight: draggableItems.EventDetailValue.fontWeight }}>{values.eventDetail}</Text>
                     </TouchableOpacity>
                   </Draggable>
+                 
                 </ImageBackground>
               </View>
 
