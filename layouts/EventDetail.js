@@ -24,8 +24,6 @@ export default function EventDetail({ navigation, route }) {
     venue: undefined,
     guildName: undefined,
     initiatorID: undefined,
-    memberID: undefined,
-    memberIDArray: undefined,
   })
 
   const {
@@ -49,7 +47,6 @@ export default function EventDetail({ navigation, route }) {
 
   useEffect(() => {
     if (values.eventName !== undefined) {
-
       axios
         .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildEventByName`, {
           params: {
@@ -68,25 +65,38 @@ export default function EventDetail({ navigation, route }) {
             venue: res.data[0].venue,
             guildName: res.data[0].guildName,
             initiatorID: res.data[0].initiatorID,
-            memberID: res.data[0].memberID, //string
-            memberIDArray: res.data[0].memberID.split(',') //array
           })
         })
         .catch((err) => console.log(err));
     }
   }, [values.eventName]);
 
-  const handleJoinEvent = () => {
-    let newMemberID;
-    if (values.memberID === null) {
-      newMemberID = CurrentUserID; // Set `newMemberID` to `CurrentUserID`
-    } else {
-      newMemberID = values.memberID + `,${CurrentUserID}`; // Append `CurrentUserID` to `memberID`
-    }
 
+  const [memberList, setMemberList] = useState([]);
+
+  useEffect(() => {
+    if (values.eventName && values.guildName) {
+      axios
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildEventMember`, {
+        params: {
+          eventName: values.eventName, 
+          guildName: values.guildName
+        },
+      })
+      .then((res) => {
+        if(res.data){
+          const userIDs = res.data.map(item => item.userID);
+          setMemberList(userIDs)
+        }
+      })
+      .catch((err) => console.log(err));
+    }
+  }, [values.eventName, values.guildName]);
+
+  const handleJoinEvent = () => {
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/joinEvent`, {
-        memberID: newMemberID,
+        userID: CurrentUserID,
         guildName: values.guildName,
         eventName: values.eventName,
         currentNumber: parseInt(values.currentNumber) + 1
@@ -199,17 +209,18 @@ export default function EventDetail({ navigation, route }) {
               editable={false}
             />
 
-            {/* initiator cannot join the event */}
+            {/* initiator cannot join the event */}  
+
             {CurrentUserID !== values.initiatorID && (
               parseInt(values.currentNumber) < parseInt(values.memberNumber) ? (
-                values.memberIDArray.includes(CurrentUserID) ? (
+                memberList.includes(CurrentUserID) ? (
                   <TouchableOpacity style={{ backgroundColor: 'grey', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
                     <Text style={styles.buttonText}>Joined</Text>
                   </TouchableOpacity>
                 ) : (
-                    <TouchableOpacity onPress={handleJoinEvent} style={{ backgroundColor: 'green', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
-                      <Text style={styles.buttonText}>Join</Text>
-                    </TouchableOpacity>
+                  <TouchableOpacity onPress={handleJoinEvent} style={{ backgroundColor: 'green', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
+                    <Text style={styles.buttonText}>Join</Text>
+                  </TouchableOpacity>
                 )
               ) : (
                 <TouchableOpacity style={{ backgroundColor: 'grey', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
@@ -217,7 +228,7 @@ export default function EventDetail({ navigation, route }) {
                 </TouchableOpacity>
               )
             )}
-
+           
           </View>
         </ScrollView>
       </View>

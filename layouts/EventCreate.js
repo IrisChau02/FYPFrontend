@@ -173,7 +173,7 @@ export default function EventCreate({ navigation, route }) {
         if (res.data === 'added') {
           shareViewToWhatsApp();
           setTimeout(() => {
-            navigation.navigate('Guild');
+            navigation.navigate('GuildDetail');
           }, 1000); 
         } else {
           alert('Failed to create the event.');
