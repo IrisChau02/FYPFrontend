@@ -33,6 +33,7 @@ import HomeOther from "./layouts/HomeOther";
 import MissionFinish from "./layouts/MissionFinish";
 import EventFinish from "./layouts/EventFinish";
 import GuildUpdate from "./layouts/GuildUpdate";
+import RankingList from "./layouts/RankingList";
 
 const Stack = createNativeStackNavigator();
 
@@ -68,6 +69,7 @@ export default function App() {
         <Stack.Screen name="MissionFinish" component={MissionFinish} />
         <Stack.Screen name="EventFinish" component={EventFinish} />
         <Stack.Screen name="GuildUpdate" component={GuildUpdate} />
+        <Stack.Screen name="RankingList" component={RankingList} />
         
       </Stack.Navigator>
     </NavigationContainer>

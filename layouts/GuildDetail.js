@@ -11,6 +11,7 @@ import { CurrentUserID } from './CurrentUserID';
 import { AntDesign } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 
+
 export default function GuildDetail({ navigation, route }) {
 
   const getFreshModel = () => ({
@@ -203,7 +204,10 @@ export default function GuildDetail({ navigation, route }) {
             <Text style={styles.iconText}>Mission</Text>
           </TouchableOpacity>
 
-
+          <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('RankingList', { guildName: values.guildName })}>
+            <AntDesign name="barschart" size={24} color="white" />
+            <Text style={styles.iconText}>Ranking</Text>
+          </TouchableOpacity>
         </View>
 
 
