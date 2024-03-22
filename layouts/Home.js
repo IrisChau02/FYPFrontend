@@ -267,6 +267,16 @@ export default function Home({ navigation, route }) {
                 <Divider style={{ margin: 10 }} />
 
                 <TouchableOpacity
+                  onPress={() => navigation.navigate('ProfilePWUpdate', { props: values })}
+                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+                >
+                  <AntDesign name="key" size={24} color="grey" />
+                  <Text style={styles.label}> Change LoginName & Password</Text>
+                </TouchableOpacity>
+
+                <Divider style={{ margin: 10 }} />
+
+                <TouchableOpacity
                   onPress={() => navigation.navigate('ProfileSportsUpdate', { props: values })}
                   style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
                 >
@@ -422,22 +432,24 @@ export default function Home({ navigation, route }) {
 
       </View>
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View
+      <View style={{ flexGrow: 1 }}>
+        <ScrollView
           style={{
-            padding: 10,
+            paddingVertical: 10,
+            paddingHorizontal: 20,
+            marginBottom: 50,
             backgroundColor: '#F1F1F1',
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             flex: 1,
           }}
-        >
-
+        >   
+         
           <TouchableOpacity
             onPress={() => navigation.navigate('FriendList')}
             style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
           >
-            <AntDesign name="team" size={24} color="grey" />
+            <AntDesign name="addusergroup" size={24} color="grey" />
             <Text style={styles.label}> Friend List </Text>
 
             {waitingFriendList.length !== 0 && (
@@ -465,9 +477,10 @@ export default function Home({ navigation, route }) {
             </View>
           </TouchableOpacity>
 
-
-        </View>
-      </ScrollView>
+          <Divider style={{ margin: 10 }} />
+         
+        </ScrollView>
+      </View>
 
       <View style={styles.bottomBarContainer}>
         <BottomBar navigation={navigation} />

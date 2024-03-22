@@ -197,7 +197,6 @@ export default function GuildDetail({ navigation, route }) {
           </TouchableOpacity>
         </View>
 
-
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, }}>
           <TouchableOpacity style={styles.displaybutton} onPress={() => navigation.navigate('Mission')}>
             <AntDesign name="calendar" size={24} color="white" />
@@ -249,7 +248,7 @@ const styles = StyleSheet.create({
   },
   displaybutton: {
     width: '45%',
-    height: 100,
+    height: 120,
     padding: 10,
     borderRadius: 20,
     borderColor: 'grey',

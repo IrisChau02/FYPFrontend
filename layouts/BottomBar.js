@@ -89,24 +89,23 @@ export default function BottomBar({ navigation, route }) {
       <View style={styles.bottomBar}>
 
         <TouchableOpacity onPress={navigateToGuild} style={styles.button}>
-          <View style={styles.iconContainer}>
             <AntDesign name="team" size={24} color="#F5F5DC" />
             <Text style={styles.iconText}>Guild</Text>
-          </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Mission')} style={styles.button}>
-          <View style={styles.iconContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Mission')} style={styles.button}>         
             <AntDesign name="calendar" size={24} color="#F5F5DC" />
-            <Text style={styles.iconText}>Mission</Text>
-          </View>
+            <Text style={styles.iconText}>Mission</Text>          
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>
-          <View style={styles.iconContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('FriendList')} style={styles.button}>         
+            <AntDesign name="addusergroup" size={24} color="#F5F5DC" />
+            <Text style={styles.iconText}>Friend</Text>          
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>          
             <AntDesign name="user" size={24} color="#F5F5DC" />
-            <Text style={styles.iconText}>Profile</Text>
-          </View>
+            <Text style={styles.iconText}>Profile</Text>       
         </TouchableOpacity>
 
       </View>
@@ -132,7 +131,8 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    alignItems: 'center',
+  justifyContent: 'center',
+  alignItems: 'center',
   },
   iconContainer: {
     flexDirection: 'row',
@@ -142,6 +142,6 @@ const styles = StyleSheet.create({
   iconText: {
     color: '#F5F5DC',
     fontWeight: 'bold',
-    marginLeft: 5, // Add some spacing between the icon and text
+    fontSize: 12
   },
 });

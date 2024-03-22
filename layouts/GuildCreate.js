@@ -110,18 +110,43 @@ export default function GuildCreate({ navigation, route }) {
   }, [values.districtID]);
 
 
+  const validate = () => {
+    const temp = {};
+
+    if (!values.guildName) {
+      temp.guildName = "Guild Name cannot be empty.";
+    } else {
+      temp.guildName = "";
+    }
+
+    if (!values.guildIntro) {
+      temp.guildIntro = "Guild Introduction cannot be empty.";
+    } else if (values.guildIntro.length > 100) {
+      temp.guildIntro = "Max 100 characters.";
+    } else {
+      temp.guildIntro = "";
+    }
+
+    setErrors(temp);
+
+    return Object.values(temp).every((x) => x === "");
+  };
+
+
   const handleGuildCreate = () => {
-    axios
-      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuild`, values)
-      .then((res) => {
-        if (res.data === 'added') {
-          alert('Create successfully')
-          navigation.navigate('GuildDetail')
-        } else {
-          alert('Failed to create');
-        }
-      })
-      .catch((err) => console.log(err));
+    if (validate()) {
+      axios
+        .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createGuild`, values)
+        .then((res) => {
+          if (res.data === 'added') {
+            //alert('Create successfully')
+            navigation.navigate('GuildDetail')
+          } else {
+            alert('Failed to create');
+          }
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
@@ -148,6 +173,7 @@ export default function GuildCreate({ navigation, route }) {
           value={values.guildName}
           onChangeText={(text) => handleInputChange('guildName', text)}
         />
+        {error.guildName && <Text style={styles.errorText}>{error.guildName}</Text>}
 
 
         <View style={styles.button}>
@@ -160,7 +186,16 @@ export default function GuildCreate({ navigation, route }) {
           onChangeText={(text) => handleInputChange('guildIntro', text)}
           multiline={true}
           keyboardType="ascii-capable"
+          height={100}
         />
+
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Text style={{ color: 'grey', fontSize: 10 }}>
+            {values.guildIntro ? values.guildIntro.length : 0} / 100
+          </Text>
+        </View>
+
+        {error.guildIntro && <Text style={styles.errorText}>{error.guildIntro}</Text>}
 
 
         <View style={styles.button}>
@@ -267,6 +302,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 8,
     borderRadius: 10,
+  },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 14,
+    marginBottom: 10,
   },
   bottomBarContainer: {
     position: 'absolute',

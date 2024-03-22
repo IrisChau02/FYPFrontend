@@ -34,6 +34,7 @@ import MissionFinish from "./layouts/MissionFinish";
 import EventFinish from "./layouts/EventFinish";
 import GuildUpdate from "./layouts/GuildUpdate";
 import RankingList from "./layouts/RankingList";
+import ProfilePWUpdate from "./layouts/ProfilePWUpdate";
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +62,7 @@ export default function App() {
         <Stack.Screen name="ProfileSportsUpdate" component={ProfileSportsUpdate} />
         <Stack.Screen name="ProfileWMUpdate" component={ProfileWMUpdate} />
         <Stack.Screen name="ProfileTimeSlotUpdate" component={ProfileTimeSlotUpdate} />
+        <Stack.Screen name="ProfilePWUpdate" component={ProfilePWUpdate} />
         <Stack.Screen name="MemberList" component={MemberList} />
         <Stack.Screen name="FriendList" component={FriendList} />
         <Stack.Screen name="WaitingFriendList" component={WaitingFriendList} />

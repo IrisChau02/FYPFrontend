@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { RadioButton } from 'react-native-paper';
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
 
 const formatDate = (date) => {
   let d = new Date(date),
@@ -23,6 +24,8 @@ const formatDate = (date) => {
 
 export default function Register({ navigation }) {
   const getFreshModel = () => ({
+    isPersonal: true,
+    isLogin: false,
     firstName: undefined,
     lastName: undefined,
     birthday: new Date(),
@@ -48,7 +51,7 @@ export default function Register({ navigation }) {
     setShowDatePicker(true);
   };
 
-  const validate = () => {
+  const validatePersonal = () => {
     const temp = {};
 
     if (!values.firstName) {
@@ -91,6 +94,14 @@ export default function Register({ navigation }) {
       temp.phoneNumber = "";
     }
 
+    setErrors(temp);
+
+    return Object.values(temp).every((x) => x === "");
+  };
+
+  const validateLogin = () => {
+    const temp = {};
+
     if (!values.loginName) {
       temp.loginName = "Login Name cannot be empty.";
     } else {
@@ -118,8 +129,18 @@ export default function Register({ navigation }) {
     return Object.values(temp).every((x) => x === "");
   };
 
+  const handleNext = () => {
+    if (validatePersonal()) {
+      setValues({
+        ...values,
+        isPersonal: false,
+        isLogin: true
+      });
+    }
+  };
+
   const handleRegisterSubmit = () => {
-    if (validate()) {
+    if (validateLogin()) {
       axios
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/register`, values)
         .then((res) => {
@@ -139,108 +160,137 @@ export default function Register({ navigation }) {
       <Text style={styles.heading}>Register</Text>
       <ScrollView contentContainerStyle={styles.container}>
 
-        <Text style={styles.label}>Personal Information</Text>
-        <TextInput
-          style={[styles.input]}
-          placeholder="First Name"
-          value={values.firstName}
-          onChangeText={(text) => handleInputChange('firstName', text)}
-        />
-        {error.firstName && <Text style={styles.errorText}>{error.firstName}</Text>}
+        {values.isPersonal && (
+          <>
+            <Text style={styles.label}>Personal Information</Text>
+            <TextInput
+              style={[styles.input]}
+              placeholder="First Name"
+              value={values.firstName}
+              onChangeText={(text) => handleInputChange('firstName', text)}
+            />
+            {error.firstName && <Text style={styles.errorText}>{error.firstName}</Text>}
 
-        <TextInput
-          style={[styles.input]}
-          placeholder="Last Name"
-          value={values.lastName}
-          onChangeText={(text) => handleInputChange('lastName', text)}
-        />
+            <TextInput
+              style={[styles.input]}
+              placeholder="Last Name"
+              value={values.lastName}
+              onChangeText={(text) => handleInputChange('lastName', text)}
+            />
 
-        {error.lastName && <Text style={styles.errorText}>{error.lastName}</Text>}
+            {error.lastName && <Text style={styles.errorText}>{error.lastName}</Text>}
 
-        <RadioButtonGroup
-          containerStyle={{ margin: 10 }}
-          selected={values.gender}
-          onSelected={(value) => handleInputChange('gender', value)}
-          radioBackground="green"
-        >
-          <RadioButtonItem value="M" label={<Text style={{ fontSize: 14, color: 'grey' }}>Male</Text>} />
-          <RadioButtonItem value="F" label={<Text style={{ fontSize: 14, color: 'grey' }}>Female</Text>} />
-          <RadioButtonItem value="NA" label={<Text style={{ fontSize: 14, color: 'grey' }}>Prefer not to say</Text>} />
-        </RadioButtonGroup>
-        {error.gender && <Text style={styles.errorText}>{error.gender}</Text>}
+            <RadioButtonGroup
+              containerStyle={{ margin: 10 }}
+              selected={values.gender}
+              onSelected={(value) => handleInputChange('gender', value)}
+              radioBackground="green"
+            >
+              <RadioButtonItem value="M" label={<Text style={{ fontSize: 14, color: 'grey' }}>Male</Text>} />
+              <RadioButtonItem value="F" label={<Text style={{ fontSize: 14, color: 'grey' }}>Female</Text>} />
+              <RadioButtonItem value="NA" label={<Text style={{ fontSize: 14, color: 'grey' }}>Prefer not to say</Text>} />
+            </RadioButtonGroup>
+            {error.gender && <Text style={styles.errorText}>{error.gender}</Text>}
 
-        <TouchableOpacity style={styles.birthdaybutton} onPress={showDatePickerModal}>
-          <Text style={styles.buttonText}>Select Birthday</Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.birthdaybutton} onPress={showDatePickerModal}>
+              <Text style={styles.buttonText}>Select Birthday</Text>
+            </TouchableOpacity>
 
-        {showDatePicker && (
-          <DateTimePicker
-            value={values.birthday}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              handleInputChange('birthday', selectedDate);
-              handleInputChange('formatbirthday', formatDate(selectedDate));
-            }}
-          />
+            {showDatePicker && (
+              <DateTimePicker
+                value={values.birthday}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  handleInputChange('birthday', selectedDate);
+                  handleInputChange('formatbirthday', formatDate(selectedDate));
+                }}
+              />
+            )}
+
+            <TextInput
+              style={[styles.input]}
+              placeholder="Birthday"
+              value={values.formatbirthday}
+            />
+            {error.formatbirthday && <Text style={styles.errorText}>{error.formatbirthday}</Text>}
+
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={values.email}
+              onChangeText={(text) => handleInputChange('email', text)}
+            />
+            {error.email && <Text style={styles.errorText}>{error.email}</Text>}
+
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={values.phoneNumber}
+              onChangeText={(text) => handleInputChange('phoneNumber', text)}
+            />
+            {error.phoneNumber && <Text style={styles.errorText}>{error.phoneNumber}</Text>}
+
+            <TouchableOpacity style={styles.button} onPress={handleNext}>
+              <Text style={styles.buttonText}>Next</Text>
+            </TouchableOpacity>
+          </>
         )}
 
-        <TextInput
-          style={[styles.input]}
-          placeholder="Birthday"
-          value={values.formatbirthday}
-        />
-        {error.formatbirthday && <Text style={styles.errorText}>{error.formatbirthday}</Text>}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={values.email}
-          onChangeText={(text) => handleInputChange('email', text)}
-        />
-        {error.email && <Text style={styles.errorText}>{error.email}</Text>}
+        {values.isLogin && (
+          <>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          value={values.phoneNumber}
-          onChangeText={(text) => handleInputChange('phoneNumber', text)}
-        />
-        {error.phoneNumber && <Text style={styles.errorText}>{error.phoneNumber}</Text>}
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+              <Text style={styles.label}>Login Information</Text>
 
-        <View style={styles.divider} />
-        <Text style={styles.label}>Login Information</Text>
+              <View style={{ marginLeft: 'auto' }}>
+                <TouchableOpacity
+                  onPress={() => setValues({
+                    ...values,
+                    isPersonal: true,
+                    isLogin: false
+                  })}
+                >
 
-        <TextInput
-          style={styles.input}
-          placeholder="User Login Name"
-          value={values.loginName}
-          onChangeText={(text) => handleInputChange('loginName', text)}
-        />
-        {error.loginName && <Text style={styles.errorText}>{error.loginName}</Text>}
+                  <Ionicons name="arrow-back-circle" size={30} color="grey" />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={values.password}
-          onChangeText={(text) => handleInputChange('password', text)}
-          secureTextEntry
-        />
-        {error.password && <Text style={styles.errorText}>{error.password}</Text>}
+            <TextInput
+              style={styles.input}
+              placeholder="User Login Name"
+              value={values.loginName}
+              onChangeText={(text) => handleInputChange('loginName', text)}
+            />
+            {error.loginName && <Text style={styles.errorText}>{error.loginName}</Text>}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          value={values.confirmPassword}
-          onChangeText={(text) => handleInputChange('confirmPassword', text)}
-          secureTextEntry
-        />
-        {error.confirmPassword && <Text style={styles.errorText}>{error.confirmPassword}</Text>}
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={values.password}
+              onChangeText={(text) => handleInputChange('password', text)}
+              secureTextEntry
+            />
+            {error.password && <Text style={styles.errorText}>{error.password}</Text>}
 
-        <TouchableOpacity style={styles.button} onPress={handleRegisterSubmit}>
-         <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm Password"
+              value={values.confirmPassword}
+              onChangeText={(text) => handleInputChange('confirmPassword', text)}
+              secureTextEntry
+            />
+            {error.confirmPassword && <Text style={styles.errorText}>{error.confirmPassword}</Text>}
+
+
+            <TouchableOpacity style={styles.button} onPress={handleRegisterSubmit}>
+              <Text style={styles.buttonText}>Register</Text>
+            </TouchableOpacity>
+          </>
+        )}
 
       </ScrollView>
     </View>

@@ -43,17 +43,54 @@ export default function MissionCreate({ navigation }) {
   const missionDifficultyList = [{ id: 1, difficulty: "Easy" }, { id: 2, difficulty: "Normal" }, { id: 3, difficulty: "Medium" }, { id: 4, difficulty: "Hard" }]
   const missionModeList = [{ id: 1, mode: "Daily" }, { id: 2, mode: "Weekly" }, { id: 3, mode: "Monthly" }, { id: 4, mode: "One Time" }]
 
+
+  const validate = () => {
+    const temp = {};
+
+    if (!values.missionName) {
+      temp.missionName = "Mission Name cannot be empty.";
+    } else {
+      temp.missionName = "";
+    }
+
+    if (!values.missionDetail) {
+      temp.missionDetail = "Mission Detail cannot be empty.";
+    } else if (values.missionDetail.length > 50) {
+      temp.missionDetail = "Max 50 characters.";
+    } else {
+      temp.missionDetail = "";
+    }
+
+    if (!values.missionDifficulty) {
+      temp.missionDifficulty = "Mission Difficulty should be selected.";
+    } else {
+      temp.missionDifficulty = "";
+    }
+
+    if (!values.missionMode) {
+      temp.missionMode = "Mission Mode should be selected.";
+    } else {
+      temp.missionMode = "";
+    }
+
+    setErrors(temp);
+
+    return Object.values(temp).every((x) => x === "");
+  };
+
   const handleCreateButton = () => {
-    axios
-      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createMission`, values)
-      .then((res) => {
-        if (res.data === 'added') {
-          navigation.navigate('Mission');
-        } else {
-          alert('Failed to create the Mission.');
-        }
-      })
-      .catch((err) => console.log(err));
+    if (validate()) {
+      axios
+        .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/createMission`, values)
+        .then((res) => {
+          if (res.data === 'added') {
+            navigation.navigate('Mission');
+          } else {
+            alert('Failed to create the Mission.');
+          }
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
 
@@ -69,18 +106,18 @@ export default function MissionCreate({ navigation }) {
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Mission Name</Text>
           </TouchableOpacity>
-
           <TextInput
             style={[styles.input]}
             placeholder="Mission Name"
             value={values.missionName}
             onChangeText={(text) => handleInputChange('missionName', text)}
           />
+          {error.missionName && <Text style={styles.errorText}>{error.missionName}</Text>}
+
 
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Mission Detail</Text>
           </TouchableOpacity>
-
           <TextInput
             style={[styles.input]}
             placeholder="Mission Detail"
@@ -88,12 +125,19 @@ export default function MissionCreate({ navigation }) {
             onChangeText={(text) => handleInputChange('missionDetail', text)}
             multiline={true}
             keyboardType="ascii-capable"
+            height = {70}
           />
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <Text style={{ color: 'grey', fontSize: 10 }}>
+              {values.missionDetail ? values.missionDetail.length : 0} / 50
+            </Text>
+          </View>
+          {error.missionDetail && <Text style={styles.errorText}>{error.missionDetail}</Text>}
+
 
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Mission Difficulty</Text>
           </TouchableOpacity>
-
           {
             missionDifficultyList.map((item) => (
               <TouchableOpacity
@@ -142,11 +186,12 @@ export default function MissionCreate({ navigation }) {
               </TouchableOpacity>
             ))
           }
+          {error.missionDifficulty && <Text style={styles.errorText}>{error.missionDifficulty}</Text>}
+
 
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Mission Mode</Text>
           </TouchableOpacity>
-
           <SelectDropdown
             data={missionModeList}
             onSelect={(item) => setValues({
@@ -167,6 +212,8 @@ export default function MissionCreate({ navigation }) {
               return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'grey'} size={18} />;
             }}
           />
+          {error.missionMode && <Text style={styles.errorText}>{error.missionMode}</Text>}
+
 
           <TouchableOpacity style={styles.submitButton} onPress={handleCreateButton}>
             <Text style={styles.submitButtonText}>Create</Text>
@@ -255,6 +302,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 14,
+    marginBottom: 10,
   },
   bottomBarContainer: {
     position: 'absolute',

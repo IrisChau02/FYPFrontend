@@ -66,20 +66,43 @@ export default function GuildUpdate({ navigation, route }) {
     }
   };
 
-  
-    const handleGuildUpdate = () => {  
+  const validate = () => {
+    const temp = {};
+
+    if (!values.guildName) {
+      temp.guildName = "Guild Name cannot be empty.";
+    } else {
+      temp.guildName = "";
+    }
+
+    if (!values.guildIntro) {
+      temp.guildIntro = "Guild Introduction cannot be empty.";
+    } else if (values.guildIntro.length > 100) {
+      temp.guildIntro = "Max 100 characters.";
+    } else {
+      temp.guildIntro = "";
+    }
+
+    setErrors(temp);
+
+    return Object.values(temp).every((x) => x === "");
+  };
+
+  const handleGuildUpdate = () => {
+    if (validate()) {
       axios
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/updateGuild`, values)
         .then((res) => {
           if (res.data === 'updated') {
-            alert('Update successfully')
+            //alert('Update successfully')
             navigation.navigate('GuildDetail')
           } else {
             alert('Failed to update');
           }
         })
         .catch((err) => console.log(err));
-    };
+    }
+  };
 
 
   return (
@@ -98,8 +121,9 @@ export default function GuildUpdate({ navigation, route }) {
             style={styles.input}
             placeholder="Input Guild Name..."
             value={values.guildName}
-            editable = {false}
+            editable={false}
           />
+          {error.guildName && <Text style={styles.errorText}>{error.guildName}</Text>}
 
           <View style={styles.button}>
             <Text style={styles.buttonText}>Guild Introduction</Text>
@@ -111,7 +135,16 @@ export default function GuildUpdate({ navigation, route }) {
             onChangeText={(text) => handleInputChange('guildIntro', text)}
             multiline={true}
             keyboardType="ascii-capable"
+            height={100}
           />
+
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <Text style={{ color: 'grey', fontSize: 10 }}>
+              {values.guildIntro ? values.guildIntro.length : 0} / 100
+            </Text>
+          </View>
+          {error.guildIntro && <Text style={styles.errorText}>{error.guildIntro}</Text>}
+
 
           <View style={styles.button} onPress={pickImageAsync}>
             <Text style={styles.buttonText}>Guild Logo</Text>
@@ -133,8 +166,8 @@ export default function GuildUpdate({ navigation, route }) {
           />
 
           <TouchableOpacity style={styles.submitButton} onPress={handleGuildUpdate}>
-          <Text style={styles.buttonText}>Confirm</Text>
-        </TouchableOpacity>
+            <Text style={styles.buttonText}>Confirm</Text>
+          </TouchableOpacity>
 
         </ScrollView>
 
@@ -218,6 +251,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 14,
+    marginBottom: 10,
   },
   bottomBarContainer: {
     position: 'absolute',

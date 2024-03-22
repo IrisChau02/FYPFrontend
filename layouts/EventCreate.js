@@ -149,13 +149,73 @@ export default function EventCreate({ navigation, route }) {
     { color: '#011f4b', label: '' }, // #011f4b
   ];
 
+  const validate = () => {
+    const temp = {};
+
+    if (!values.eventName) {
+      temp.eventName = "Event Name cannot be empty.";
+    } else {
+      temp.eventName = "";
+    }
+
+    if (!values.eventDetail) {
+      temp.eventDetail = "Event Detail cannot be empty.";
+    } else if (values.eventDetail > 50) {
+      temp.eventDetail = "Max 50 characters.";
+    } else {
+      temp.eventDetail = "";
+    }
+
+    if (!values.eventDate) {
+      temp.eventDate = "Event Date cannot be empty.";
+    } else {
+      temp.eventDate = "";
+    }
+
+    if (!values.startTime) {
+      temp.startTime = "Start Time cannot be empty.";
+    } else if (!Number.isInteger(values.startTime)) {
+      temp.startTime = "Start Time must be an integer."
+    } else {
+      temp.startTime = "";
+    }
+
+    if (!values.endTime) {
+      temp.endTime = "End Time cannot be empty.";
+    } else if (!Number.isInteger(values.endTime)) {
+      temp.endTime = "End Time must be an integer."
+    } else {
+      temp.endTime = "";
+    }
+
+    if (!values.memberNumber) {
+      temp.memberNumber = "Member Number Limit cannot be empty.";
+    } else if (!Number.isInteger(values.memberNumber)) {
+      temp.memberNumber = "Member Number Limit must be an integer."
+    } else {
+      temp.memberNumber = "";
+    }
+
+    if (!values.venue) {
+      temp.venue = "Venue cannot be empty.";
+    } else {
+      temp.venue = "";
+    }
+
+    setErrors(temp);
+
+    return Object.values(temp).every((x) => x === "");
+  };
+
   const handleNextButton = () => {
-    scrollViewRef.current.scrollTo({ y: 0, animated: true });
-    setValues({
-      ...values,
-      isFilling: false,
-      isFormat: true
-    })
+    if (validate()) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+      setValues({
+        ...values,
+        isFilling: false,
+        isFormat: true
+      })
+    }
   };
 
   const handleBackButton = () => {
@@ -174,7 +234,7 @@ export default function EventCreate({ navigation, route }) {
           shareViewToWhatsApp();
           setTimeout(() => {
             navigation.navigate('GuildDetail');
-          }, 1000); 
+          }, 1000);
         } else {
           alert('Failed to create the event.');
         }
@@ -671,18 +731,18 @@ export default function EventCreate({ navigation, route }) {
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Name</Text>
               </TouchableOpacity>
-
               <TextInput
                 style={styles.input}
                 placeholder="Event Name"
                 value={values.eventName}
                 onChangeText={(text) => handleInputChange('eventName', text)}
               />
+              {error.eventName && <Text style={styles.errorText}>{error.eventName}</Text>}
+
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Detail</Text>
               </TouchableOpacity>
-
               <TextInput
                 style={styles.input}
                 placeholder="Event Detail"
@@ -690,22 +750,20 @@ export default function EventCreate({ navigation, route }) {
                 onChangeText={(text) => handleInputChange('eventDetail', text)}
                 multiline={true}
                 keyboardType="ascii-capable"
+                height={70}
               />
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <Text style={{ color: 'grey', fontSize: 10 }}>
+                  {values.eventDetail ? values.eventDetail.length : 0} / 50
+                </Text>
+              </View>
+              {error.eventDetail && <Text style={styles.errorText}>{error.eventDetail}</Text>}
 
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Date</Text>
               </TouchableOpacity>
-
               <View style={{ flexDirection: 'row' }}>
-
-                <View style={{ flex: 4 }}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Event Time"
-                    value={values.formateventDate}
-                  />
-                </View>
                 <View style={{ flex: 1 }}>
                   <TouchableOpacity style={{
                     backgroundColor: '#91AC9A',
@@ -717,7 +775,13 @@ export default function EventCreate({ navigation, route }) {
                   }} onPress={showDatePickerModal}>
                     <AntDesign name="calendar" size={24} color="white" />
                   </TouchableOpacity>
-
+                </View>
+                <View style={{ flex: 4 }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Event Time"
+                    value={values.formateventDate}
+                  />
                 </View>
               </View>
 
@@ -725,6 +789,7 @@ export default function EventCreate({ navigation, route }) {
                 <DateTimePicker
                   value={values.eventDate}
                   mode="date"
+                  minimumDate={new Date()}
                   display="default"
                   onChange={(event, selectedDate) => {
                     setShowDatePicker(false);
@@ -733,53 +798,56 @@ export default function EventCreate({ navigation, route }) {
                   }}
                 />
               )}
+              {error.eventDate && <Text style={styles.errorText}>{error.eventDate}</Text>}
+
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Start Time</Text>
               </TouchableOpacity>
-
               <TextInput
                 style={styles.input}
                 placeholder="Event Start Time"
                 value={values.startTime}
                 onChangeText={(text) => handleInputChange('startTime', text)}
               />
+              {error.startTime && <Text style={styles.errorText}>{error.startTime}</Text>}
 
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Finished Time</Text>
               </TouchableOpacity>
-
               <TextInput
                 style={styles.input}
                 placeholder="Event Finished Time"
                 value={values.endTime}
                 onChangeText={(text) => handleInputChange('endTime', text)}
               />
+              {error.endTime && <Text style={styles.errorText}>{error.endTime}</Text>}
 
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Member Number Limit</Text>
               </TouchableOpacity>
-
               <TextInput
                 style={styles.input}
                 placeholder="Member Number Limit"
                 value={values.memberNumber}
                 onChangeText={(text) => handleInputChange('memberNumber', text)}
               />
+              {error.memberNumber && <Text style={styles.errorText}>{error.memberNumber}</Text>}
 
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Venue</Text>
               </TouchableOpacity>
-
               <TextInput
                 style={styles.input}
                 placeholder="Venue"
                 value={values.venue}
                 onChangeText={(text) => handleInputChange('venue', text)}
               />
+              {error.venue && <Text style={styles.errorText}>{error.venue}</Text>}
+
 
               <TouchableOpacity style={styles.greenbutton} onPress={handleNextButton}>
                 <Text style={styles.buttonText}>Next</Text>
@@ -899,7 +967,7 @@ export default function EventCreate({ navigation, route }) {
                       <Text style={{ fontSize: draggableItems.EventDetailValue.fontSize, color: draggableItems.EventDetailValue.fontColor, fontWeight: draggableItems.EventDetailValue.fontWeight }}>{values.eventDetail}</Text>
                     </TouchableOpacity>
                   </Draggable>
-                 
+
                 </ImageBackground>
               </View>
 
@@ -989,6 +1057,11 @@ const styles = StyleSheet.create({
     color: '#91AC9A',
     fontWeight: 'bold',
     marginTop: 5,
+    marginBottom: 10,
+  },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 14,
     marginBottom: 10,
   },
 });

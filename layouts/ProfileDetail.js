@@ -90,34 +90,6 @@ export default function ProfileDetail({ navigation, route }) {
     }
   }, [route]);
 
-  const [districtList, setDistrictList] = useState([]);
-  const [workingModeList, setWorkingModeList] = useState([]);
-  const [sportsList, setSportsList] = useState([]);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const districtResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getDistrict`);
-      const workingModeResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getWorkingMode`);
-      const sportsResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getSports`);
-
-      const [districtData, workingModeData, sportsData] = await Promise.all([
-        districtResponse,
-        workingModeResponse,
-        sportsResponse,
-      ]);
-
-      setDistrictList(districtData.data);
-      setWorkingModeList(workingModeData.data);
-      setSportsList(sportsData.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const validate = () => {
     const temp = {};
 
@@ -161,31 +133,9 @@ export default function ProfileDetail({ navigation, route }) {
       temp.phoneNumber = "";
     }
 
-    if (!values.loginName) {
-      temp.loginName = "Login Name cannot be empty.";
-    } else {
-      temp.loginName = "";
-    }
-
-    if (!values.password) {
-      temp.password = "Password cannot be empty.";
-    } else if (values.password.length < 8 || !/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/.test(values.password)) {
-      temp.password = "Password must be at least 8 characters long and contain at least one letter, one number, and one symbol.";
-    } else {
-      temp.password = "";
-    }
-
-    if (!values.confirmPassword) {
-      temp.confirmPassword = "Confirm Password cannot be empty.";
-    } else if (values.confirmPassword !== values.password) {
-      temp.confirmPassword = "Confirm Password must be the same as the Password.";
-    } else {
-      temp.confirmPassword = "";
-    }
-
     if (values.userIntro !== null) {
       if (values.userIntro.length > 50) {
-        temp.userIntro = "Max is 50 characters.";
+        temp.userIntro = "Max 50 characters.";
       } else {
         temp.userIntro = "";
       }
@@ -305,35 +255,6 @@ export default function ProfileDetail({ navigation, route }) {
         />
         {error.phoneNumber && <Text style={styles.errorText}>{error.phoneNumber}</Text>}
 
-        <View style={styles.divider} />
-        <Text style={styles.label}>Login Information</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="User Login Name"
-          value={values.loginName}
-          onChangeText={(text) => handleInputChange('loginName', text)}
-        />
-        {error.loginName && <Text style={styles.errorText}>{error.loginName}</Text>}
-
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={values.password}
-          onChangeText={(text) => handleInputChange('password', text)}
-
-        />
-        {error.password && <Text style={styles.errorText}>{error.password}</Text>}
-
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          value={values.confirmPassword}
-          onChangeText={(text) => handleInputChange('confirmPassword', text)}
-          secureTextEntry
-        />
-        {error.confirmPassword && <Text style={styles.errorText}>{error.confirmPassword}</Text>}
-
         <Text style={styles.label}>Self Introduction</Text>
 
         <TextInput
@@ -342,12 +263,19 @@ export default function ProfileDetail({ navigation, route }) {
           value={values.userIntro}
           onChangeText={(text) => handleInputChange('userIntro', text)}
           multiline={true}
-        //keyboardType="ascii-capable"
+          height={100}
+          //keyboardType="ascii-capable"
         />
         {error.userIntro && <Text style={styles.errorText}>{error.userIntro}</Text>}
 
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Text style={{ color: 'grey', fontSize: 10 }}>
+            {values.userIntro ? values.userIntro.length : 0} / 50
+          </Text>
+        </View>
+
         <TouchableOpacity style={styles.button} onPress={handleChange}>
-          <Text style={styles.buttonText}>Confirm Change</Text>
+          <Text style={styles.buttonText}>Confirm</Text>
         </TouchableOpacity>
 
       </ScrollView>

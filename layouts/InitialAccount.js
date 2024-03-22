@@ -125,14 +125,14 @@ export default function InitialAccount({ navigation, route }) {
 
   const handleConfirmButton = () => {
     if (!values.districtID || !values.workModeID || !values.sportsID || !values.timeslotID) {
-      alert("District, Work Mode, Favourite Sport, Timeslot cannot be empty.")
+      alert("District, Working Mode, Timeslot, and Favourite Sport must be selected.")
     } else {
 
       axios
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/initiateAccount`, values)
         .then((res) => {
           if (res.data === 'updated') {
-            alert('Success');
+            //alert('Success');
             navigation.navigate('Login')
           }
         })
