@@ -81,12 +81,23 @@ export default function MissionFinish({ navigation, route }) {
   };
 
 
-  const handleFinishMission = () => {  
+  const handleFinishMission = () => {
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/finishMission`, values)
       .then((res) => {
         if (res.data === 'updated') {
-          alert('Update successfully')
+
+          //only Daily and weekly have cumulative
+          if (values.missionMode === 'Daily' || values.missionMode === 'Weekly') {
+            alert(
+            `Mission Difficulty: ${values.missionDifficulty}\nMission Keep Time: ${values.missionKeepTime + 1}\nCheckpoint gain = ${values.missionDifficulty === "Easy" ? 1 : values.missionDifficulty === "Normal" ? 2 : values.missionDifficulty === "Medium" ? 3 : values.missionDifficulty === "Hard" ? 4 : 0} * ${values.missionKeepTime + 1}`
+            );
+          } else {
+            alert(
+              `Mission Difficulty: ${values.missionDifficulty}\nCheckpoint gain = ${values.missionDifficulty === "Easy" ? 1 : values.missionDifficulty === "Normal" ? 2 : values.missionDifficulty === "Medium" ? 3 : values.missionDifficulty === "Hard" ? 4 : 0}`
+            );
+          }
+
           navigation.navigate('Mission')
         } else {
           alert('Failed to update');
@@ -157,12 +168,12 @@ export default function MissionFinish({ navigation, route }) {
 
           <TouchableOpacity onPress={pickImageAsync} style={{ alignItems: 'center', justifyContent: 'center' }}>
             <Image source={values.missionPhoto ? { uri: `data:image/jpeg;base64,${values.missionPhoto}` } : defaultLogoImage}
-              style={{ width: 200, height: 200, borderWidth: 1.5, borderColor: 'grey'}} />
+              style={{ width: 200, height: 200, borderWidth: 1.5, borderColor: 'grey' }} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={{backgroundColor: 'green',padding: 10,borderRadius: 5,margin: 10}} onPress={handleFinishMission}>
-          <Text style={styles.buttonText}>Finish</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={{ backgroundColor: 'green', padding: 10, borderRadius: 5, margin: 10 }} onPress={handleFinishMission}>
+            <Text style={styles.buttonText}>Finish</Text>
+          </TouchableOpacity>
 
         </ScrollView>
 

@@ -115,7 +115,28 @@ export default function Mission({ navigation, route }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
-      <Text style={styles.heading}>Mission</Text>
+
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 40,
+        marginBottom: 10,
+        paddingHorizontal: 10
+      }}>
+
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>Mission</Text>
+        </View>
+
+        <View style={{ marginLeft: 'auto' }}>
+          <TouchableOpacity onPress={() => navigation.navigate('MissionCreate')}>
+            <AntDesign name="pluscircle" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+
+      </View>
+
       <View style={styles.margincontainer}>
 
         <ScrollView style={{ marginBottom: 100 }}>
@@ -135,10 +156,6 @@ export default function Mission({ navigation, route }) {
 
           {values.guildName && (
             <>
-              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MissionCreate')}>
-                <Text style={styles.buttonText}>Create Mission</Text>
-              </TouchableOpacity>
-
               {
                 missionList.map(mission => {
                   return (
@@ -299,14 +316,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingBottom: 30
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
-    marginTop: 40,
-    marginBottom: 10,
   },
   button: {
     backgroundColor: 'green',

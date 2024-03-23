@@ -21,6 +21,14 @@ export default function MissionCreate({ navigation }) {
     missionDifficulty: undefined,
     missionMode: undefined,
     isFinish: false,
+    MaxDailyCount: 3,
+    MaxWeeklyCount: 2,
+    MaxMonthlyCount: 1,
+    MaxOneTimeCount: 4,
+    DailyCount: 0,
+    WeeklyCount: 0,
+    MonthlyCount: 0,
+    OneTimeCount: 0,
   })
 
   const {
@@ -39,6 +47,62 @@ export default function MissionCreate({ navigation }) {
       userID: CurrentUserID
     })
   }, [CurrentUserID]);
+
+  useEffect(() => {
+    if (values.userID) {
+      fetchData();
+    }
+  }, [values.userID]);
+
+  const fetchData = async () => {
+    try {
+      const DailyCount = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getMissionNumByMode`, {
+        params: {
+          userID: values.userID,
+          missionMode: "Daily"
+        },
+      });
+
+      const WeeklyCount = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getMissionNumByMode`, {
+        params: {
+          userID: values.userID,
+          missionMode: "Weekly"
+        },
+      });
+
+      const MonthlyCount = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getMissionNumByMode`, {
+        params: {
+          userID: values.userID,
+          missionMode: "Monthly"
+        },
+      });
+
+      const OneTimeCount = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getMissionNumByMode`, {
+        params: {
+          userID: values.userID,
+          missionMode: "One Time"
+        },
+      });
+
+      const [DailyCountData, WeeklyCountData, MonthlyCountData, OneTimeCountData] = await Promise.all([
+        DailyCount,
+        WeeklyCount,
+        MonthlyCount,
+        OneTimeCount,
+      ]);
+
+      setValues({
+        ...values,
+        DailyCount: DailyCountData.data[0]['count(*)'],
+        WeeklyCount: WeeklyCountData.data[0]['count(*)'],
+        MonthlyCount: MonthlyCountData.data[0]['count(*)'],
+        OneTimeCount: OneTimeCountData.data[0]['count(*)'],
+      })
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const missionDifficultyList = [{ id: 1, difficulty: "Easy" }, { id: 2, difficulty: "Normal" }, { id: 3, difficulty: "Medium" }, { id: 4, difficulty: "Hard" }]
   const missionModeList = [{ id: 1, mode: "Daily" }, { id: 2, mode: "Weekly" }, { id: 3, mode: "Monthly" }, { id: 4, mode: "One Time" }]
@@ -67,10 +131,27 @@ export default function MissionCreate({ navigation }) {
       temp.missionDifficulty = "";
     }
 
+
     if (!values.missionMode) {
       temp.missionMode = "Mission Mode should be selected.";
     } else {
-      temp.missionMode = "";
+      switch (values.missionMode) {
+        case "Daily":
+          temp.missionMode = values.DailyCount >= values.MaxDailyCount ? "Max 3 daily missions can be created." : "";
+          break;
+        case "Weekly":
+          temp.missionMode = values.WeeklyCount >= values.MaxWeeklyCount ? "Max 2 weekly missions can be created." : "";
+          break;
+        case "Monthly":
+          temp.missionMode = values.MonthlyCount >= values.MaxMonthlyCount ? "Max 1 monthly mission can be created." : "";
+          break;
+        case "One Time":
+          temp.missionMode = values.OneTimeCount >= values.MaxOneTimeCount ? "Max 4 OneTime missions can be created." : "";
+          break;
+        default:
+          temp.missionMode = "";
+          break;
+      }
     }
 
     setErrors(temp);
@@ -125,7 +206,7 @@ export default function MissionCreate({ navigation }) {
             onChangeText={(text) => handleInputChange('missionDetail', text)}
             multiline={true}
             keyboardType="ascii-capable"
-            height = {70}
+            height={70}
           />
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
             <Text style={{ color: 'grey', fontSize: 10 }}>
@@ -186,6 +267,7 @@ export default function MissionCreate({ navigation }) {
               </TouchableOpacity>
             ))
           }
+
           {error.missionDifficulty && <Text style={styles.errorText}>{error.missionDifficulty}</Text>}
 
 
@@ -214,6 +296,14 @@ export default function MissionCreate({ navigation }) {
           />
           {error.missionMode && <Text style={styles.errorText}>{error.missionMode}</Text>}
 
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <Text style={{ color: 'grey', fontSize: 10 }}>
+              | | Daily: {values.DailyCount} / {values.MaxDailyCount} | |
+              Weekly: {values.WeeklyCount} / {values.MaxWeeklyCount}  | |
+              Monthly: {values.MonthlyCount} / {values.MaxMonthlyCount}  | |
+              One Time: {values.OneTimeCount} / {values.MaxOneTimeCount}  | |
+            </Text>
+          </View>
 
           <TouchableOpacity style={styles.submitButton} onPress={handleCreateButton}>
             <Text style={styles.submitButtonText}>Create</Text>
@@ -238,7 +328,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F1',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    paddingBottom: 50
+    marginBottom: 30
   },
   heading: {
     fontSize: 24,
