@@ -119,9 +119,16 @@ const GuildCard = ({ guild, navigation }) => {
         <Text style={styles.guildInfo}>{guild.guildIntro}</Text>
       </View>
 
-      <TouchableOpacity onPress={handleJoinGuild} style={styles.button}>
-        <Text style={styles.buttonText}>Join</Text>
-      </TouchableOpacity>
+      {guild.memberNo < guild.maxMemberLimit ? (
+        <TouchableOpacity onPress={handleJoinGuild} style={styles.button}>
+          <Text style={styles.buttonText}>Join</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Full</Text>
+        </TouchableOpacity>
+      )}
+
 
     </View>
   );

@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { CurrentUserID } from './CurrentUserID';
 import { AntDesign } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
+import { ProgressBar, MD3Colors } from 'react-native-paper';
 
 
 export default function GuildDetail({ navigation, route }) {
@@ -26,6 +27,8 @@ export default function GuildDetail({ navigation, route }) {
     maxMemberLimit: undefined,
     memberNo: undefined,
     groupID: undefined,
+    totalCheckPoint: undefined,
+    nextLevelCheckPoint: undefined,
   })
 
   const {
@@ -81,34 +84,63 @@ export default function GuildDetail({ navigation, route }) {
 
 
   useEffect(() => {
-    fetchGuildData();
+    if (values.guildName) {
+      fetchGuildData();
+    }
   }, [values.guildName]);
 
-  const fetchGuildData = () => {
-    if (values.guildName) {
-      axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildDetailByName`, {
-          params: {
-            guildName: values.guildName,
-          },
-        })
-        .then((res) => {
-          if (res.data === 'failed') {
-          } else {
-            setValues({
-              ...values,
-              guildLogo: res.data[0].guildLogo,
-              guildIntro: res.data[0].guildIntro,
-              masterUserID: res.data[0].masterUserID,
-              districtID: res.data[0].districtID,
-              level: res.data[0].level,
-              maxMemberLimit: res.data[0].maxMemberLimit,
-              memberNo: res.data[0].memberNo,
-              groupID: res.data[0].groupID
-            })
-          }
-        })
-        .catch((err) => console.log(err));
+  const fetchGuildData = async () => {
+    try {
+      const GuildDetailResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildDetailByName`, {
+        params: {
+          guildName: values.guildName,
+        },
+      });
+
+      const CheckPointResponse = axios.get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getGuildCheckPoint`, {
+        params: {
+          guildName: values.guildName,
+        },
+      });
+
+      const [GuildDetail, CheckPoint] = await Promise.all([
+        GuildDetailResponse,
+        CheckPointResponse,
+      ]);
+
+      let nextLevelCheckPoint = 0;
+
+      switch (parseInt(GuildDetail.data[0].level)) {
+        case 1:
+          nextLevelCheckPoint = 7000;
+          break;
+        case 2:
+          nextLevelCheckPoint = 21000;
+          break;
+        case 3:
+          nextLevelCheckPoint = 42000;
+          break;
+        default:
+          nextLevelCheckPoint = 70000;
+          break;
+      }
+
+      setValues({
+        ...values,
+        guildLogo: GuildDetail.data[0].guildLogo,
+        guildIntro: GuildDetail.data[0].guildIntro,
+        masterUserID: GuildDetail.data[0].masterUserID,
+        districtID: GuildDetail.data[0].districtID,
+        level: GuildDetail.data[0].level,
+        maxMemberLimit: GuildDetail.data[0].maxMemberLimit,
+        memberNo: GuildDetail.data[0].memberNo,
+        groupID: GuildDetail.data[0].groupID,
+        totalCheckPoint: CheckPoint.data[0]?.totalCheckPoint,
+        nextLevelCheckPoint: nextLevelCheckPoint
+      })
+
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -131,6 +163,19 @@ export default function GuildDetail({ navigation, route }) {
     }
   }, [values.masterUserID]);
 
+  const handleUpgradeButton = () => {
+    axios
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/upgradeGuild`, values)
+      .then((res) => {
+        if (res.data === 'updated') {
+          fetchGuildData();
+        } else {
+          alert('Failed to Upgrade.');
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
       <Text style={styles.heading}>Guild</Text>
@@ -148,7 +193,7 @@ export default function GuildDetail({ navigation, route }) {
                 </TouchableOpacity>
               )}
 
-              <Text style={styles.guildName}>Name: {values.guildName}</Text>
+              <Text style={styles.guildName}>{values.guildName}</Text>
 
 
               <Text style={{ fontSize: 16, color: 'grey' }}>
@@ -156,9 +201,68 @@ export default function GuildDetail({ navigation, route }) {
                 {values.masterName}
               </Text>
 
-              <Text style={styles.guildDetails}>
-                Lv {values.level} | Member {values.memberNo}/{values.maxMemberLimit} |
+              <Text style={{ fontSize: 14, color: 'gray', paddingVertical: 5 }}>
+                Member {values.memberNo}/{values.maxMemberLimit}
               </Text>
+
+
+              <View style={{ flexDirection: 'row', paddingTop: 5 }}>
+                <Text style={{ fontSize: 16, color: 'grey' }}>
+                  Lv {values.level}
+                </Text>
+
+                <MaterialIcons name="monetization-on" size={20} style={{ marginLeft: 20 }} color="#FFC000" />
+                <Text style={{ fontSize: 16, color: 'grey' }}>{values.totalCheckPoint}</Text>
+
+              </View>
+
+              <ProgressBar
+                progress={
+                  values.totalCheckPoint && values.nextLevelCheckPoint ?
+                    Number((values.totalCheckPoint / values.nextLevelCheckPoint).toFixed(4)) :
+                    0
+                }
+                color="#FFC107" />
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <Text style={{ color: 'grey', fontSize: 10 }}>
+                  {values.nextLevelCheckPoint ? values.nextLevelCheckPoint : 0}
+                </Text>
+              </View>
+
+              {values.userID === values.masterUserID && values.level !== 5 && (values.totalCheckPoint >= values.nextLevelCheckPoint) ? (
+                <TouchableOpacity
+                  style={{
+                    height: 30,
+                    marginBottom: 10,
+                    paddingHorizontal: 10,
+                    borderRadius: 30,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#db9e0f',
+                  }}
+                  onPress={handleUpgradeButton}
+                >
+                  <Text style={{ fontSize: 13, fontWeight: 'bold', color: 'white' }}>Upgrade</Text>
+                </TouchableOpacity>
+              ) : null}
+
+              {values.userID === values.masterUserID && values.level === 5 ? (
+                <TouchableOpacity
+                  style={{
+                    height: 30,
+                    marginBottom: 10,
+                    paddingHorizontal: 10,
+                    borderRadius: 30,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#db9e0f',
+                  }}
+
+                >
+                  <Text style={{ fontSize: 13, fontWeight: 'bold', color: 'white' }}>Max Level</Text>
+                </TouchableOpacity>
+              ) : null}
 
             </View>
           </View>
@@ -302,10 +406,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'grey',
     marginBottom: 8,
-  },
-  guildDetails: {
-    fontSize: 14,
-    color: 'gray',
   },
   iconContainer: {
     flexDirection: 'row',
