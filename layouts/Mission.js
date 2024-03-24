@@ -18,6 +18,7 @@ export default function Mission({ navigation, route }) {
   const getFreshModel = () => ({
     userID: undefined,
     guildName: undefined,
+    CurrentmissionMode: "Total",
   })
 
   const {
@@ -51,7 +52,7 @@ export default function Mission({ navigation, route }) {
   useEffect(() => {
     setValues({
       ...values,
-      userID: CurrentUserID
+      userID: CurrentUserID,
     })
   }, [CurrentUserID]);
 
@@ -66,21 +67,22 @@ export default function Mission({ navigation, route }) {
 
   const fetchUserData = () => {
     axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-          if (res.data === 'failed') {
-          } else {
-            setValues({
-              ...values,
-              guildName: res.data[0].guildName,
-            })
-          }
-        })
-        .catch((err) => console.log(err));
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+        params: {
+          userID: values.userID,
+        },
+      })
+      .then((res) => {
+        if (res.data === 'failed') {
+        } else {
+          setValues({
+            ...values,
+            guildName: res.data[0].guildName,
+            CurrentmissionMode: "Total",
+          })
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
 
@@ -112,6 +114,161 @@ export default function Mission({ navigation, route }) {
     }
   };
 
+  const missionModeList = [
+    { id: 0, mode: "Total" },
+    { id: 1, mode: "Daily" },
+    { id: 2, mode: "Weekly" },
+    { id: 3, mode: "Monthly" },
+    { id: 4, mode: "One Time" }]
+
+
+  const MissionCard = ({ missionList, CurrentmissionMode }) => {
+    return (
+      <>
+        {
+          missionList.map(mission => {
+            if (CurrentmissionMode === "Total" || mission.missionMode === CurrentmissionMode) {
+              return (
+                <Card style={styles.card} key={mission.missionName}>
+
+                  <View
+                    style={{
+                      padding: 5,
+                      borderRadius: 7,
+                      width: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor:
+                        mission.missionDifficulty === 'Easy'
+                          ? '#919492'
+                          : mission.missionDifficulty === 'Normal'
+                            ? '#ACB984'
+                            : mission.missionDifficulty === 'Medium'
+                              ? '#E7C27D'
+                              : mission.missionDifficulty === 'Hard'
+                                ? '#F2ACB9'
+                                : 'light grey'
+                    }}
+                  >
+
+                    <View style={{
+                      backgroundColor: '#fff',
+                      padding: 7,
+                      borderRadius: 30,
+                      width: '60%',
+                      marginTop: 10,
+                      marginBottom: 10,
+
+                    }}>
+                      <Text style={{ color: 'grey', fontSize: 16, textAlign: 'center' }}>{mission.missionMode}</Text>
+                    </View>
+
+
+                    <View style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                      <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionDifficulty} </Text>
+
+                      {mission.missionDifficulty === 'Easy' && (
+                        <AntDesign name="star" size={24} color="#FFF" />
+                      )}
+                      {mission.missionDifficulty === 'Normal' && (
+                        <>
+                          <AntDesign name="star" size={24} color="#FFF" />
+                          <AntDesign name="star" size={24} color="#FFF" />
+                        </>
+                      )}
+                      {mission.missionDifficulty === 'Medium' && (
+                        <>
+                          <AntDesign name="star" size={24} color="#FFF" />
+                          <AntDesign name="star" size={24} color="#FFF" />
+                          <AntDesign name="star" size={24} color="#FFF" />
+                        </>
+                      )}
+                      {mission.missionDifficulty === 'Hard' && (
+                        <>
+                          <AntDesign name="star" size={24} color="#FFF" />
+                          <AntDesign name="star" size={24} color="#FFF" />
+                          <AntDesign name="star" size={24} color="#FFF" />
+                          <AntDesign name="star" size={24} color="#FFF" />
+                        </>
+                      )}
+
+                      {mission.missionMode === 'Daily' && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons name="local-fire-department" size={24} color="#FFF" style={{ marginLeft: 10 }} />
+                          <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionKeepTime} day</Text>
+                        </View>
+                      )}
+
+                      {mission.missionMode === 'Weekly' && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <MaterialIcons name="local-fire-department" size={24} color="#FFF" style={{ marginLeft: 10 }} />
+                          <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionKeepTime} week</Text>
+                        </View>
+                      )}
+
+
+
+                    </View>
+
+                  </View>
+
+                  <View style={{ padding: 5, justifyContent: 'center', alignItems: 'center' }}>
+
+                    <Text style={{
+                      fontSize: 18,
+                      color: 'grey',
+                      fontWeight: 'bold',
+                      marginBottom: 5,
+                    }}>{mission.missionName}</Text>
+
+                    <Text style={{
+                      fontSize: 12,
+                      color: 'grey',
+                      marginBottom: 5,
+                    }}>{mission.missionDetail}</Text>
+
+                  </View>
+
+                  {!mission.isFinish ? (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('MissionFinish', { mission: mission })}
+                      style={{
+                        backgroundColor: '#91AC9A',
+                        padding: 8,
+                        borderRadius: 30,
+                        margin: 10
+                      }}
+                    >
+                      <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>Finish</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: 'grey',
+                        padding: 8,
+                        borderRadius: 30,
+                        margin: 10,
+                        flex: 1,
+                        alignItems: 'center'
+                      }}
+                    >
+                      <AntDesign name="checkcircle" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+
+
+                </Card>
+              );
+            }
+          })
+        }
+      </>
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
@@ -139,7 +296,42 @@ export default function Mission({ navigation, route }) {
 
       <View style={styles.margincontainer}>
 
-        <ScrollView style={{ marginBottom: 100 }}>
+        {/* Tab */}
+        <View style={{ backgroundColor: '#F1F1F1', borderBottomWidth: 1.5, borderBottomColor: '#999999' }}>
+          <View style={{ flexDirection: 'row', height: 40, justifyContent: 'space-around', alignItems: 'center' }}>
+            {/* Content of the row */}
+            {missionModeList.map((item, index) => (
+
+              <TouchableOpacity
+                key={index}
+                style={{
+                  height: 30,
+                  borderColor: 'grey',
+                  borderWidth: 1.2,
+                  marginBottom: 10,
+                  paddingHorizontal: 10,
+                  borderRadius: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: item.mode === values.CurrentmissionMode ? '#999999' : null,
+                }}
+
+                onPress={() => {
+                  setValues({
+                    ...values,
+                    CurrentmissionMode: item.mode
+                  });
+                }}
+              >
+                <Text style={{ fontSize: 12, color: item.mode === values.CurrentmissionMode ? 'white' : 'grey' }}>{item.mode}</Text>
+              </TouchableOpacity>
+
+            ))}
+          </View>
+        </View>
+        {/* Tab */}
+
+        <ScrollView style={{ marginBottom: 150, paddingVertical: 10 }}>
 
           {/* Only join the guild can see the guild mission card */}
           {!values.guildName && (
@@ -155,147 +347,7 @@ export default function Mission({ navigation, route }) {
           {/* Only join the guild can see the guild mission card */}
 
           {values.guildName && (
-            <>
-              {
-                missionList.map(mission => {
-                  return (
-                    <Card style={styles.card} key={mission.missionName}>
-
-                      <View
-                        style={{
-                          padding: 5,
-                          borderRadius: 7,
-                          width: '100%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor:
-                            mission.missionDifficulty === 'Easy'
-                              ? '#919492'
-                              : mission.missionDifficulty === 'Normal'
-                                ? '#ACB984'
-                                : mission.missionDifficulty === 'Medium'
-                                  ? '#E7C27D'
-                                  : mission.missionDifficulty === 'Hard'
-                                    ? '#F2ACB9'
-                                    : 'light grey'
-                        }}
-                      >
-
-                        <View style={{
-                          backgroundColor: '#fff',
-                          padding: 7,
-                          borderRadius: 30,
-                          width: '60%',
-                          marginTop: 10,
-                          marginBottom: 10,
-
-                        }}>
-                          <Text style={{ color: 'grey', fontSize: 16, textAlign: 'center' }}>{mission.missionMode}</Text>
-                        </View>
-
-
-                        <View style={{
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}>
-                          <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionDifficulty} </Text>
-
-                          {mission.missionDifficulty === 'Easy' && (
-                            <AntDesign name="star" size={24} color="#FFF" />
-                          )}
-                          {mission.missionDifficulty === 'Normal' && (
-                            <>
-                              <AntDesign name="star" size={24} color="#FFF" />
-                              <AntDesign name="star" size={24} color="#FFF" />
-                            </>
-                          )}
-                          {mission.missionDifficulty === 'Medium' && (
-                            <>
-                              <AntDesign name="star" size={24} color="#FFF" />
-                              <AntDesign name="star" size={24} color="#FFF" />
-                              <AntDesign name="star" size={24} color="#FFF" />
-                            </>
-                          )}
-                          {mission.missionDifficulty === 'Hard' && (
-                            <>
-                              <AntDesign name="star" size={24} color="#FFF" />
-                              <AntDesign name="star" size={24} color="#FFF" />
-                              <AntDesign name="star" size={24} color="#FFF" />
-                              <AntDesign name="star" size={24} color="#FFF" />
-                            </>
-                          )}
-
-                          {mission.missionMode === 'Daily' && (
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <MaterialIcons name="local-fire-department" size={24} color="#FFF" style={{ marginLeft: 10 }} />
-                              <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionKeepTime} day</Text>
-                            </View>
-                          )}
-
-                          {mission.missionMode === 'Weekly' && (
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <MaterialIcons name="local-fire-department" size={24} color="#FFF" style={{ marginLeft: 10 }} />
-                              <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{mission.missionKeepTime} week</Text>
-                            </View>
-                          )}
-
-
-
-                        </View>
-
-                      </View>
-
-                      <View style={{ padding: 5, justifyContent: 'center', alignItems: 'center' }}>
-
-                        <Text style={{
-                          fontSize: 18,
-                          color: 'grey',
-                          fontWeight: 'bold',
-                          marginBottom: 5,
-                        }}>{mission.missionName}</Text>
-
-                        <Text style={{
-                          fontSize: 12,
-                          color: 'grey',
-                          marginBottom: 5,
-                        }}>{mission.missionDetail}</Text>
-
-                      </View>
-
-                      {!mission.isFinish ? (
-                        <TouchableOpacity
-                          onPress={() => navigation.navigate('MissionFinish', { mission: mission })}
-                          style={{
-                            backgroundColor: '#91AC9A',
-                            padding: 8,
-                            borderRadius: 30,
-                            margin: 10
-                          }}
-                        >
-                          <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>Finish</Text>
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          style={{
-                            backgroundColor: 'grey',
-                            padding: 8,
-                            borderRadius: 30,
-                            margin: 10,
-                            flex: 1,
-                            alignItems: 'center'
-                          }}
-                        >
-                          <AntDesign name="checkcircle" size={24} color="#fff" />
-                        </TouchableOpacity>
-                      )}
-
-
-                    </Card>
-                  );
-                })
-              }
-            </>
+            <MissionCard missionList={missionList} CurrentmissionMode={values.CurrentmissionMode} />
           )}
 
         </ScrollView>

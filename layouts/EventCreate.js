@@ -166,10 +166,10 @@ export default function EventCreate({ navigation, route }) {
       temp.eventDetail = "";
     }
 
-    if (!values.eventDate) {
-      temp.eventDate = "Event Date cannot be empty.";
+    if (!values.formateventDate) {
+      temp.formateventDate = "Event Date cannot be empty.";
     } else {
-      temp.eventDate = "";
+      temp.formateventDate = "";
     }
 
     if (!values.startTime) {
@@ -798,7 +798,7 @@ export default function EventCreate({ navigation, route }) {
                   }}
                 />
               )}
-              {error.eventDate && <Text style={styles.errorText}>{error.eventDate}</Text>}
+              {error.formateventDate && <Text style={styles.errorText}>{error.formateventDate}</Text>}
 
 
               <TouchableOpacity style={styles.button}>

@@ -149,9 +149,9 @@ export default function MemberList({ navigation, route }) {
   }
 
 
-  const [selectedGender, setSelectedGender] = useState();
-  const [selectedTimeslot, setSelectedTimeslot] = useState();
-  const [selectedSports, setSelectedSports] = useState();
+  const [selectedGender, setSelectedGender] = useState(null);
+  const [selectedTimeslot, setSelectedTimeslot] = useState(null);
+  const [selectedSports, setSelectedSports] = useState(null);
 
 
   useEffect(() => {
@@ -176,6 +176,9 @@ export default function MemberList({ navigation, route }) {
   }, [selectedSports, selectedGender, selectedTimeslot]);
 
   const handleCancelFilterMember = () => {
+    setSelectedGender(null);
+    setSelectedTimeslot(null);
+    setSelectedSports(null);
     setFilterMemberList(memberList);
   };
 
@@ -192,7 +195,13 @@ export default function MemberList({ navigation, route }) {
             <SelectDropdown
               data={genderList}
               onSelect={(item) => setSelectedGender(item.gender)}
-              buttonTextAfterSelection={(selectedItem) => selectedItem.gender}
+              buttonTextAfterSelection={(selectedItem) => {
+                if (selectedGender !== null) {
+                  return selectedItem.gender;
+                } else {
+                  return "Select Gender";
+                }
+              }}
               rowTextForSelection={(item) => item.gender}
 
               buttonStyle={{ width: '80%', height: 40, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
@@ -200,7 +209,7 @@ export default function MemberList({ navigation, route }) {
               rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
               rowTextStyle={{ color: '#444', textAlign: 'left' }}
 
-              defaultButtonText={'Select gender'}
+              defaultButtonText={'Select Gender'}
 
               renderDropdownIcon={isOpened => {
                 return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
@@ -213,7 +222,14 @@ export default function MemberList({ navigation, route }) {
             <SelectDropdown
               data={timeslotList}
               onSelect={(item) => setSelectedTimeslot(item.timeslotID)}
-              buttonTextAfterSelection={(selectedItem) => selectedItem.timeslotName}
+              buttonTextAfterSelection={(selectedItem) => {
+                if (selectedTimeslot !== null) {
+                  return selectedItem.timeslotName;
+                } else {
+                  return "Select Timeslot";
+                }
+              }}
+
               rowTextForSelection={(item) => item.timeslotName}
 
               buttonStyle={{ width: '80%', height: 40, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
@@ -234,7 +250,13 @@ export default function MemberList({ navigation, route }) {
             <SelectDropdown
               data={sportsList}
               onSelect={(item) => setSelectedSports(item.sportsID)}
-              buttonTextAfterSelection={(selectedItem) => selectedItem.sportsName}
+              buttonTextAfterSelection={(selectedItem) => {
+                if (selectedSports !== null) {
+                  return selectedItem.sportsName;
+                } else {
+                  return "Select Sports";
+                }
+              }}
               rowTextForSelection={(item) => item.sportsName}
 
               buttonStyle={{ width: '80%', height: 40, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#444', width: '100%' }}
@@ -242,7 +264,7 @@ export default function MemberList({ navigation, route }) {
               rowStyle={{ backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' }}
               rowTextStyle={{ color: '#444', textAlign: 'left' }}
 
-              defaultButtonText={'Select sports'}
+              defaultButtonText={'Select Sports'}
 
               renderDropdownIcon={isOpened => {
                 return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#444'} size={18} />;
@@ -267,7 +289,7 @@ export default function MemberList({ navigation, route }) {
             </TouchableOpacity>
           </View>
 
-          <Divider style={{ borderWidth: 2, borderColor: 'gray', marginBottom: 10 }} />
+          <Divider style={{ borderWidth: 1, borderColor: 'gray', marginBottom: 10 }} />
 
           {
             filterMemberList.map(member => {
