@@ -64,7 +64,6 @@ export default function Home({ navigation, route }) {
 
   useEffect(() => {
     if (forceUpdate) {
-      console.log('Home component has been rerendered');
       setIsShow(false); //set the dialog as close
       getWaitingFriend();
       setForceUpdate(false); // Reset forceUpdate to false after the rerender

@@ -35,6 +35,8 @@ import EventFinish from "./layouts/EventFinish";
 import GuildUpdate from "./layouts/GuildUpdate";
 import RankingList from "./layouts/RankingList";
 import ProfilePWUpdate from "./layouts/ProfilePWUpdate";
+import GuildDetailOther from "./layouts/GuildDetailOther";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +74,7 @@ export default function App() {
         <Stack.Screen name="EventFinish" component={EventFinish} />
         <Stack.Screen name="GuildUpdate" component={GuildUpdate} />
         <Stack.Screen name="RankingList" component={RankingList} />
+        <Stack.Screen name="GuildDetailOther" component={GuildDetailOther} />
         
       </Stack.Navigator>
     </NavigationContainer>

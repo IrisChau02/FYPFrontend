@@ -440,7 +440,6 @@ export default function MemberList({ navigation, route }) {
                 </Card>
               );
             })
-
           }
 
         </View>

@@ -89,10 +89,12 @@ export default function RankingList({ navigation, route }) {
         <View style={{ flexDirection: 'row' }}>
           {/* left */}
           <View style={{ flex: 1 }}>
-            <Image
-              source={guild.guildLogo ? { uri: `data:image/jpeg;base64,${guild.guildLogo}` } : defaultLogoImage}
-              style={styles.logo}
-            />
+            <TouchableOpacity onPress={() => navigation.navigate('GuildDetailOther', { guild })}>
+              <Image
+                source={guild.guildLogo ? { uri: `data:image/jpeg;base64,${guild.guildLogo}` } : defaultLogoImage}
+                style={styles.logo}
+              />
+            </TouchableOpacity>
           </View>
 
           {/* right */}
@@ -134,10 +136,12 @@ export default function RankingList({ navigation, route }) {
             <View style={{ flexDirection: 'row' }}>
               {/* left */}
               <View style={{ flex: 1 }}>
-                <Image
-                  source={guild.guildLogo ? { uri: `data:image/jpeg;base64,${guild.guildLogo}` } : defaultLogoImage}
-                  style={styles.logo}
-                />
+                <TouchableOpacity onPress={() => navigation.navigate('GuildDetailOther', { guild })}>
+                  <Image
+                    source={guild.guildLogo ? { uri: `data:image/jpeg;base64,${guild.guildLogo}` } : defaultLogoImage}
+                    style={styles.logo}
+                  />
+                </TouchableOpacity>
               </View>
 
               {/* right */}
