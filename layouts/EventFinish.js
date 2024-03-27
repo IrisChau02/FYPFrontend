@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
 import axios from 'axios';
 import { CurrentUserID } from './CurrentUserID';
 import * as ImagePicker from 'expo-image-picker';
 
 import BottomBar from "./BottomBar";
+
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+import { useRef } from 'react';
 
 import { AntDesign } from '@expo/vector-icons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -30,6 +34,8 @@ export default function EventFinish({ navigation, route }) {
 
   const defaultLogoImage = require('../assets/defaultLogo.png');
 
+  const viewRef = useRef(null);
+
   useEffect(() => {
     if (route && route.params) {
       setValues({
@@ -40,7 +46,6 @@ export default function EventFinish({ navigation, route }) {
     }
   }, [route]);
 
-  
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
@@ -59,25 +64,51 @@ export default function EventFinish({ navigation, route }) {
       })
 
     } else {
-      alert('You need to provide pictures of doing the mission.');
+      alert('You need to provide pictures of the event.');
     }
   };
 
 
-  const handleFinishEvent = () => {  
-    axios
-      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/finishGuildEvent`, values)
-      .then((res) => {
-        if (res.data === 'updated') {
-          alert('Update successfully')
-          navigation.navigate('Event')
-        } else {
-          alert('Failed to update');
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+  const handleFinishEvent = () => {
+    if (values.eventPhoto) {
+      axios
+        .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/finishGuildEvent`, values)
+        .then((res) => {
+          if (res.data === 'updated') {
+            shareViewToWhatsApp();
 
+            setTimeout(() => {
+              navigation.navigate('Event')
+            }, 1000);
+
+          } else {
+            alert('Failed to update');
+          }
+        })
+        .catch((err) => console.log(err));
+    } else {
+      alert('Event photo need to be uploaded.');
+    }
+  }
+
+  const shareViewToWhatsApp = async () => {
+    try {
+      // Get the reference to the view
+      const view = viewRef.current;
+
+      // Capture the specific part of the view as a base64 image
+      const captureOptions = {
+        format: 'png',
+        quality: 0.6
+      };
+      const imageURI = await captureRef(view, captureOptions);
+
+      // Share the image to WhatsApp
+      await Sharing.shareAsync(imageURI, { mimeType: 'image/png', dialogTitle: 'Share to WhatsApp' });
+    } catch (error) {
+      console.error('Error sharing image to WhatsApp:', error);
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
@@ -88,18 +119,28 @@ export default function EventFinish({ navigation, route }) {
 
         <ScrollView style={{ marginBottom: 100 }}>
 
-        <View style={styles.button} onPress={pickImageAsync}>
+          <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Event Photo</Text>
-          </View>
-
-          <TouchableOpacity onPress={pickImageAsync} style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Image source={values.eventPhoto ? { uri: `data:image/jpeg;base64,${values.eventPhoto}` } : defaultLogoImage}
-              style={{ width: 300, height: 300, borderWidth: 1.5, borderColor: 'grey'}} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={{backgroundColor: 'green',padding: 10,borderRadius: 5,margin: 10}} onPress={handleFinishEvent}>
-          <Text style={styles.buttonText}>Finish</Text>
-        </TouchableOpacity>
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+
+            <View ref={viewRef} style={{ aspectRatio: 1, width: 300, height: 300 }}>
+              <ImageBackground source={values.eventPhoto ? { uri: `data:image/jpeg;base64,${values.eventPhoto}` } : defaultLogoImage}
+                style={{ width: '100%', height: '100%' }} />
+            </View>
+          </View>
+
+          <TouchableOpacity
+            onPress={pickImageAsync}
+            style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+          >
+            <AntDesign name="camera" size={50} color="grey" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{ backgroundColor: 'green', padding: 10, borderRadius: 5, margin: 10 }} onPress={handleFinishEvent}>
+            <Text style={styles.buttonText}>Finish</Text>
+          </TouchableOpacity>
 
         </ScrollView>
 
