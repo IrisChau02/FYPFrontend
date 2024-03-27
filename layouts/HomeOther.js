@@ -272,6 +272,20 @@ export default function HomeOther({ navigation, route }) {
 
             <Divider style={{ margin: 10 }} />
 
+            <View style={{ justifyContent: 'center', alignItems: 'center', margin: 5 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Feather name="map-pin" size={24} color="grey" />
+                <Text style={{ fontSize: 16, color: 'grey', fontWeight: 'bold' }}>{values.districtName}</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row' }}>
+                <AntDesign name="team" size={24} color="grey" />
+                <Text style={{ fontSize: 16, color: 'grey' }}>{values.guildName ? values.guildName : "No guild"}</Text>
+              </View>
+            </View>
+
+            <Divider style={{ margin: 10 }} />
+
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <TextInput
                 style={styles.messageInput}

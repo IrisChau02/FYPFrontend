@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useEffect } from "react";
 import useForm from '../hooks/useForm';
 import { View, Text, StyleSheet } from 'react-native';
-import { TouchableOpacity} from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { CurrentUserID } from './CurrentUserID';
+import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 
 export default function BottomBar({ navigation, route }) {
@@ -55,22 +56,22 @@ export default function BottomBar({ navigation, route }) {
 
   const fetchData = () => {
     axios
-        .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
-          params: {
-            userID: values.userID,
-          },
-        })
-        .then((res) => {
-          if (res.data === 'failed') {
-          } else {
-            setValues({
-              ...values,
-              userID: res.data[0].userID,
-              guildName: res.data[0].guildName,
-            })
-          }
-        })
-        .catch((err) => console.log(err));
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+        params: {
+          userID: values.userID,
+        },
+      })
+      .then((res) => {
+        if (res.data === 'failed') {
+        } else {
+          setValues({
+            ...values,
+            userID: res.data[0].userID,
+            guildName: res.data[0].guildName,
+          })
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   const navigateToGuild = () => {
@@ -89,23 +90,30 @@ export default function BottomBar({ navigation, route }) {
       <View style={styles.bottomBar}>
 
         <TouchableOpacity onPress={navigateToGuild} style={styles.button}>
-            <AntDesign name="team" size={24} color="#F5F5DC" />
-            <Text style={styles.iconText}>Guild</Text>
+          <AntDesign name="team" size={24} color="#F5F5DC" />
+          <Text style={styles.iconText}>Guild</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Mission')} style={styles.button}>         
-            <AntDesign name="calendar" size={24} color="#F5F5DC" />
-            <Text style={styles.iconText}>Mission</Text>          
+        <TouchableOpacity
+          onPress={() => navigation.navigate(values.guildName ? 'Event' : 'Guild', { guildName: values.guildName })}
+          style={styles.button}>
+          <MaterialIcons name="event-note" size={24} color="#F5F5DC" />
+          <Text style={styles.iconText}>Event</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('FriendList')} style={styles.button}>         
-            <AntDesign name="addusergroup" size={24} color="#F5F5DC" />
-            <Text style={styles.iconText}>Friend</Text>          
+        <TouchableOpacity onPress={() => navigation.navigate('Mission')} style={styles.button}>
+          <AntDesign name="calendar" size={24} color="#F5F5DC" />
+          <Text style={styles.iconText}>Mission</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>          
-            <AntDesign name="user" size={24} color="#F5F5DC" />
-            <Text style={styles.iconText}>Profile</Text>       
+        <TouchableOpacity onPress={() => navigation.navigate('FriendList')} style={styles.button}>
+          <AntDesign name="addusergroup" size={24} color="#F5F5DC" />
+          <Text style={styles.iconText}>Friend</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>
+          <AntDesign name="user" size={24} color="#F5F5DC" />
+          <Text style={styles.iconText}>Profile</Text>
         </TouchableOpacity>
 
       </View>
@@ -131,8 +139,8 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconContainer: {
     flexDirection: 'row',

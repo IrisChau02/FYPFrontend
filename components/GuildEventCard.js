@@ -62,6 +62,10 @@ const GuildEventCard = ({ event, navigation }) => {
         <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
       </View>
 
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.eventInfo}>Member: {event.currentNumber} / {event.memberNumber}  </Text>
+      </View>
+
       <Text style={styles.eventInfo}>Venue: {event.venue}</Text>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EventDetail', { event: event })}>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>

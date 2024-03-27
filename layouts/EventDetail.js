@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
 import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList, ScrollView, SafeAreaView, Linking } from 'react-native';
 import axios from 'axios';
+import { Entypo } from '@expo/vector-icons';
 
 import { Dimensions } from 'react-native';
 import BottomBar from "./BottomBar";
@@ -73,6 +74,7 @@ export default function EventDetail({ navigation, route }) {
 
 
   const [memberList, setMemberList] = useState([]);
+  const [memberNameList, setMemberNameList] = useState([]);
 
   useEffect(() => {
     if (values.eventName && values.guildName) {
@@ -86,7 +88,9 @@ export default function EventDetail({ navigation, route }) {
         .then((res) => {
           if (res.data) {
             const userIDs = res.data.map(item => item.userID);
+            const userNames = res.data.map(item => item.loginName);
             setMemberList(userIDs)
+            setMemberNameList(userNames)
           }
         })
         .catch((err) => console.log(err));
@@ -107,6 +111,24 @@ export default function EventDetail({ navigation, route }) {
           navigation.navigate('Event');
         } else {
           alert('Failed to Join');
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleLeaveEvent = () => {
+    axios
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/leaveEvent`, {
+        userID: CurrentUserID,
+        guildName: values.guildName,
+        eventName: values.eventName,
+      })
+      .then((res) => {
+        if (res.data === 'updated') {
+          alert('Leave successfully');
+          navigation.navigate('Event');
+        } else {
+          alert('Failed to Leave');
         }
       })
       .catch((err) => console.log(err));
@@ -200,6 +222,17 @@ export default function EventDetail({ navigation, route }) {
 
 
             <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Member List</Text>
+            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              placeholder="Member List"
+              value={memberNameList.join(',')}
+              editable={false}
+            />
+
+
+            <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Venue</Text>
             </TouchableOpacity>
             <TextInput
@@ -209,14 +242,22 @@ export default function EventDetail({ navigation, route }) {
               editable={false}
             />
 
+
             {/* initiator cannot join the event */}
             {CurrentUserID !== values.initiatorID &&
               (memberList.includes(CurrentUserID) ? (
-                <TouchableOpacity style={{ backgroundColor: 'grey', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
-                  <Text style={styles.buttonText}>Joined</Text>
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity style={{ backgroundColor: 'grey', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
+                    <Text style={styles.buttonText}>Joined</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={handleLeaveEvent} style={{ backgroundColor: 'grey', padding: 10, borderRadius: 5, width: 45, marginTop: 10, marginBottom: 10 }}>
+                    <Entypo name="log-out" size={24} color="white" />
+                  </TouchableOpacity>
+                </>
               ) : (
                 parseInt(values.currentNumber) < parseInt(values.memberNumber) ? (
+
                   <TouchableOpacity onPress={handleJoinEvent} style={{ backgroundColor: 'green', padding: 10, borderRadius: 5, width: '100%', marginTop: 10, marginBottom: 10 }}>
                     <Text style={styles.buttonText}>Join</Text>
                   </TouchableOpacity>

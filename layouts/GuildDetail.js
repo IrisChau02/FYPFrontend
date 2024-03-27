@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { CurrentUserID } from './CurrentUserID';
 import { AntDesign } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { ProgressBar, MD3Colors } from 'react-native-paper';
 
 
@@ -127,6 +128,7 @@ export default function GuildDetail({ navigation, route }) {
 
       setValues({
         ...values,
+        guildName: GuildDetail.data[0].guildName,
         guildLogo: GuildDetail.data[0].guildLogo,
         guildIntro: GuildDetail.data[0].guildIntro,
         masterUserID: GuildDetail.data[0].masterUserID,
@@ -176,6 +178,22 @@ export default function GuildDetail({ navigation, route }) {
       .catch((err) => console.log(err));
   };
 
+  const handleLeaveButton = () => {
+    axios
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/leaveGuild`, {
+        userID: values.userID,
+        guildName: values.guildName,
+      })
+      .then((res) => {
+        if (res.data === 'updated') {
+          navigation.navigate('Guild');
+        } else {
+          alert('Failed to leave the guild.');
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
       <Text style={styles.heading}>Guild</Text>
@@ -193,8 +211,14 @@ export default function GuildDetail({ navigation, route }) {
                 </TouchableOpacity>
               )}
 
-              <Text style={styles.guildName}>{values.guildName}</Text>
+              {/* only not master can leave the guild*/}
+              {values.userID !== values.masterUserID && (
+                <TouchableOpacity style={{ marginLeft: 'auto' }} onPress={handleLeaveButton}>
+                  <Text><Entypo name="log-out" size={22} color="grey" /></Text>
+                </TouchableOpacity>
+              )}
 
+              <Text style={styles.guildName}>{values.guildName}</Text>
 
               <Text style={{ fontSize: 16, color: 'grey' }}>
                 <EvilIcons name="user" size={22} color="grey" />

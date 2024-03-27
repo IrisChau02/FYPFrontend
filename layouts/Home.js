@@ -442,8 +442,8 @@ export default function Home({ navigation, route }) {
             borderTopRightRadius: 30,
             flex: 1,
           }}
-        >   
-         
+        >
+
           <TouchableOpacity
             onPress={() => navigation.navigate('FriendList')}
             style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
@@ -477,7 +477,21 @@ export default function Home({ navigation, route }) {
           </TouchableOpacity>
 
           <Divider style={{ margin: 10 }} />
-         
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate(values.guildName ? 'Event' : 'Guild', { guildName: values.guildName })}
+            style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+          >
+            <MaterialIcons name="event-note" size={24} color="grey" />
+            <Text style={styles.label}> Event </Text>
+
+            <View style={{ marginLeft: 'auto' }}>
+              <AntDesign name="right" size={24} color="grey" />
+            </View>
+          </TouchableOpacity>
+
+          <Divider style={{ margin: 10 }} />
+
         </ScrollView>
       </View>
 

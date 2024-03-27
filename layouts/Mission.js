@@ -33,9 +33,9 @@ export default function Mission({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setForceUpdate(true);
       fetchUserData();
       fetchData();
+      setForceUpdate(true);
     });
 
     return unsubscribe;

@@ -152,6 +152,8 @@ export default function EventCreate({ navigation, route }) {
   const validate = () => {
     const temp = {};
 
+    const regex = /^[0-9]+$/;
+
     if (!values.eventName) {
       temp.eventName = "Event Name cannot be empty.";
     } else {
@@ -174,7 +176,7 @@ export default function EventCreate({ navigation, route }) {
 
     if (!values.startTime) {
       temp.startTime = "Start Time cannot be empty.";
-    } else if (!Number.isInteger(values.startTime)) {
+    } else if (!regex.test(values.startTime)) {
       temp.startTime = "Start Time must be an integer."
     } else {
       temp.startTime = "";
@@ -182,7 +184,7 @@ export default function EventCreate({ navigation, route }) {
 
     if (!values.endTime) {
       temp.endTime = "End Time cannot be empty.";
-    } else if (!Number.isInteger(values.endTime)) {
+    } else if (!regex.test(values.endTime)) {
       temp.endTime = "End Time must be an integer."
     } else {
       temp.endTime = "";
@@ -190,7 +192,7 @@ export default function EventCreate({ navigation, route }) {
 
     if (!values.memberNumber) {
       temp.memberNumber = "Member Number Limit cannot be empty.";
-    } else if (!Number.isInteger(values.memberNumber)) {
+    } else if (!regex.test(values.memberNumber)) {
       temp.memberNumber = "Member Number Limit must be an integer."
     } else {
       temp.memberNumber = "";
