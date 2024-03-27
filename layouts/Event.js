@@ -88,33 +88,52 @@ export default function Event({ navigation, route }) {
           <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>Event</Text>
         </View>
 
-        <View style={{ marginLeft: 'auto' }}>
-          <TouchableOpacity onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName })}>
-            <AntDesign name="pluscircle" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
+
+        {values.guildName && (
+          <View style={{ marginLeft: 'auto' }}>
+            <TouchableOpacity onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName })}>
+              <AntDesign name="pluscircle" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
-      <FlatList
-        data={[{ key: 'eventPage' }]}
-        renderItem={() => (
+      {/* Only join the guild can see the guild event card */}
+      {!values.guildName && (
+        <View style={styles.margincontainer}>
 
-          <SafeAreaView>
-            <View style={{ marginBottom: 30 }}>
+          <View style={{ marginTop: 100, justifyContent: 'center', alignItems: 'center', }}>
+            <AntDesign name="warning" size={40} color="grey" />
+            <Text style={{ marginTop: 20, fontSize: 20, color: 'grey', textAlign: 'center' }}> * Join a guild *</Text>
+            <Text style={{ marginTop: 20, fontSize: 15, color: 'grey', textAlign: 'center' }}> * To unlock guild event function *</Text>
 
-              <FlatList
-                data={eventList}
-                renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.cardList}
-              />
-            </View>
-          </SafeAreaView>
+          </View>
+        </View>
+      )}
+      {/* Only join the guild can see the guild event card */}
 
-        )}
-        keyExtractor={(item) => item.key}
-        style={styles.margincontainer}
-      />
+      {values.guildName && (
+        <FlatList
+          data={[{ key: 'eventPage' }]}
+          renderItem={() => (
+
+            <SafeAreaView>
+              <View style={{ marginBottom: 30 }}>
+
+                <FlatList
+                  data={eventList}
+                  renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={styles.cardList}
+                />
+              </View>
+            </SafeAreaView>
+
+          )}
+          keyExtractor={(item) => item.key}
+          style={styles.margincontainer}
+        />
+      )}
 
       <View style={styles.bottomBarContainer}>
         <BottomBar navigation={navigation} />

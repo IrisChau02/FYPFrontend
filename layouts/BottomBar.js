@@ -95,7 +95,7 @@ export default function BottomBar({ navigation, route }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate(values.guildName ? 'Event' : 'Guild', { guildName: values.guildName })}
+          onPress={() => navigation.navigate('Event', { guildName: values.guildName })}
           style={styles.button}>
           <MaterialIcons name="event-note" size={24} color="#F5F5DC" />
           <Text style={styles.iconText}>Event</Text>
