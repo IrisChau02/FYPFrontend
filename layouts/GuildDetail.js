@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import React, { useState } from 'react';
 import useForm from '../hooks/useForm';
-import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, FlatList, ScrollView, Linking } from 'react-native';
 import axios from 'axios';
 import BottomBar from "./BottomBar";
 import { Divider } from 'react-native-paper';
@@ -197,8 +197,9 @@ export default function GuildDetail({ navigation, route }) {
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
       <Text style={styles.heading}>Guild</Text>
-      <View style={styles.margincontainer}>
 
+      <ScrollView style={styles.margincontainer}>
+      <View style={{marginBottom: 20}}>
         <View style={styles.cardContainer}>
           <View style={styles.row}>
             <Image source={{ uri: `data:image/jpeg;base64,${values.guildLogo}` }} style={styles.logo} />
@@ -337,9 +338,9 @@ export default function GuildDetail({ navigation, route }) {
           </TouchableOpacity>
         </View>
 
-
-      </View>
-
+        </View>
+      </ScrollView>
+      
       <View style={styles.bottomBarContainer}>
         <BottomBar navigation={navigation} />
       </View>

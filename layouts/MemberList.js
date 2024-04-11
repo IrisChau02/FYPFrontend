@@ -139,7 +139,6 @@ export default function MemberList({ navigation, route }) {
       })
       .then((res) => {
         if (res.data == "added") {
-          alert("added")
           fetch_User_Friend_Data()
         } else {
           alert("fail to add")

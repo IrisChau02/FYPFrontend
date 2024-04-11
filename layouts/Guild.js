@@ -66,7 +66,6 @@ export default function Guild({ navigation }) {
           },
         })
         .then((res) => {
-
           setGuildList(res.data)
         })
         .catch((err) => console.log(err));

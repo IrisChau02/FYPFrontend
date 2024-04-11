@@ -32,6 +32,27 @@ export default function RankingList({ navigation, route }) {
 
   const defaultLogoImage = require('../assets/defaultUserLogo.png');
 
+  useEffect(() => {
+    if(CurrentUserID){
+      axios
+      .get(`${process.env.EXPO_PUBLIC_API_BASE_URL}/getUserDataByID`, {
+        params: {
+          userID: CurrentUserID,
+        },
+      })
+      .then((res) => {
+        if (res.data === 'failed') {
+        } else {
+          setValues({
+            ...values,
+            guildName: res.data[0].guildName,
+          })
+        }
+      })
+      .catch((err) => console.log(err));
+    }
+  }, [CurrentUserID]);
+
   const [allGuildRankingList, setAllGuildRankingList] = useState([]);
 
   useEffect(() => {
@@ -89,7 +110,12 @@ export default function RankingList({ navigation, route }) {
         <View style={{ flexDirection: 'row' }}>
           {/* left */}
           <View style={{ flex: 1 }}>
-            <TouchableOpacity onPress={() => navigation.navigate('GuildDetailOther', { guild })}>
+            
+            <TouchableOpacity onPress={() => {
+              if (values.guildName !== guild.guildName) {
+                navigation.navigate('GuildDetailOther', { guild });
+              }
+            }}>
               <Image
                 source={guild.guildLogo ? { uri: `data:image/jpeg;base64,${guild.guildLogo}` } : defaultLogoImage}
                 style={styles.logo}
@@ -136,7 +162,11 @@ export default function RankingList({ navigation, route }) {
             <View style={{ flexDirection: 'row' }}>
               {/* left */}
               <View style={{ flex: 1 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('GuildDetailOther', { guild })}>
+                <TouchableOpacity onPress={() => {
+                  if (values.guildName !== guild.guildName) {
+                    navigation.navigate('GuildDetailOther', { guild });
+                  }
+                }}>
                   <Image
                     source={guild.guildLogo ? { uri: `data:image/jpeg;base64,${guild.guildLogo}` } : defaultLogoImage}
                     style={styles.logo}

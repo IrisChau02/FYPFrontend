@@ -145,7 +145,7 @@ export default function Register({ navigation }) {
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/register`, values)
         .then((res) => {
           if (res.data === 'added') {
-            alert('success');
+            alert('Success. Please Login again.');
             navigation.navigate('Login');
           } else {
             alert('fail');

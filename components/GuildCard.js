@@ -12,7 +12,6 @@ const defaultLogoImage = require('../assets/defaultLogo.png');
 const GuildCard = ({ guild, navigation }) => {
 
   const getFreshModel = () => ({
-    userID: undefined,
     currentUserBirthday: undefined,
     masterName: undefined,
   })
@@ -25,15 +24,6 @@ const GuildCard = ({ guild, navigation }) => {
     handleInputChange
   } = useForm(getFreshModel);
 
-
-  /* 
-  // do with get master name, otherwise, 2 set value have error
-   useEffect(() => {
-     setValues({
-       ...values,
-       userID: CurrentUserID
-     })
-   }, [CurrentUserID]);*/
 
   //get master name
   useEffect(() => {
@@ -64,8 +54,7 @@ const GuildCard = ({ guild, navigation }) => {
 
       setValues({
         ...values,
-        masterName: masterUserData.data.loginName,
-        userID: CurrentUserID,
+        masterName: masterUserData.data[0].loginName,
         currentUserBirthday: currentUserData.data[0].birthday
       })
 
@@ -78,7 +67,7 @@ const GuildCard = ({ guild, navigation }) => {
   const handleJoinGuild = () => {
     axios
       .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/joinGuild`, {
-        userID: values.userID,
+        userID: CurrentUserID,
         guildName: guild.guildName,
         birthday: values.currentUserBirthday,
         memberNo: guild.memberNo,

@@ -162,7 +162,7 @@ export default function EventCreate({ navigation, route }) {
 
     if (!values.eventDetail) {
       temp.eventDetail = "Event Detail cannot be empty.";
-    } else if (values.eventDetail > 50) {
+    } else if (values.eventDetail.length > 50) {
       temp.eventDetail = "Max 50 characters.";
     } else {
       temp.eventDetail = "";
