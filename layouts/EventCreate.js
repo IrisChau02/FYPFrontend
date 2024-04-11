@@ -13,6 +13,7 @@ import * as Sharing from 'expo-sharing';
 import { useRef } from 'react';
 import Draggable from 'react-native-draggable';
 import * as ImagePicker from 'expo-image-picker';
+import MapView, { Marker } from 'react-native-maps';
 
 import { AntDesign } from '@expo/vector-icons';
 
@@ -399,6 +400,20 @@ export default function EventCreate({ navigation, route }) {
       fontWeight: null
     }
   });
+
+  const [region, setRegion] = useState({
+    latitude: 22.3193,
+    longitude: 114.1694,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+
+  const handleMapPress = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    console.log(latitude, longitude)
+    setRegion({ ...region, latitude, longitude });
+  };
+
 
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
@@ -850,6 +865,20 @@ export default function EventCreate({ navigation, route }) {
               />
               {error.venue && <Text style={styles.errorText}>{error.venue}</Text>}
 
+
+              <View style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <MapView
+                  region={region}
+                  onPress={handleMapPress}
+                  style={{ width: 300, height: 300 }}
+                >
+                  <Marker coordinate={region} draggable
+                    onDragEnd={handleMapPress} />
+                </MapView>
+              </View>
 
               <TouchableOpacity style={styles.greenbutton} onPress={handleNextButton}>
                 <Text style={styles.buttonText}>Next</Text>
