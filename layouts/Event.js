@@ -6,7 +6,10 @@ import axios from 'axios';
 import { AntDesign } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
-import GuildEventCard from "../components/GuildEventCard";
+import { Card, Title, Paragraph, Divider } from 'react-native-paper';
+
+import moment from 'moment';
+import { Calendar, Agenda } from 'react-native-calendars';
 
 export default function Event({ navigation, route }) {
 
@@ -67,10 +70,65 @@ export default function Event({ navigation, route }) {
         },
       })
       .then((res) => {
-        setEventList(res.data)
+        if (res.data) {
+          setEventList(res.data)
+        }
       })
       .catch((err) => console.log(err));
   };
+
+  const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
+  const eventDates = {};
+
+  eventList.forEach((event) => {
+    const startDate = event.eventDate;
+    if (!eventDates[startDate]) {
+      eventDates[startDate] = [];
+    }
+    eventDates[startDate].push({
+      eventName: event.eventName,
+      start: event.startTime,
+      end: event.endTime,
+    });
+  });
+
+  const renderAgendaItem = (item) => (
+    <View style={{ padding: 15, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
+
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'gray', marginRight: 20 }}>
+          {item.start} - {item.end}
+        </Text>
+        <TouchableOpacity style={{ backgroundColor: '#91AC9A', padding: 2, borderRadius: 30, width: 35 }} onPress={() => navigation.navigate('EventDetail', { event: item })}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <AntDesign name="search1" size={20} color="white" />
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={{ marginTop: 4, fontSize: 14, color: 'gray' }}>{item.eventName}</Text>
+
+    </View>
+  );
+
+  const renderEmptyData = () => {
+    if (Object.keys(eventDates).length === 0) {
+      return renderEmptyDate();
+    } else {
+      return (
+        <Text style={{ fontSize: 16, color: 'gray', textAlign: 'center', padding: 10 }}>
+          No Event
+        </Text>
+      );
+    }
+  };
+
+  const renderEmptyDate = () => (
+    <View style={{ padding: 16 }}>
+      <Text style={{ fontSize: 16 }}>No event</Text>
+    </View>
+  );
+
 
   return (
     <View style={{ flex: 1, backgroundColor: '#5EAF88' }}>
@@ -88,7 +146,6 @@ export default function Event({ navigation, route }) {
           <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>Event</Text>
         </View>
 
-
         {values.guildName && (
           <View style={{ marginLeft: 'auto' }}>
             <TouchableOpacity onPress={() => navigation.navigate('EventCreate', { guildName: values.guildName })}>
@@ -98,42 +155,72 @@ export default function Event({ navigation, route }) {
         )}
       </View>
 
-      {/* Only join the guild can see the guild event card */}
-      {!values.guildName && (
-        <View style={styles.margincontainer}>
+      <View style={styles.margincontainer}>
 
+        {/* Only join the guild can see the guild event card */}
+        {!values.guildName && (
           <View style={{ marginTop: 100, justifyContent: 'center', alignItems: 'center', }}>
             <AntDesign name="warning" size={40} color="grey" />
             <Text style={{ marginTop: 20, fontSize: 20, color: 'grey', textAlign: 'center' }}> * Join a guild *</Text>
             <Text style={{ marginTop: 20, fontSize: 15, color: 'grey', textAlign: 'center' }}> * To unlock guild event function *</Text>
-
           </View>
+        )}
+        {/* Only join the guild can see the guild event card */}
+
+        {/*   Agenda   */}
+        <View style={{ flex: 1 }}>
+          <Agenda
+            items={eventDates}
+            selected={selectedDate}
+            renderItem={renderAgendaItem}
+            renderEmptyData={renderEmptyData}
+          />
         </View>
-      )}
-      {/* Only join the guild can see the guild event card */}
 
-      {values.guildName && (
-        <FlatList
-          data={[{ key: 'eventPage' }]}
-          renderItem={() => (
+        <View style={{ borderBottomColor: 'grey', borderBottomWidth: 1.2, marginVertical: 5 }} />
 
-            <SafeAreaView>
-              <View style={{ marginBottom: 30 }}>
+        {/*   Event card   */}
+        <ScrollView style={{ flex: 1 }}>
+          {
+            eventList.map(event => {
+              return (
+                <Card style={{
+                  height: 'auto',
+                  backgroundColor: '#F1F1F1',
+                  borderColor: 'grey',
+                  borderWidth: 1.5,
+                  justifyContent: 'center',
+                  padding: 10,
+                  marginBottom: 10,
+                }} key={event.eventName}>
 
-                <FlatList
-                  data={eventList}
-                  renderItem={({ item }) => <GuildEventCard event={item} navigation={navigation} />}
-                  keyExtractor={(item, index) => index.toString()}
-                  style={styles.cardList}
-                />
-              </View>
-            </SafeAreaView>
+                  <Text style={styles.eventName}>{event.eventName}</Text>
+                  <Text style={styles.eventInfo}>Initiator: {event.loginName}</Text>
 
-          )}
-          keyExtractor={(item) => item.key}
-          style={styles.margincontainer}
-        />
-      )}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.eventInfo}>Date: {event.eventDate}  |  </Text>
+                    <Text style={styles.eventInfo}>Time: {event.startTime} - {event.endTime}</Text>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.eventInfo}>Member: {event.currentNumber} / {event.memberNumber}  </Text>
+                  </View>
+
+                  <Text style={styles.eventInfo}>Venue: {event.venue}</Text>
+                  <TouchableOpacity style={styles.eventbutton} onPress={() => navigation.navigate('EventDetail', { event: event })}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <AntDesign name="search1" size={24} color="white" />
+                      <Text style={styles.buttonText}>View Details</Text>
+                    </View>
+                  </TouchableOpacity>
+
+                </Card>
+              );
+            })
+          }
+
+        </ScrollView>
+      </View>
 
       <View style={styles.bottomBarContainer}>
         <BottomBar navigation={navigation} />
@@ -170,6 +257,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+  },
+  eventName: {
+    fontSize: 18,
+    color: 'grey',
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  eventInfo: {
+    fontSize: 16,
+    marginBottom: 4,
+    color: 'grey',
+  },
+  eventbutton: {
+    backgroundColor: '#91AC9A',
+    padding: 8,
+    borderRadius: 30,
+    margin: 10
   },
   bottomBarContainer: {
     position: 'absolute',
