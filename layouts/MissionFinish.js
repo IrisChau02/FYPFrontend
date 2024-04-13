@@ -5,6 +5,9 @@ import { View, Text, StyleSheet, Image, Pressable, TextInput, TouchableOpacity, 
 import axios from 'axios';
 import { CurrentUserID } from './CurrentUserID';
 import * as ImagePicker from 'expo-image-picker';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+import { useRef } from 'react';
 
 import BottomBar from "./BottomBar";
 
@@ -58,6 +61,8 @@ export default function MissionFinish({ navigation, route }) {
     }
   }, [route]);
 
+  const viewRef = useRef(null);
+
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images, //ensure the type is image
@@ -80,30 +85,59 @@ export default function MissionFinish({ navigation, route }) {
     }
   };
 
+  const shareViewToWhatsApp = async () => {
+    try {
+      // Get the reference to the view
+      const view = viewRef.current;
+
+      // Capture the specific part of the view as a base64 image
+      const captureOptions = {
+        format: 'png',
+        quality: 0.3
+      };
+      const imageURI = await captureRef(view, captureOptions);
+
+      // Share the image to WhatsApp
+      await Sharing.shareAsync(imageURI, { mimeType: 'image/png', dialogTitle: 'Share to WhatsApp' });
+    } catch (error) {
+      console.error('Error sharing image to WhatsApp:', error);
+    }
+  };
+
 
   const handleFinishMission = () => {
-    axios
-      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/finishMission`, values)
-      .then((res) => {
-        if (res.data === 'updated') {
+    if (values.missionPhoto) {
 
-          //only Daily and weekly have cumulative
-          if (values.missionMode === 'Daily' || values.missionMode === 'Weekly') {
-            alert(
-            `Mission Difficulty: ${values.missionDifficulty}\nMission Keep Time: ${values.missionKeepTime + 1}\nCheckpoint gain = ${values.missionDifficulty === "Easy" ? 1 : values.missionDifficulty === "Normal" ? 2 : values.missionDifficulty === "Medium" ? 3 : values.missionDifficulty === "Hard" ? 4 : 0} * ${values.missionKeepTime + 1}`
-            );
+      axios
+        .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/finishMission`, values)
+        .then((res) => {
+          if (res.data === 'updated') {
+            shareViewToWhatsApp();
+
+            setTimeout(() => {
+              //only Daily and weekly have cumulative
+              if (values.missionMode === 'Daily' || values.missionMode === 'Weekly') {
+                alert(
+                  `Mission Difficulty: ${values.missionDifficulty}\nMission Keep Time: ${values.missionKeepTime + 1}\nCheckpoint gain = ${values.missionDifficulty === "Easy" ? 1 : values.missionDifficulty === "Normal" ? 2 : values.missionDifficulty === "Medium" ? 3 : values.missionDifficulty === "Hard" ? 4 : 0} * ${values.missionKeepTime + 1}`
+                );
+              } else {
+                alert(
+                  `Mission Difficulty: ${values.missionDifficulty}\nCheckpoint gain = ${values.missionDifficulty === "Easy" ? 1 : values.missionDifficulty === "Normal" ? 2 : values.missionDifficulty === "Medium" ? 3 : values.missionDifficulty === "Hard" ? 4 : 0}`
+                );
+              }
+
+              navigation.navigate('Mission')
+            }, 1000);
+
           } else {
-            alert(
-              `Mission Difficulty: ${values.missionDifficulty}\nCheckpoint gain = ${values.missionDifficulty === "Easy" ? 1 : values.missionDifficulty === "Normal" ? 2 : values.missionDifficulty === "Medium" ? 3 : values.missionDifficulty === "Hard" ? 4 : 0}`
-            );
+            alert('Failed to update');
           }
+        })
+        .catch((err) => console.log(err));
 
-          navigation.navigate('Mission')
-        } else {
-          alert('Failed to update');
-        }
-      })
-      .catch((err) => console.log(err));
+    } else {
+      alert('Mission photo need to be uploaded.');
+    }
   };
 
 
@@ -166,9 +200,18 @@ export default function MissionFinish({ navigation, route }) {
             <Text style={styles.buttonText}>Mission Photo</Text>
           </View>
 
-          <TouchableOpacity onPress={pickImageAsync} style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Image source={values.missionPhoto ? { uri: `data:image/jpeg;base64,${values.missionPhoto}` } : defaultLogoImage}
-              style={{ width: 200, height: 200, borderWidth: 1.5, borderColor: 'grey' }} />
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <View ref={viewRef} style={{ aspectRatio: 1, width: 300, height: 300 }}>
+              <Image source={values.missionPhoto ? { uri: `data:image/jpeg;base64,${values.missionPhoto}` } : defaultLogoImage}
+                style={{ width: '100%', height: '100%' }} />
+            </View>
+          </View>
+
+          <TouchableOpacity
+            onPress={pickImageAsync}
+            style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+          >
+            <AntDesign name="camera" size={50} color="grey" />
           </TouchableOpacity>
 
           <TouchableOpacity style={{ backgroundColor: 'green', padding: 10, borderRadius: 5, margin: 10 }} onPress={handleFinishMission}>

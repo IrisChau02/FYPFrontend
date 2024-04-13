@@ -122,6 +122,20 @@ export default function Mission({ navigation, route }) {
     { id: 4, mode: "One Time" }]
 
 
+  const handleDeleteMission = (mission) => {
+    axios
+      .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/deleteMission`, mission)
+      .then((res) => {
+        if (res.data === 'updated') {
+          fetchData();
+        } else {
+          alert('Failed to delete.');
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+
   const MissionCard = ({ missionList, CurrentmissionMode }) => {
     return (
       <>
@@ -130,7 +144,6 @@ export default function Mission({ navigation, route }) {
             if (CurrentmissionMode === "Total" || mission.missionMode === CurrentmissionMode) {
               return (
                 <Card style={styles.card} key={mission.missionName}>
-
                   <View
                     style={{
                       padding: 5,
@@ -210,13 +223,23 @@ export default function Mission({ navigation, route }) {
                         </View>
                       )}
 
-
-
                     </View>
 
                   </View>
 
                   <View style={{ padding: 5, justifyContent: 'center', alignItems: 'center' }}>
+
+                    {mission.isSystem === 0 && mission.missionMode !== 'One Time' ? (
+                      <TouchableOpacity onPress={() => navigation.navigate('MissionUpdate', { mission })}>
+                        <AntDesign name="edit" size={24} color="gray" />
+                      </TouchableOpacity>
+                    ) : null}
+
+                    {mission.isSystem === 0 && mission.missionMode === 'One Time' ? (
+                      <TouchableOpacity onPress={() => handleDeleteMission(mission)}>
+                        <AntDesign name="delete" size={24} color="gray" />
+                      </TouchableOpacity>
+                    ) : null}
 
                     <Text style={{
                       fontSize: 18,

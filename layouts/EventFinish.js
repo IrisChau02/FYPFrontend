@@ -124,7 +124,6 @@ export default function EventFinish({ navigation, route }) {
           </TouchableOpacity>
 
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-
             <View ref={viewRef} style={{ aspectRatio: 1, width: 300, height: 300 }}>
               <ImageBackground source={values.eventPhoto ? { uri: `data:image/jpeg;base64,${values.eventPhoto}` } : defaultLogoImage}
                 style={{ width: '100%', height: '100%' }} />

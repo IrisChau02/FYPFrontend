@@ -36,7 +36,7 @@ import GuildUpdate from "./layouts/GuildUpdate";
 import RankingList from "./layouts/RankingList";
 import ProfilePWUpdate from "./layouts/ProfilePWUpdate";
 import GuildDetailOther from "./layouts/GuildDetailOther";
-
+import MissionUpdate from "./layouts/MissionUpdate";
 
 const Stack = createNativeStackNavigator();
 
@@ -75,6 +75,7 @@ export default function App() {
         <Stack.Screen name="GuildUpdate" component={GuildUpdate} />
         <Stack.Screen name="RankingList" component={RankingList} />
         <Stack.Screen name="GuildDetailOther" component={GuildDetailOther} />
+        <Stack.Screen name="MissionUpdate" component={MissionUpdate} />
         
       </Stack.Navigator>
     </NavigationContainer>
