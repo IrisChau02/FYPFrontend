@@ -9,7 +9,7 @@ import { Dimensions } from 'react-native';
 import BottomBar from "./BottomBar";
 
 import { CurrentUserID } from './CurrentUserID';
-
+import MapView, { Marker } from 'react-native-maps';
 
 export default function EventDetail({ navigation, route }) {
 
@@ -23,6 +23,8 @@ export default function EventDetail({ navigation, route }) {
     memberNumber: undefined,
     currentNumber: undefined,
     venue: undefined,
+    latitude: undefined,
+    longitude: undefined,
     guildName: undefined,
     initiatorID: undefined,
   })
@@ -46,6 +48,13 @@ export default function EventDetail({ navigation, route }) {
     }
   }, [route]);
 
+  const [region, setRegion] = useState({
+    latitude: 22.3193,
+    longitude: 114.1694,
+    latitudeDelta: 0.0461 * 0.1,
+    longitudeDelta: 0.0210 * 0.1,
+  });
+
   useEffect(() => {
     if (values.eventName !== undefined) {
       axios
@@ -59,19 +68,26 @@ export default function EventDetail({ navigation, route }) {
             ...values,
             eventDetail: res.data[0].eventDetail,
             formateventDate: res.data[0].eventDate,
-            startTime: res.data[0].startTime.toString(),
-            endTime: res.data[0].endTime.toString(),
+            startTime: res.data[0].startTime,
+            endTime: res.data[0].endTime,
             memberNumber: res.data[0].memberNumber.toString(),
             currentNumber: res.data[0].currentNumber.toString(),
             venue: res.data[0].venue,
+            latitude: res.data[0].latitude,
+            longitude: res.data[0].longitude,
             guildName: res.data[0].guildName,
             initiatorID: res.data[0].initiatorID,
           })
+
+          setRegion(prevRegion => ({
+            ...prevRegion,
+            latitude: res.data[0].latitude,
+            longitude: res.data[0].longitude,
+          }));
         })
         .catch((err) => console.log(err));
     }
   }, [values.eventName]);
-
 
   const [memberList, setMemberList] = useState([]);
   const [memberNameList, setMemberNameList] = useState([]);
@@ -241,6 +257,18 @@ export default function EventDetail({ navigation, route }) {
               value={values.venue}
               editable={false}
             />
+
+            <View style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <MapView
+                region={region}
+                style={{ width: 300, height: 300 }}
+              >
+                <Marker coordinate={region} />
+              </MapView>
+            </View>
 
 
             {/* initiator cannot join the event */}

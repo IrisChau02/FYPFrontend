@@ -33,6 +33,14 @@ const formatDate = (date) => {
   return [year, month, day].join('-');
 }
 
+function extractTime(dateTimeString) {
+  const dateTime = new Date(dateTimeString);
+  const hours = dateTime.getHours();
+  const minutes = dateTime.getMinutes();
+  const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  return timeString;
+}
+
 export default function EventCreate({ navigation, route }) {
 
   const getFreshModel = () => ({
@@ -42,12 +50,15 @@ export default function EventCreate({ navigation, route }) {
     eventDetail: undefined,
     eventDate: new Date(),
     formateventDate: undefined,
-    startTime: undefined,
-    endTime: undefined,
+    startTime: new Date(),
+    formatstartTime: undefined,
+    endTime: new Date(),
+    formatendTime: undefined,
     memberNumber: undefined,
     currentNumber: 1,
     venue: undefined,
-
+    latitude: 22.3193,
+    longitude: 114.1694,
     //making poster
     isFilling: true,
     isFormat: false
@@ -63,6 +74,10 @@ export default function EventCreate({ navigation, route }) {
 
   const PlaceholderImage = require('../assets/loginbackground2.png');
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+
   const scrollViewRef = useRef(null);
 
   const showDatePickerModal = () => {
@@ -152,7 +167,7 @@ export default function EventCreate({ navigation, route }) {
 
   const validate = () => {
     const temp = {};
-
+/*
     const regex = /^[0-9]+$/;
 
     if (!values.eventName) {
@@ -175,20 +190,24 @@ export default function EventCreate({ navigation, route }) {
       temp.formateventDate = "";
     }
 
-    if (!values.startTime) {
-      temp.startTime = "Start Time cannot be empty.";
-    } else if (!regex.test(values.startTime)) {
-      temp.startTime = "Start Time must be an integer."
+   
+    if (!values.formatstartTime) {
+      temp.formatstartTime = "Start Time cannot be empty.";
     } else {
-      temp.startTime = "";
+      temp.formatstartTime = "";
     }
 
-    if (!values.endTime) {
-      temp.endTime = "End Time cannot be empty.";
-    } else if (!regex.test(values.endTime)) {
-      temp.endTime = "End Time must be an integer."
+    if (!values.formatendTime) {
+      temp.formatendTime = "End Time cannot be empty.";
     } else {
-      temp.endTime = "";
+      const startDateTime = new Date(`2000-01-01T${values.formatstartTime}:00`);
+      const endDateTime = new Date(`2000-01-01T${values.formatendTime}:00`);
+    
+      if (values.formatstartTime && values.formatendTime && startDateTime.getTime() >= endDateTime.getTime()) {
+        temp.formatendTime = "End time should be greater than start time.";
+      } else {
+        temp.formatendTime = "";
+      }
     }
 
     if (!values.memberNumber) {
@@ -203,7 +222,7 @@ export default function EventCreate({ navigation, route }) {
       temp.venue = "Venue cannot be empty.";
     } else {
       temp.venue = "";
-    }
+    }*/
 
     setErrors(temp);
 
@@ -298,120 +317,126 @@ export default function EventCreate({ navigation, route }) {
   const template9 = require('../assets/template_9.png');
   const template10 = require('../assets/template_10.png');
 
-  const [backgroundImg, setBackgroundImg] = useState(null);
+  const [backgroundImg, setBackgroundImg] = useState(template1);
 
   const [draggableItems, setDraggableItems] = useState({
     EventName: {
-      x: 10 + 30,
+      x: 60,
       y: 10 + 50,
       fontSize: 16,
-      fontColor: '#000000',
-      fontWeight: null
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
     },
     EventNameValue: {
-      x: 160 + 30,
-      y: 10 + 50,
-      fontSize: 16,
-      fontColor: '#000000',
-      fontWeight: null
-    },
-    EventDate: {
-      x: 10 + 30,
+      x: 60,
       y: 30 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
+      fontWeight: 'bold'
+    },
+    EventDate: {
+      x: 60,
+      y: 50 + 50,
+      fontSize: 16,
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     EventDateValue: {
-      x: 160 + 30,
-      y: 30 + 50,
+      x: 60,
+      y: 70 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     StartTime: {
-      x: 10 + 30,
-      y: 50 + 50,
+      x: 60,
+      y: 90 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     StartTimeValue: {
-      x: 160 + 30,
-      y: 50 + 50,
+      x: 60,
+      y: 110 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     EndTime: {
-      x: 10 + 30,
-      y: 70 + 50,
+      x: 60,
+      y: 130 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     EndTimeValue: {
-      x: 160 + 30,
-      y: 70 + 50,
+      x: 60,
+      y: 150 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     EventVenue: {
-      x: 10 + 30,
-      y: 90 + 50,
+      x: 60,
+      y: 170 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     EventVenueValue: {
-      x: 160 + 30,
-      y: 90 + 50,
+      x: 60,
+      y: 190 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     MemberLimit: {
-      x: 10 + 30,
-      y: 110 + 50,
+      x: 60,
+      y: 210 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     MemberLimitValue: {
-      x: 160 + 30,
-      y: 110 + 50,
+      x: 60,
+      y: 230 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     EventDetail: {
-      x: 10 + 30,
-      y: 130 + 50,
+      x: 60,
+      y: 250 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     },
     EventDetailValue: {
-      x: 160 + 30,
-      y: 130 + 50,
+      x: 60,
+      y: 270 + 50,
       fontSize: 16,
-      fontColor: '#000000',
+      fontColor: '#FFFFFF',
       fontWeight: null
     }
   });
 
+
   const [region, setRegion] = useState({
     latitude: 22.3193,
     longitude: 114.1694,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitudeDelta: 0.0461,
+    longitudeDelta: 0.0210,
   });
 
   const handleMapPress = (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
-    console.log(latitude, longitude)
     setRegion({ ...region, latitude, longitude });
+
+    setValues({
+      ...values,
+      latitude: latitude,
+      longitude: longitude
+    })
   };
 
 
@@ -796,7 +821,7 @@ export default function EventCreate({ navigation, route }) {
                 <View style={{ flex: 4 }}>
                   <TextInput
                     style={styles.input}
-                    placeholder="Event Time"
+                    placeholder="Event Date"
                     value={values.formateventDate}
                   />
                 </View>
@@ -821,25 +846,93 @@ export default function EventCreate({ navigation, route }) {
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Start Time</Text>
               </TouchableOpacity>
-              <TextInput
-                style={styles.input}
-                placeholder="Event Start Time"
-                value={values.startTime}
-                onChangeText={(text) => handleInputChange('startTime', text)}
-              />
-              {error.startTime && <Text style={styles.errorText}>{error.startTime}</Text>}
+
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: '#91AC9A',
+                      padding: 10,
+                      borderRadius: 30,
+                      width: 45,
+                      marginLeft: 10,
+                      marginBottom: 10,
+                    }}
+                    onPress={() => setShowStartTimePicker(true)}
+                  >
+                    <AntDesign name="calendar" size={24} color="white" />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ flex: 4 }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Event Start Time"
+                    value={values.formatstartTime}
+                  />
+                </View>
+              </View>
+
+              {showStartTimePicker && (
+                <DateTimePicker
+                  value={values.startTime}
+                  mode="time"
+                  display="spinner"
+                  onChange={(event, selectedTime) => {
+                    setShowStartTimePicker(false);
+                    handleInputChange('startTime', selectedTime);
+                    handleInputChange('formatstartTime', extractTime(selectedTime));
+                  }}
+                />
+              )}
+              {error.formatstartTime && <Text style={styles.errorText}>{error.formatstartTime}</Text>}
 
 
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Event Finished Time</Text>
               </TouchableOpacity>
-              <TextInput
-                style={styles.input}
-                placeholder="Event Finished Time"
-                value={values.endTime}
-                onChangeText={(text) => handleInputChange('endTime', text)}
-              />
-              {error.endTime && <Text style={styles.errorText}>{error.endTime}</Text>}
+
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: '#91AC9A',
+                      padding: 10,
+                      borderRadius: 30,
+                      width: 45,
+                      marginLeft: 10,
+                      marginBottom: 10,
+                    }}
+                    onPress={() => setShowEndTimePicker(true)}
+                  >
+                    <AntDesign name="calendar" size={24} color="white" />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ flex: 4 }}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Event Finished Time"
+                    value={values.formatendTime}
+
+                  />
+                </View>
+              </View>
+
+              {showEndTimePicker && (
+                <DateTimePicker
+                  value={values.endTime}
+                  mode="time"
+                  display="spinner"
+                  onChange={(event, selectedTime) => {
+                    setShowEndTimePicker(false);
+                    handleInputChange('endTime', selectedTime);
+                    handleInputChange('formatendTime', extractTime(selectedTime));
+                  }}
+                />
+              )}
+
+              {error.formatendTime && <Text style={styles.errorText}>{error.formatendTime}</Text>}
 
 
               <TouchableOpacity style={styles.button}>
@@ -947,7 +1040,7 @@ export default function EventCreate({ navigation, route }) {
                   </Draggable>
                   <Draggable x={draggableItems.StartTimeValue.x} y={draggableItems.StartTimeValue.y}>
                     <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('StartTimeValue'); }}>
-                      <Text style={{ fontSize: draggableItems.StartTimeValue.fontSize, color: draggableItems.StartTimeValue.fontColor, fontWeight: draggableItems.StartTimeValue.fontWeight }}>{values.startTime}</Text>
+                      <Text style={{ fontSize: draggableItems.StartTimeValue.fontSize, color: draggableItems.StartTimeValue.fontColor, fontWeight: draggableItems.StartTimeValue.fontWeight }}>{values.formatstartTime}</Text>
                     </TouchableOpacity>
                   </Draggable>
 
@@ -959,7 +1052,7 @@ export default function EventCreate({ navigation, route }) {
                   </Draggable>
                   <Draggable x={draggableItems.EndTimeValue.x} y={draggableItems.EndTimeValue.y}>
                     <TouchableOpacity onPress={() => { setIsCustomFont(true); setCustomItem('EndTimeValue'); }}>
-                      <Text style={{ fontSize: draggableItems.EndTimeValue.fontSize, color: draggableItems.EndTimeValue.fontColor, fontWeight: draggableItems.EndTimeValue.fontWeight }}>{values.endTime}</Text>
+                      <Text style={{ fontSize: draggableItems.EndTimeValue.fontSize, color: draggableItems.EndTimeValue.fontColor, fontWeight: draggableItems.EndTimeValue.fontWeight }}>{values.formatendTime}</Text>
                     </TouchableOpacity>
                   </Draggable>
 
