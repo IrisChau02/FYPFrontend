@@ -300,7 +300,7 @@ export default function HomeOther({ navigation, route }) {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() =>
-                  Linking.openURL(`https://wa.me/${values.phoneNumber}?text=Hello, nice to meet you!`)
+                  Linking.openURL(`https://wa.me/852${values.phoneNumber}?text=Hello, nice to meet you!`)
                 }
               >
                 <Text style={styles.buttonText}>

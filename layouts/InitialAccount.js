@@ -124,7 +124,7 @@ export default function InitialAccount({ navigation, route }) {
 
 
   const handleConfirmButton = () => {
-    if (!values.districtID || !values.workModeID || !values.sportsID || !values.timeslotID) {
+    if (!values.districtID || !values.workModeID || values.sportsID.length===0 || !values.timeslotID) {
       alert("District, Working Mode, Timeslot, and Favourite Sport must be selected.")
     } else {
 

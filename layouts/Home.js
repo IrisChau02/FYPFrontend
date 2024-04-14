@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 import BottomBar from "./BottomBar";
 import { setCurrentUserID } from './CurrentUserID';
@@ -301,6 +302,16 @@ export default function Home({ navigation, route }) {
                 >
                   <Feather name="sun" size={24} color="grey" />
                   <Text style={styles.label}> Change Timeslot</Text>
+                </TouchableOpacity>
+
+                <Divider style={{ margin: 10 }} />
+
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Login')}
+                  style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}
+                >
+                  <Entypo name="log-out" size={22} color="grey" />
+                  <Text style={styles.label}> Log out</Text>
                 </TouchableOpacity>
 
                 <Divider style={{ margin: 10 }} />

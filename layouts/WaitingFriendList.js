@@ -99,7 +99,7 @@ export default function WaitingFriendList({ navigation, route }) {
 
 
                   {/* center */}
-                  <View style={{ flex: 2 }}>
+                  <View style={{ flex: 2.5 }}>
 
                     <View style={{ flexDirection: 'row' }}>
                       <TextInput
@@ -220,7 +220,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'green',
-    padding: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
     borderRadius: 5,
     width: '100%',
     marginTop: 10,
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
   },
   bottomBarContainer: {

@@ -167,7 +167,7 @@ export default function EventCreate({ navigation, route }) {
 
   const validate = () => {
     const temp = {};
-/*
+
     const regex = /^[0-9]+$/;
 
     if (!values.eventName) {
@@ -222,7 +222,7 @@ export default function EventCreate({ navigation, route }) {
       temp.venue = "Venue cannot be empty.";
     } else {
       temp.venue = "";
-    }*/
+    }
 
     setErrors(temp);
 

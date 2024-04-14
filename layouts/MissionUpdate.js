@@ -43,6 +43,7 @@ export default function MissionUpdate({ navigation, route }) {
       setValues({
         ...values,
         userID: CurrentUserID,
+        missionNewName: mission.missionName,
         missionName: mission.missionName,
         missionDetail: mission.missionDetail,
         missionDifficulty: mission.missionDifficulty,

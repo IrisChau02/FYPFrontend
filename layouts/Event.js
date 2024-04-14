@@ -124,9 +124,9 @@ export default function Event({ navigation, route }) {
   };
 
   const renderEmptyDate = () => (
-    <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 16 }}>No event</Text>
-    </View>
+    <Text style={{ fontSize: 16, color: 'gray', textAlign: 'center', padding: 10 }}>
+          No Event
+        </Text>
   );
 
 
