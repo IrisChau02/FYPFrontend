@@ -132,8 +132,11 @@ export default function InitialAccount({ navigation, route }) {
         .post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/initiateAccount`, values)
         .then((res) => {
           if (res.data === 'updated') {
-            //alert('Success');
-            navigation.navigate('Login')
+            console.log(values.loginName, values.password)
+            navigation.navigate('Home', {
+              loginName: values.loginName,
+              password: values.password,
+            });
           }
         })
         .catch((err) => console.log(err));
